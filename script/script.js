@@ -783,6 +783,21 @@
 
         let currentMonthIndex = 0; // Start from January (index 0)
 
+        // Function to determine bar colors based on comparing values across datasets for the same month
+        function getColorsForMonth(value2025, value2024, valueTarget) {
+            // Find the minimum value among the three
+            const minValue = Math.min(value2025, value2024, valueTarget);
+            
+            return {
+                color2025: value2025 === minValue ? colors.year2025.red : colors.year2025.normal,
+                border2025: value2025 === minValue ? colors.year2025.redBorder : colors.year2025.normalBorder,
+                color2024: value2024 === minValue ? colors.year2024.red : colors.year2024.normal,
+                border2024: value2024 === minValue ? colors.year2024.redBorder : colors.year2024.normalBorder,
+                colorTarget: valueTarget === minValue ? colors.target.red : colors.target.normal,
+                borderTarget: valueTarget === minValue ? colors.target.redBorder : colors.target.normalBorder
+            };
+        }
+
         // Function to get 3 consecutive months of data
         function getThreeMonthsData(startIndex) {
             const indices = [];
@@ -803,9 +818,38 @@
             return { labels, data2025, data2024, dataTarget };
         }
 
+        // Define color schemes
+        const colors = {
+            year2025: {
+                normal: 'rgba(88, 103, 64, 0.85)',
+                normalBorder: 'rgba(88, 103, 64, 1)',
+                red: 'rgba(220, 53, 69, 0.85)',
+                redBorder: 'rgba(220, 53, 69, 1)'
+            },
+            year2024: {
+                normal: 'rgba(150, 168, 64, 0.85)',
+                normalBorder: 'rgba(150, 168, 64, 1)',
+                red: 'rgba(220, 53, 69, 0.85)',
+                redBorder: 'rgba(220, 53, 69, 1)'
+            },
+            target: {
+                normal: 'rgba(229, 187, 34, 0.85)',
+                normalBorder: 'rgba(229, 187, 34, 1)',
+                red: 'rgba(220, 53, 69, 0.85)',
+                redBorder: 'rgba(220, 53, 69, 1)'
+            }
+        };
+
         // Rental Income Composition Over Time (3-Month Summary Bar Chart)
         const rentalAreaCtx = document.getElementById('rentalAreaChart').getContext('2d');
         const initialData = getThreeMonthsData(currentMonthIndex);
+
+        // Generate initial colors by comparing the three values
+        const initialColors = getColorsForMonth(
+            initialData.data2025[0],
+            initialData.data2024[0],
+            initialData.dataTarget[0]
+        );
 
         const rentalAreaChart = new Chart(rentalAreaCtx, {
             type: 'bar',
@@ -814,20 +858,20 @@
                 datasets: [{
                     label: 'Year 2025',
                     data: initialData.data2025,
-                    backgroundColor: 'rgba(88, 103, 64, 0.85)',
-                    borderColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: [initialColors.color2025],
+                    borderColor: [initialColors.border2025],
                     borderWidth: 1
                 }, {
                     label: 'Year 2024',
                     data: initialData.data2024,
-                    backgroundColor: 'rgba(150, 168, 64, 0.85)',
-                    borderColor: 'rgba(150, 168, 64, 1)',
+                    backgroundColor: [initialColors.color2024],
+                    borderColor: [initialColors.border2024],
                     borderWidth: 1
                 }, {
                     label: 'Current Year Target',
                     data: initialData.dataTarget,
-                    backgroundColor: 'rgba(229, 187, 34, 0.85)',
-                    borderColor: 'rgba(229, 187, 34, 1)',
+                    backgroundColor: [initialColors.colorTarget],
+                    borderColor: [initialColors.borderTarget],
                     borderWidth: 1
                 }]
             },
@@ -888,7 +932,11 @@
                         const meta = chart.getDatasetMeta(datasetIndex);
                         meta.data.forEach((bar, index) => {
                             const value = dataset.data[index];
-                            ctx.fillStyle = '#333';
+                            // Color the label red if the bar is red
+                            const barColor = Array.isArray(dataset.backgroundColor) 
+                                ? dataset.backgroundColor[index] 
+                                : dataset.backgroundColor;
+                            ctx.fillStyle = barColor && barColor.includes('220, 53, 69') ? '#dc3545' : '#333';
                             ctx.font = 'bold 9px Arial';
                             ctx.textAlign = 'center';
                             ctx.fillText(value + 'M', bar.x, bar.y - 5);
@@ -908,6 +956,22 @@
             rentalAreaChart.data.datasets[0].data = newData.data2025;
             rentalAreaChart.data.datasets[1].data = newData.data2024;
             rentalAreaChart.data.datasets[2].data = newData.dataTarget;
+            
+            // Update colors by comparing the three values for the current month
+            const monthColors = getColorsForMonth(
+                newData.data2025[0],
+                newData.data2024[0],
+                newData.dataTarget[0]
+            );
+            
+            rentalAreaChart.data.datasets[0].backgroundColor = [monthColors.color2025];
+            rentalAreaChart.data.datasets[0].borderColor = [monthColors.border2025];
+            
+            rentalAreaChart.data.datasets[1].backgroundColor = [monthColors.color2024];
+            rentalAreaChart.data.datasets[1].borderColor = [monthColors.border2024];
+            
+            rentalAreaChart.data.datasets[2].backgroundColor = [monthColors.colorTarget];
+            rentalAreaChart.data.datasets[2].borderColor = [monthColors.borderTarget];
             
             // Animate the update
             rentalAreaChart.update('active');
@@ -1020,6 +1084,13 @@
                 topBtnContainer.classList.remove('visible');
             }
         });
+
+        // Remove loading screen after animation completes
+        setTimeout(() => {
+            document.querySelector('.loading-overlay').style.display = 'none';
+            document.querySelector('.demo-content').style.display = 'block';
+        }, 3500);
+
 
         // Initialize the chart
         const monthlyCollectionChart = new Chart(
