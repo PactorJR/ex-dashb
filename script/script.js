@@ -1,19 +1,3 @@
-
-        // Sidebar toggle functionality
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleBtn');
-        const sidebarTrigger = document.getElementById('sidebarTrigger');
-
-        toggleBtn.addEventListener('click', () => {
-            if (!sidebar.classList.contains('hidden')) {
-                sidebar.classList.add('hidden');
-                sidebarTrigger.classList.add('active');
-            } else {
-                sidebar.classList.remove('hidden');
-                sidebarTrigger.classList.remove('active');
-            }
-        });
-
         // Smooth scroll to section
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
@@ -36,9 +20,9 @@
         // Configuration: Customize pause duration for each section (in milliseconds)
         const SECTION_CONFIG = {
             pauseDuration: 3000, // Default pause duration (3 seconds)
-            scrollSpeed: 2300,   // Milliseconds per viewport height
+            scrollSpeed: 2500,   // Milliseconds per viewport height
             pauseAtBottom: 3000, // Pause duration at bottom before rewinding (3 seconds)
-            rewindSpeed: 1800,   // Milliseconds per viewport height when rewinding (faster)
+            rewindSpeed: 1,   // Milliseconds per viewport height when rewinding (faster)
             sectionPauses: {
                 'profit': 4000,      // 4 seconds at Net Profit section
                 'revenue': 4500,     // 4.5 seconds at Gross Revenue section
@@ -922,6 +906,16 @@
                     });
                 }
             }]
+        });
+
+        // Show/hide scroll to top button based on scroll position
+        window.addEventListener('scroll', () => {
+            const topBtnContainer = document.getElementById('topBtnContainer');
+            if (window.scrollY > 300) {
+                topBtnContainer.classList.add('visible');
+            } else {
+                topBtnContainer.classList.remove('visible');
+            }
         });
 
         // Initialize the chart

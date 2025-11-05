@@ -99,14 +99,6 @@
             z-index: 1000;
         }
 
-        .sidebar:not(.expanded) .scroll-to-top:hover::after {
-            opacity: 1;
-        }
-
-        .sidebar.expanded .scroll-to-top::after {
-            display: none;
-        }
-
         @keyframes fadeIn {
             to {
                 opacity: 1;
@@ -157,252 +149,12 @@
             transform: scale(1);
         }
 
-        /* Initial sidebar animation */
-        .sidebar { animation: slideInLeft 0.6s ease 2.7s forwards; }
-        .initial-header { animation: slideInUp 0.6s ease 2.9s forwards; }
-
-        /* Sidebar trigger area */
-        .sidebar-trigger {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 20px;
-            height: 100vh;
-            z-index: 99;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .sidebar-trigger.active {
-            pointer-events: all;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 5px;
-            background: #ffffff;
-            padding: 30px 0;
-            box-shadow: 2px 0 20px rgba(0,0,0,0.03);
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 100;
-            transition: width 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        .sidebar.collapsed {
-            width: 5px;
-        }
-
-        .sidebar.hidden {
-            transform: translateX(-100%);
-            opacity: 0;
-            width: 80px;
-        }
-
-        .sidebar-trigger:hover ~ .sidebar.hidden,
-        .sidebar.hidden:hover {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .toggle-btn {
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar.hidden .toggle-btn {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .sidebar.hidden:hover .toggle-btn,
-        .sidebar-trigger:hover ~ .sidebar.hidden .toggle-btn {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .logo {
-            padding: 0 20px 30px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            white-space: nowrap;
-        }
-
-        .logo-icon {
-            min-width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #586740 0%, #96a840 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.2em;
-        }
-
-        .logo-text {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar.expanded .logo-text {
-            opacity: 1;
-        }
-
-        .logo h2 {
-            color: #586740;
-            font-size: 1.5em;
-            font-weight: 600;
-        }
-
-        .logo p {
-            color: #96a840;
-            font-size: 0.85em;
-            margin-top: 5px;
-        }
-
-        .toggle-btn {
-            position: absolute;
-            top: 30px;
-            right: -15px;
-            width: 30px;
-            height: 30px;
-            background: #586740;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            z-index: 101;
-            opacity: 1;
-        }
-
-        .sidebar.collapsed .toggle-btn {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .sidebar-trigger:hover ~ .sidebar.collapsed .toggle-btn,
-        .sidebar.collapsed:hover .toggle-btn {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .toggle-btn:hover {
-            background: #96a840;
-            transform: scale(1.1);
-        }
-
-        .toggle-btn svg {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.3s ease;
-            position: absolute;
-            z-index: 1001;
-        }
-
-        .sidebar.expanded .toggle-btn svg {
-            transform: rotate(180deg);
-        }
-
-        .nav-menu {
-            list-style: none;
-        }
-
-        .nav-item {
-            padding: 15px 20px;
-            color: #525552;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            white-space: nowrap;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            background: #f8f8f5;
-            color: #586740;
-        }
-
-        .nav-item.active {
-            background: #f8f8f5;
-            color: #586740;
-            font-weight: 500;
-        }
-
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: #586740;
-        }
-
-        .nav-icon {
-            min-width: 20px;
-            height: 20px;
-            display: inline-block;
-        }
-
-        .nav-text {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar.expanded .nav-text {
-            opacity: 1;
-        }
-
-        .nav-item::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 70px;
-            background: #586740;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            z-index: 1000;
-        }
-
-        .sidebar:not(.expanded) .nav-item:hover::after {
-            opacity: 1;
-        }
-
-        .sidebar.expanded .nav-item::after {
-            display: none;
-        }
-
         /* Main Content */
         .main-content {
             margin-left: 0;
             flex: 1;
             padding: 40px;
             transition: margin-left 0.3s ease;
-        }
-
-        .sidebar.expanded ~ .main-content {
-            margin-left: 280px;
         }
 
         .header {
@@ -517,6 +269,137 @@
         .stat-change {
             font-size: 0.85em;
             opacity: 0.9;
+        }
+        
+        /* Floating Play Button (Top Right) - Hidden unless hovered */
+        .floating-play-btn {
+            position: fixed;
+            top: 20px;
+            right: -56px; /* Hidden off-screen */
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #587340 0%, #96a840 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .floating-play-btn::before {
+            content: '';
+            position: absolute;
+            right: 56px; /* Trigger area to the left of button */
+            top: 0;
+            width: 80px; /* Hover trigger area width */
+            height: 100%;
+            background: transparent;
+        }
+
+        .floating-play-btn:hover,
+        .floating-play-btn::before:hover ~ .floating-play-btn {
+            right: 20px; /* Slide in when hovered */
+        }
+
+        /* Alternative: Use a container approach */
+        .play-btn-container {
+            position: fixed;
+            top: 20px;
+            right: 0;
+            width: 136px; /* 80px trigger + 56px button */
+            height: 56px;
+            z-index: 1000;
+        }
+
+        .play-btn-container:hover .floating-play-btn {
+            right: 20px;
+        }
+
+        .floating-play-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+            margin-left: 3px;
+        }
+
+        .floating-play-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Floating Scroll to Top Button (Bottom Right) - Hidden unless hovered */
+        .floating-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: -56px; /* Hidden off-screen */
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #587340 0%, #96a840 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .floating-top-btn::before {
+            content: '';
+            position: absolute;
+            right: 56px; /* Trigger area to the left of button */
+            top: 0;
+            width: 80px; /* Hover trigger area width */
+            height: 100%;
+            background: transparent;
+        }
+
+        .floating-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .floating-top-btn.visible:hover {
+            right: 30px; /* Slide in when hovered and visible */
+        }
+
+        /* Alternative: Use a container approach */
+        .top-btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 0;
+            width: 136px; /* 80px trigger + 56px button */
+            height: 56px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .top-btn-container.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .top-btn-container:hover .floating-top-btn {
+            right: 30px;
+        }
+
+        .floating-top-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .floating-top-btn:active {
+            transform: scale(0.95);
         }
 
         /* Animation keyframes */
