@@ -13,7 +13,7 @@
             });
         }
 
-        // Smooth animated scroll with section pauses
+        // Smooth animated scroll with section pauses and toggle control
         let isAutoScrolling = false;
         let currentSectionIndex = 0;
 
@@ -30,6 +30,26 @@
                 'rental': 4000       // 4 seconds at Rental Income section
             }
         };
+
+        // Toggle auto-scroll on/off
+        function toggleAutoScroll() {
+            const btn = document.getElementById('playBtn');
+            const icon = btn.querySelector('svg');
+            
+            if (isAutoScrolling) {
+                // Stop scrolling
+                stopAutoScroll();
+                // Change to play icon
+                icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                btn.classList.remove('playing');
+            } else {
+                // Start scrolling
+                scrollDownManually();
+                // Change to stop icon (square)
+                icon.innerHTML = '<rect x="6" y="6" width="12" height="12"></rect>';
+                btn.classList.add('playing');
+            }
+        }
 
         function scrollDownManually() {
             if (isAutoScrolling) return;
@@ -49,11 +69,15 @@
         }
 
         function scrollToNextSection(sections) {
+            if (!isAutoScrolling) return; // Stop if toggle was pressed
+            
             if (currentSectionIndex >= sections.length) {
                 // All sections visited, scroll to absolute bottom
                 scrollToBottom(() => {
+                    if (!isAutoScrolling) return; // Check again before pausing
                     // Pause at bottom before rewinding
                     setTimeout(() => {
+                        if (!isAutoScrolling) return; // Check before rewinding
                         rewindToTop();
                     }, SECTION_CONFIG.pauseAtBottom);
                 });
@@ -66,8 +90,10 @@
             
             // Scroll to current section
             scrollToElement(section, () => {
+                if (!isAutoScrolling) return; // Stop if toggle was pressed
                 // Pause at this section
                 setTimeout(() => {
+                    if (!isAutoScrolling) return; // Check before continuing
                     currentSectionIndex++;
                     scrollToNextSection(sections);
                 }, pauseDuration);
@@ -92,6 +118,8 @@
             let startTime = null;
 
             function animation(currentTime) {
+                if (!isAutoScrolling) return; // Stop animation if toggled off
+                
                 if (startTime === null) startTime = currentTime;
                 const timeElapsed = currentTime - startTime;
                 const progress = Math.min(timeElapsed / duration, 1);
@@ -131,6 +159,8 @@
             let startTime = null;
 
             function animation(currentTime) {
+                if (!isAutoScrolling) return; // Stop animation if toggled off
+                
                 if (startTime === null) startTime = currentTime;
                 const timeElapsed = currentTime - startTime;
                 const progress = Math.min(timeElapsed / duration, 1);
@@ -151,20 +181,22 @@
             requestAnimationFrame(animation);
         }
 
-        // Optional: Function to stop auto-scrolling
-        function stopAutoScroll() {
-            isAutoScrolling = false;
-            currentSectionIndex = 0;
-        }
-
-        // Rewind to top function
+        // Rewind to top function with loop restart
         function rewindToTop() {
             const startPosition = window.scrollY || window.pageYOffset;
             const targetPosition = 0;
             const distance = startPosition; // Distance to top
             
             if (distance <= 0) {
-                isAutoScrolling = false;
+                // Restart the loop if still auto-scrolling
+                if (isAutoScrolling) {
+                    currentSectionIndex = 0;
+                    setTimeout(() => {
+                        if (isAutoScrolling) {
+                            scrollDownManually();
+                        }
+                    }, 1000); // Small pause before restarting
+                }
                 return;
             }
             
@@ -175,6 +207,8 @@
             let startTime = null;
 
             function animation(currentTime) {
+                if (!isAutoScrolling) return; // Stop animation if toggled off
+                
                 if (startTime === null) startTime = currentTime;
                 const timeElapsed = currentTime - startTime;
                 const progress = Math.min(timeElapsed / duration, 1);
@@ -189,15 +223,23 @@
                 if (timeElapsed < duration) {
                     requestAnimationFrame(animation);
                 } else {
-                    isAutoScrolling = false;
-                    currentSectionIndex = 0;
+                    // Restart the loop if still auto-scrolling
+                    if (isAutoScrolling) {
+                        currentSectionIndex = 0;
+                        setTimeout(() => {
+                            if (isAutoScrolling) {
+                                const sections = document.querySelectorAll('.dashboard-section');
+                                scrollToNextSection(sections);
+                            }
+                        }, 1000); // Small pause before restarting
+                    }
                 }
             }
             
             requestAnimationFrame(animation);
         }
 
-        // Optional: Function to stop auto-scrolling
+        // Function to stop auto-scrolling
         function stopAutoScroll() {
             isAutoScrolling = false;
             currentSectionIndex = 0;
@@ -206,8 +248,16 @@
         // Optional: Add keyboard shortcut to stop scrolling (ESC key)
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isAutoScrolling) {
-                stopAutoScroll();
+                toggleAutoScroll();
             }
+        });
+
+        // Auto-start on page load
+        window.addEventListener('load', () => {
+            // Small delay to ensure everything is loaded
+            setTimeout(() => {
+                toggleAutoScroll();
+            }, 500);
         });
 
 
@@ -720,39 +770,65 @@
         };
 
         // ============================================
-        // SECTION 4: RETAIL INCOME CHARTS
+        // SECTION 4: RENTAL INCOME CHARTS
         // ============================================
 
-        // Rental Income Composition Over Time (Stacked Area Chart)
+        // Monthly data for all three datasets
+        const monthlyData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            year2025: [19.1, 18.6, 19.2, 18.8, 18.7, 18.7, 19.3, 18.9, 19.3, 19.7, 19.4, 18.7],
+            year2024: [18.9, 18.8, 18.9, 18.9, 18.7, 18.7, 18.9, 18.9, 18.7, 18.9, 18.7, 18.7],
+            target: [17.7, 17.4, 17.4, 17.1, 17.7, 17.3, 17.4, 17.7, 17.9, 20.0, 18.9, 19.0]
+        };
+
+        let currentMonthIndex = 0; // Start from January (index 0)
+
+        // Function to get 3 consecutive months of data
+        function getThreeMonthsData(startIndex) {
+            const indices = [];
+            const labels = [];
+            const data2025 = [];
+            const data2024 = [];
+            const dataTarget = [];
+            
+            for (let i = 0; i < 1; i++) {
+                const index = (startIndex + i) % 12; // Wrap around to beginning
+                indices.push(index);
+                labels.push(monthlyData.labels[index]);
+                data2025.push(monthlyData.year2025[index]);
+                data2024.push(monthlyData.year2024[index]);
+                dataTarget.push(monthlyData.target[index]);
+            }
+            
+            return { labels, data2025, data2024, dataTarget };
+        }
+
+        // Rental Income Composition Over Time (3-Month Summary Bar Chart)
         const rentalAreaCtx = document.getElementById('rentalAreaChart').getContext('2d');
+        const initialData = getThreeMonthsData(currentMonthIndex);
+
         const rentalAreaChart = new Chart(rentalAreaCtx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['Year 2025', 'Year 2024', 'Current Year Target'],
+                labels: initialData.labels,
                 datasets: [{
-                    label: 'Variance',
-                    data: [0.2, 0.4, 0.0],
+                    label: 'Year 2025',
+                    data: initialData.data2025,
                     backgroundColor: 'rgba(88, 103, 64, 0.85)',
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1
                 }, {
-                    label: 'Actual',
-                    data: [19.4, 19.2, 19.4],
+                    label: 'Year 2024',
+                    data: initialData.data2024,
                     backgroundColor: 'rgba(150, 168, 64, 0.85)',
                     borderColor: 'rgba(150, 168, 64, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1
                 }, {
-                    label: 'Target',
-                    data: [19.3, 18.9, 18.9],
+                    label: 'Current Year Target',
+                    data: initialData.dataTarget,
                     backgroundColor: 'rgba(229, 187, 34, 0.85)',
                     borderColor: 'rgba(229, 187, 34, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -760,17 +836,16 @@
                 maintainAspectRatio: false,
                 scales: {
                     x: {
-                        stacked: true,
                         grid: {
                             display: false
                         }
                     },
                     y: {
-                        stacked: true,
-                        beginAtZero: true,
+                        beginAtZero: false,
+                        min: 15,
                         max: 22,
                         ticks: {
-                            stepSize: 5,
+                            stepSize: 1,
                             callback: function(value) {
                                 return '₱' + value + 'M';
                             }
@@ -782,48 +857,89 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'top',
+                        align: 'start',
                         labels: {
                             boxWidth: 15,
                             boxHeight: 15,
-                            padding: 10
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
                         }
                     },
                     title: {
                         display: false
                     },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₱' + context.parsed.y + 'M';
+                            }
+                        }
                     }
                 }
-            }
+            },
+            plugins: [{
+                id: 'customDataLabels',
+                afterDatasetsDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    chart.data.datasets.forEach((dataset, datasetIndex) => {
+                        const meta = chart.getDatasetMeta(datasetIndex);
+                        meta.data.forEach((bar, index) => {
+                            const value = dataset.data[index];
+                            ctx.fillStyle = '#333';
+                            ctx.font = 'bold 9px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(value + 'M', bar.x, bar.y - 5);
+                        });
+                    });
+                }
+            }]
         });
+
+        // Auto-slide function to update the chart every 3 seconds
+        function updateRentalAreaChart() {
+            currentMonthIndex = (currentMonthIndex + 1) % 12; // Move to next month, wrap around
+            const newData = getThreeMonthsData(currentMonthIndex);
+            
+            // Update chart data
+            rentalAreaChart.data.labels = newData.labels;
+            rentalAreaChart.data.datasets[0].data = newData.data2025;
+            rentalAreaChart.data.datasets[1].data = newData.data2024;
+            rentalAreaChart.data.datasets[2].data = newData.dataTarget;
+            
+            // Animate the update
+            rentalAreaChart.update('active');
+        }
+
+        // Start auto-sliding every 3 seconds
+        setInterval(updateRentalAreaChart, 3000);
 
         // Rental Income Monthly Comparison Bar Chart
         const rentalComparisonCtx = document.getElementById('rentalComparisonChart').getContext('2d');
         const rentalComparisonChart = new Chart(rentalComparisonCtx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: monthlyData.labels,
                 datasets: [
                     {
                         label: 'Year 2025',
-                        data: [19.1, 18.6, 19.2, 18.8, 18.7, 18.7, 19.3, 18.9, 19.3, 19.7, 19.4, 18.7],
+                        data: monthlyData.year2025,
                         backgroundColor: 'rgba(88, 103, 64, 0.85)',
                         borderColor: 'rgba(88, 103, 64, 1)',
                         borderWidth: 1
                     },
                     {
                         label: 'Year 2024',
-                        data: [18.9, 18.8, 18.9, 18.9, 18.7, 18.7, 18.9, 18.9, 18.7, 18.9, 18.7, 18.7],
+                        data: monthlyData.year2024,
                         backgroundColor: 'rgba(150, 168, 64, 0.85)',
                         borderColor: 'rgba(150, 168, 64, 1)',
                         borderWidth: 1
                     },
                     {
                         label: 'Current Year Target',
-                        data: [17.7, 17.4, 17.4, 17.1, 17.7, 17.3, 17.4, 17.7, 17.9, 20.0, 18.9, 19.0],
+                        data: monthlyData.target,
                         backgroundColor: 'rgba(229, 187, 34, 0.85)',
                         borderColor: 'rgba(229, 187, 34, 1)',
                         borderWidth: 1
@@ -874,19 +990,6 @@
                                 return context.dataset.label + ': ₱' + context.parsed.y + 'M';
                             }
                         }
-                    },
-                    datalabels: {
-                        display: true,
-                        align: 'end',
-                        anchor: 'end',
-                        formatter: function(value) {
-                            return value + 'M';
-                        },
-                        font: {
-                            size: 9,
-                            weight: 'bold'
-                        },
-                        color: '#333'
                     }
                 }
             },

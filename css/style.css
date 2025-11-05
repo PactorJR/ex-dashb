@@ -272,40 +272,6 @@
         }
         
         /* Floating Play Button (Top Right) - Hidden unless hovered */
-        .floating-play-btn {
-            position: fixed;
-            top: 20px;
-            right: -56px; /* Hidden off-screen */
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #587340 0%, #96a840 100%);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .floating-play-btn::before {
-            content: '';
-            position: absolute;
-            right: 56px; /* Trigger area to the left of button */
-            top: 0;
-            width: 80px; /* Hover trigger area width */
-            height: 100%;
-            background: transparent;
-        }
-
-        .floating-play-btn:hover,
-        .floating-play-btn::before:hover ~ .floating-play-btn {
-            right: 20px; /* Slide in when hovered */
-        }
-
-        /* Alternative: Use a container approach */
         .play-btn-container {
             position: fixed;
             top: 20px;
@@ -315,25 +281,9 @@
             z-index: 1000;
         }
 
-        .play-btn-container:hover .floating-play-btn {
-            right: 20px;
-        }
-
-        .floating-play-btn svg {
-            width: 24px;
-            height: 24px;
-            color: white;
-            margin-left: 3px;
-        }
-
-        .floating-play-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Floating Scroll to Top Button (Bottom Right) - Hidden unless hovered */
-        .floating-top-btn {
-            position: fixed;
-            bottom: 30px;
+        .floating-play-btn {
+            position: absolute;
+            top: 0;
             right: -56px; /* Hidden off-screen */
             width: 56px;
             height: 56px;
@@ -341,36 +291,30 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            opacity: 0;
-            visibility: hidden;
         }
 
-        .floating-top-btn::before {
-            content: '';
-            position: absolute;
-            right: 56px; /* Trigger area to the left of button */
-            top: 0;
-            width: 80px; /* Hover trigger area width */
-            height: 100%;
-            background: transparent;
+        .play-btn-container:hover .floating-play-btn {
+            right: 20px; /* Slide in when container is hovered */
         }
 
-        .floating-top-btn.visible {
-            opacity: 1;
-            visibility: visible;
+        .floating-play-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+            margin-left: 3px;
+            transition: all 0.3s ease;
         }
 
-        .floating-top-btn.visible:hover {
-            right: 30px; /* Slide in when hovered and visible */
+        .floating-play-btn:active {
+            transform: scale(0.95);
         }
 
-        /* Alternative: Use a container approach */
+        /* Floating Scroll to Top Button (Bottom Right) - Hidden unless hovered */
         .top-btn-container {
             position: fixed;
             bottom: 30px;
@@ -388,8 +332,25 @@
             visibility: visible;
         }
 
-        .top-btn-container:hover .floating-top-btn {
-            right: 30px;
+        .floating-top-btn {
+            position: absolute;
+            top: 0;
+            right: -56px; /* Hidden off-screen */
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #587340 0%, #96a840 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .top-btn-container.visible:hover .floating-top-btn {
+            right: 30px; /* Slide in when container is hovered and visible */
         }
 
         .floating-top-btn svg {
