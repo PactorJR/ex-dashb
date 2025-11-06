@@ -16,13 +16,37 @@
         </iframe>
     </div>
         
-    <!-- Floating Play Button Container (Top Right) -->
-    <div class="play-btn-container">
-        <button class="floating-play-btn" id="playBtn" onclick="toggleAutoScroll()">
+    <!-- Navigation Buttons (hidden unless hovered) -->
+    <div class="nav-hover-zone" aria-hidden="false">
+        <!-- small visible handle so users can find the nav area -->
+        <button class="nav-handle" aria-label="Open navigation" title="Open navigation"></button>
+        <div class="nav-buttons">
+        <button class="nav-btn prev-btn" id="prevBtn" onclick="previousSection()" aria-label="Previous">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
         </button>
+        <button class="nav-btn play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play/Pause">
+            <svg class="play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <svg class="pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                <line x1="6" y1="4" x2="6" y2="20"></line>
+                <line x1="18" y1="4" x2="18" y2="20"></line>
+            </svg>
+        </button>
+        <button class="nav-btn restart-btn" id="restartBtn" onclick="restartPresentation()" aria-label="Restart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+            </svg>
+        </button>
+        <button class="nav-btn next-btn" id="nextBtn" onclick="nextSection()" aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+        </div>
     </div>
 
     <!-- Floating Scroll to Top Button Container (Bottom Right) -->
@@ -36,10 +60,6 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="header initial-header">
-            <h1>Executive Dashboard</h1>
-            <p>Financial Performance Overview - November 2025</p>
-        </div>
 
         <!-- Section 1: Net Profit -->
         <section class="dashboard-section" id="profit">

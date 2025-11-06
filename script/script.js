@@ -1,4 +1,4 @@
-        // Smooth scroll to section
+// Smooth scroll to section
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
@@ -252,44 +252,10 @@
             }
         });
 
-        // Auto-start on page load
-        window.addEventListener('load', () => {
-            // Small delay to ensure everything is loaded
-            setTimeout(() => {
-                toggleAutoScroll();
-            }, 500);
-        });
+        // (Removed old auto-scroll startup to avoid conflicts with presentation controls)
 
 
-        // Section visibility on scroll (with reverse animation)
-        function handleSectionVisibility() {
-            const sections = document.querySelectorAll('.dashboard-section');
-            const windowHeight = window.innerHeight;
-            const scrollY = window.scrollY || window.pageYOffset;
-
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                const sectionBottom = sectionTop + sectionHeight;
-
-                if (scrollY + windowHeight > sectionTop + 200 && scrollY < sectionBottom - 100) {
-                    section.classList.add('section-visible');
-                } else {
-                    section.classList.remove('section-visible');
-                }
-            });
-        }
-
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const firstSection = document.querySelector('.dashboard-section');
-                if (firstSection) {
-                    firstSection.classList.add('section-visible');
-                }
-            }, 3000);
-        });
-
-        window.addEventListener('scroll', handleSectionVisibility);
+        // (Removed scroll-based visibility handlers - presentation controls will manage section visibility)
 
 
         // Intersection Observer for scroll animations
@@ -312,27 +278,7 @@
             animatedElements.forEach(el => observer.observe(el));
         });
 
-        // Update active nav item on scroll
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('.dashboard-section');
-            const navItems = document.querySelectorAll('.nav-item');
-            
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (scrollY >= (sectionTop - 200)) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('onclick')?.includes(current)) {
-                    item.classList.add('active');
-                }
-            });
-        });
+        // (Removed scroll-based nav highlighting)
 
         // ============================================
         // SECTION 1: NET PROFIT CHARTS
@@ -609,7 +555,7 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                return context.dataset.label + ': ₱' + context.parsed.y.toFixed(1) + 'M';
+                                return context.dataset.label + ': ₱' + context.parsed.y + 'M';
                             }
                         }
                     }
@@ -623,10 +569,7 @@
                         },
                         ticks: {
                             color: '#525552',
-                            font: { size: 11 },
-                            callback: function(value) {
-                                return '₱' + value + 'M';
-                            }
+                            font: { size: 11 }
                         },
                         title: {
                             display: true,
@@ -1026,8 +969,7 @@
                         ticks: {
                             callback: function(value) {
                                 return '₱' + value + 'M';
-                            },
-                            stepSize: 1
+                            }
                         },
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)'
@@ -1075,22 +1017,7 @@
             }]
         });
 
-        // Show/hide scroll to top button based on scroll position
-        window.addEventListener('scroll', () => {
-            const topBtnContainer = document.getElementById('topBtnContainer');
-            if (window.scrollY > 300) {
-                topBtnContainer.classList.add('visible');
-            } else {
-                topBtnContainer.classList.remove('visible');
-            }
-        });
-
-        // Remove loading screen after animation completes
-        setTimeout(() => {
-            document.querySelector('.loading-overlay').style.display = 'none';
-            document.querySelector('.demo-content').style.display = 'block';
-        }, 3500);
-
+        // (Removed scroll-based show/hide for scroll-to-top button)
 
         // Initialize the chart
         const monthlyCollectionChart = new Chart(
@@ -1118,3 +1045,154 @@
             document.getElementById('profitBarChart'),
             profitBarConfig
         );
+
+        // Presentation controls
+        let isPlaying = true;
+        let presentationInterval;
+        // Sections cache used by presentation controls
+        const sections = document.querySelectorAll('.dashboard-section');
+
+        const PRESENTATION_CONFIG = {
+            autoPlayInterval: 5000, // Time each section is shown (in milliseconds)
+            transitionDuration: 800 // Match this with CSS transition duration
+        };
+
+        // Initialize presentation
+        function initPresentation() {
+            showSection(0);
+            startAutoPlay();
+        }
+
+        function showSection(index) {
+            const sections = document.querySelectorAll('.dashboard-section');
+            sections.forEach((section, i) => {
+                section.classList.remove('section-visible', 'section-previous');
+                if (i === index) {
+                    section.classList.add('section-visible');
+                } else if (i < index) {
+                    section.classList.add('section-previous');
+                }
+            });
+            currentSectionIndex = index;
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.opacity = currentSectionIndex === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = currentSectionIndex === sections.length - 1 ? '0.5' : '1';
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === sections.length - 1;
+        }
+
+        function nextSection() {
+            const sections = document.querySelectorAll('.dashboard-section');
+            if (currentSectionIndex < sections.length - 1) {
+                showSection(currentSectionIndex + 1);
+            } else if (isPlaying) {
+                // If auto-playing and we reach the end, restart from beginning
+                restartPresentation();
+            }
+        }
+
+        function previousSection() {
+            if (currentSectionIndex > 0) {
+                showSection(currentSectionIndex - 1);
+            }
+        }
+
+        function startAutoPlay() {
+            isPlaying = true;
+            updatePlayButton();
+            clearInterval(presentationInterval);
+            presentationInterval = setInterval(() => {
+                if (currentSectionIndex === sections.length - 1) {
+                    restartPresentation();
+                } else {
+                    nextSection();
+                }
+            }, PRESENTATION_CONFIG.autoPlayInterval);
+        }
+
+        function stopAutoPlay() {
+            isPlaying = false;
+            updatePlayButton();
+            clearInterval(presentationInterval);
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopAutoPlay();
+            } else {
+                startAutoPlay();
+            }
+        }
+
+        function updatePlayButton() {
+            const playIcon = document.querySelector('.play-icon');
+            const pauseIcon = document.querySelector('.pause-icon');
+            
+            if (isPlaying) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            } else {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        }
+
+        function restartPresentation() {
+            showSection(0);
+            if (isPlaying) {
+                startAutoPlay();
+            }
+        }
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'PageDown':
+                    nextSection();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    previousSection();
+                    break;
+                case ' ':
+                    togglePlay();
+                    break;
+                case 'Home':
+                    restartPresentation();
+                    break;
+            }
+        });
+
+        // Initialize when the page loads
+        window.addEventListener('load', () => {
+            initPresentation();
+        });
+
+        // Nav handle toggle: allow clicking the small handle to open/close nav on small screens
+        document.addEventListener('DOMContentLoaded', () => {
+            const navHover = document.querySelector('.nav-hover-zone');
+            const navHandle = document.querySelector('.nav-handle');
+            if (!navHover || !navHandle) return;
+
+            navHandle.addEventListener('click', (e) => {
+                // toggle 'nav-open' class to keep nav visible
+                navHover.classList.toggle('nav-open');
+                // move focus to play button for keyboard users
+                const play = document.getElementById('playBtn') || document.querySelector('.play-btn');
+                if (play) play.focus();
+            });
+
+            // close nav when clicking outside of buttons
+            document.addEventListener('click', (e) => {
+                if (!navHover.contains(e.target)) {
+                    navHover.classList.remove('nav-open');
+                }
+            });
+        });
