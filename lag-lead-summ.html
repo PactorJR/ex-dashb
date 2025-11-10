@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="css/lag-lead-style.css">
+    <script src="script/lag-lead-script.js" defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h2>Executive Dashboard<span></span></h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="lag-lead-summ.html" class="active">Summary Dashboard</a></li>
+                    <li><a href="tl-scoring.html">Team Leader Scoring</a></li>
+                    <li><a href="emp-scoring.html">Employee Score</a></li>
+                </ul>
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Navigation Buttons (hidden unless hovered) -->
+    <div class="nav-hover-zone" aria-hidden="false">
+        <!-- small visible handle so users can find the nav area -->
+        <button class="nav-handle" aria-label="Open navigation" title="Open navigation"></button>
+        <div class="nav-buttons">
+            <button class="nav-btn prev-btn" id="prevBtn" onclick="previousSection()" aria-label="Previous">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="nav-btn play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play/Pause">
+                <svg class="play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <svg class="pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="display:none;">
+                    <line x1="6" y1="4" x2="6" y2="20"></line>
+                    <line x1="18" y1="4" x2="18" y2="20"></line>
+                </svg>
+            </button>
+            <button class="nav-btn restart-btn" id="restartBtn" onclick="restartPresentation()" aria-label="Restart">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                </svg>
+            </button>
+            <button class="nav-btn next-btn" id="nextBtn" onclick="nextSection()" aria-label="Next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Scroll to Top Button Container (Bottom Right) -->
+    <div class="top-btn-container" id="topBtnContainer">
+        <button class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Section 1: Net Profit -->
+        <section class="dashboard-section" id="profit">
+            <div class="section-header fade-in-scale">
+                <h2>Net Profit Analysis</h2>
+                <p>Profitability trends and target achievement</p>
+            </div>
+
+            <!-- Summary Stats for Profit with staggered delays -->
+            <div class="summary-stats">
+                <div class="stat-card" style="animation-delay: 0.15s">
+                    <div class="stat-label">Target (Nov 2025)</div>
+                    <div class="stat-value">₱9.77M</div>
+                    <div class="stat-change">Monthly Goal</div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.3s">
+                    <div class="stat-label">Actual (Projected)</div>
+                    <div class="stat-value">₱9.87M</div>
+                    <div class="stat-change">Based on trends</div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.45s">
+                    <div class="stat-label">Variance</div>
+                    <div class="stat-value">+₱100K</div>
+                    <div class="stat-change">Above target</div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <!-- Profit Pie Chart -->
+                <div class="card slide-in-left" style="animation-delay: 0.3s">
+                    <h3>Profit Breakdown - November 2025</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="profitPieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Profit Bar Chart -->
+                <div class="card slide-in-right" style="animation-delay: 0.5s">
+                    <h3>Monthly Profit Performance (2024)</h3>
+                    <div class="chart-container">
+                        <canvas id="profitBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Gross Revenue -->
+        <section class="dashboard-section" id="revenue">
+            <div class="section-header slide-in-up">
+                <h2>Gross Revenue Analysis</h2>
+                <p>Year-over-year revenue comparison and performance metrics</p>
+            </div>
+
+            <!-- Summary Stats for Revenue with staggered delays -->
+            <div class="summary-stats">
+                <div class="stat-card" style="animation-delay: 0.1s">
+                    <div class="stat-icon" style="background:transparent; box-shadow: none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Revenue (Nov 2025)</div>
+                        <div class="stat-value">₱35.06M</div>
+                        <div class="stat-change neutral">Target: Not Available</div>
+                    </div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.2s">
+                    <div class="stat-icon" style="background:transparent; box-shadow: none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">2024 Average</div>
+                        <div class="stat-value">₱34.05M</div>
+                        <div class="stat-change neutral">Monthly Average</div>
+                    </div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.3s">
+                    <div class="stat-icon" style="background:transparent; box-shadow: none;">>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">YoY Growth</div>
+                        <div class="stat-value" style="color: #fff;">+2.97%</div>
+                        <div class="stat-change neutral">vs Nov 2024 (₱34.0M)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard revenue-dashboard">
+                <!-- Revenue Distribution Card -->
+                <div class="card chart-card slide-in-left" style="animation-delay: 0.2s">
+                    <div class="card-header">
+                        <div>
+                            <h3>Revenue Distribution</h3>
+                            <p class="card-subtitle">November comparison: 2024 vs 2025</p>
+                        </div>
+                        <div class="card-badge">
+                            <span class="badge-text">Current vs Previous</span>
+                        </div>
+                    </div>
+                    <div class="pie-chart-container">
+                        <canvas id="revenuePieChart"></canvas>
+                    </div>
+                    <div class="chart-insights">
+                        <div class="insight-item">
+                            <span class="insight-dot" style="background: #587340;"></span>
+                            <span class="insight-label">Nov 2025: <strong>₱35.06M</strong></span>
+                        </div>
+                        <div class="insight-item">
+                            <span class="insight-dot" style="background: #e5bb22;"></span>
+                            <span class="insight-label">Nov 2024: <strong>₱34.00M</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue Comparison Card -->
+                <div class="card chart-card slide-in-right" style="animation-delay: 0.4s">
+                    <div class="card-header">
+                        <div>
+                            <h3>Monthly Revenue Comparison</h3>
+                            <p class="card-subtitle">Target vs Actual 2024 performance</p>
+                        </div>
+                        <div class="card-badge">
+                            <span class="badge-text">12 Months</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueBarChart"></canvas>
+                    </div>
+                    <div class="chart-footer">
+                        <div class="footer-stat">
+                            <span class="footer-label">Avg Target</span>
+                            <span class="footer-value">₱32.8M</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-label">Avg Actual</span>
+                            <span class="footer-value">₱34.2M</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-label">Performance</span>
+                            <span class="footer-value" style="color: #587340;">+4.3%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Collection Rate & Monthly Collections -->
+        <section class="dashboard-section" id="collections">
+            <div class="section-header slide-in-up">
+                <h2>Collection Performance</h2>
+                <p>Receivables collection rate and monthly performance tracking</p>
+            </div>
+
+            <!-- Collection Rate Cards -->
+            <div class="collection-rate-grid">
+                <div class="collection-card negative slide-in-left" style="animation-delay: 0.1s">
+                    <h4>Collection Rate</h4>
+                    <div class="collection-value">-89.7%</div>
+                    <p class="collection-subtitle">Below Target</p>
+                </div>
+                <div class="collection-card positive slide-in-up" style="animation-delay: 0.2s">
+                    <h4>Collection Rate</h4>
+                    <div class="collection-value">100.0%</div>
+                    <p class="collection-subtitle">Target Achievement</p>
+                </div>
+                <div class="collection-card neutral slide-in-right" style="animation-delay: 0.3s">
+                    <h4>Collection Rate</h4>
+                    <div class="collection-value">10.3%</div>
+                    <p class="collection-subtitle">Current Performance</p>
+                </div>
+            </div>
+
+            <!-- Monthly Collection Chart -->
+            <div class="monthly-collection-card slide-in-up" style="animation-delay: 0.4s">
+                <div class="card-header">
+                    <div>
+                        <h3>Monthly Collection Overview</h3>
+                        <p class="card-subtitle">Total Receivables vs Total Collected (2024)</p>
+                    </div>
+                    <div class="card-badge">
+                        <span class="badge-text">Year 2024</span>
+                    </div>
+                </div>
+                <div class="collection-chart-container">
+                    <canvas id="monthlyCollectionChart"></canvas>
+                </div>
+                <div class="chart-footer">
+                    <div class="footer-stat">
+                        <span class="footer-label">Avg Receivables</span>
+                        <span class="footer-value">₱12.9M</span>
+                    </div>
+                    <div class="footer-stat">
+                        <span class="footer-label">Avg Collected</span>
+                        <span class="footer-value">₱8.6M</span>
+                    </div>
+                    <div class="footer-stat">
+                        <span class="footer-label">Collection Rate</span>
+                        <span class="footer-value" style="color: #587340;">66.7%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Rental Income -->
+        <section class="dashboard-section" id="rental">
+            <div class="section-header fade-in-scale">
+                <h2>Rental Income Analysis</h2>
+                <p>Rental revenue trends and performance comparison</p>
+            </div>
+
+            <!-- Summary Stats for Rental Income with staggered delays -->
+            <div class="summary-stats">
+                <div class="stat-card" style="animation-delay: 0.15s">
+                    <div class="stat-label">Target</div>
+                    <div class="stat-value">₱19.55M</div>
+                    <div class="stat-change">19,553,683.32</div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.3s">
+                    <div class="stat-label">Actual</div>
+                    <div class="stat-value">₱19.41M</div>
+                    <div class="stat-change">19,412,471.33</div>
+                </div>
+                <div class="stat-card" style="animation-delay: 0.45s">
+                    <div class="stat-label">Variance</div>
+                    <div class="stat-value">-0.7%</div>
+                    <div class="stat-change negative">Below target</div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <!-- Rental Income Area Chart -->
+                <div class="card slide-in-left" style="animation-delay: 0.3s">
+                    <h3>Rental Income Composition Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="rentalAreaChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Rental Income Comparison Chart -->
+                <div class="card slide-in-right" style="animation-delay: 0.5s">
+                    <h3>Monthly Rental Income Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="rentalComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
