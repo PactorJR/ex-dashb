@@ -1,4 +1,4 @@
-// Smooth scroll to section
+        // Smooth scroll to section
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
@@ -1198,36 +1198,23 @@
         });
 
         // Auto-hiding navbar functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const navbar = document.querySelector('.navbar');
-    
-    // Hide navbar initially
-    navbar.style.transform = 'translateY(-100%)';
-    navbar.style.transition = 'transform 0.3s ease-in-out';
-    
-    // Show navbar on hover
-    navbar.addEventListener('mouseenter', function() {
-        navbar.style.transform = 'translateY(0)';
-    });
-    
-    // Hide navbar when mouse leaves
-    navbar.addEventListener('mouseleave', function() {
-        navbar.style.transform = 'translateY(-100%)';
-    });
-    
-    // Alternative: Show navbar when hovering near the top of the page
-    // Uncomment this section if you prefer this behavior
-    /*
-    document.addEventListener('mousemove', function(e) {
-        // Show navbar when mouse is within 50px of the top
-        if (e.clientY < 50) {
-            navbar.style.transform = 'translateY(0)';
-        } else if (e.clientY > navbar.offsetHeight + 20) {
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.querySelector('.navbar');
+            
+            // Hide navbar initially
             navbar.style.transform = 'translateY(-100%)';
-        }
-    });
-    */
-});
+            navbar.style.transition = 'transform 0.3s ease-in-out';
+            
+            // Show navbar on hover
+            navbar.addEventListener('mouseenter', function() {
+                navbar.style.transform = 'translateY(0)';
+            });
+            
+            // Hide navbar when mouse leaves
+            navbar.addEventListener('mouseleave', function() {
+                navbar.style.transform = 'translateY(-100%)';
+            });
+        });
 
         // Auto-hiding navbar functionality
         document.addEventListener('DOMContentLoaded', function() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Executive Dashboard</title>
     <link rel="stylesheet" href="css/index-style.css">
     <script src="script/index-script.js" defer></script>
 </head>
@@ -37,28 +37,7 @@
             </div>
         </div>
     </nav>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-image">
-            <img src="files/images/bg-pallete2.png" alt="background">
-        </div>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <!-- Logo above content -->
-            <div class="hero-logo">
-                <img src="files/images/lotus-dev.png" alt="LOTUS Development">
-            </div>
-            
-            <!-- Replace text with image -->
-            <div class="hero-title-image">
-                <img src="files/images/we-provide-image.png" alt="We provide Business Opportunities for all">
-            </div>
-            
-            <div class="hero-underline"></div>
-            <p>From Community Malls to Shopping Plazas, Wet & Dry Markets, and Bazaar & Pop-Ups - discover your perfect business space with Lotus Development.</p>
-        </div>
-        <!-- Navigation Buttons (hidden unless hovered) -->
+    <!-- Navigation Buttons (hidden unless hovered) -->
         <div class="nav-hover-zone" aria-hidden="false">
             <!-- small visible handle so users can find the nav area -->
             <button class="nav-handle" aria-label="Open navigation" title="Open navigation"></button>
@@ -90,419 +69,664 @@
                     </svg>
                 </button>
             </div>
-    </div>
-    </section>
-    <div class="dashboard">
-        <h3 class="fade-in">Summary Scores</h3>
-        <!-- Top Stats Cards -->
-        <div class="stats-row">
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Technical Team</h3>
-                    <span class="stat-value tech">10%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill tech" style="width: 10%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>LRAD Team</h3>
-                    <span class="stat-value lrad">30%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill lrad" style="width: 30%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Quality</h3>
-                    <span class="stat-value qual">80%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill qual" style="width: 80%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>DC Team</h3>
-                    <span class="stat-value dc">23%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill dc" style="width: 23%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>IT Team</h3>
-                    <span class="stat-value it">45%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill it" style="width: 45%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Opportunity Team</h3>
-                    <span class="stat-value opp">37%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill opp" style="width: 37%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Marcom</h3>
-                    <span class="stat-value marc">47%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill marc" style="width: 47%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Audit Team</h3>
-                    <span class="stat-value aud">54%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill aud" style="width: 54%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Gathering Team</h3>
-                    <span class="stat-value gath">27%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill gath" style="width: 27%"></div>
-                </div>
-            </div>
-
-            <div class="stat-card fade-in" style="transition-delay: 0.1s;">
-                <div class="stat-header">
-                    <h3>Operations Team</h3>
-                    <span class="stat-value oper">77%</span>
-                </div>
-                <p class="stat-subtitle">Overall Score</p>
-                <div class="progress-bar">
-                    <div class="progress-fill oper" style="width: 77%"></div>
-                </div>
-            </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="charts-grid">
-            <!-- Left Column - 4 small charts -->
-            <div class="charts-column-left">
-                <div class="chart-card scale-in">
-                    <div class="chart-value">₱9,766,410.44</div>
-                    <p class="chart-label">Net Profit</p>
-                    <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <polyline points="0,60 30,50 60,55 90,40 120,45 150,30 180,20 210,50 240,35 270,40 300,60" 
-                                  fill="none" stroke="#96a840" stroke-width="3"/>
-                    </svg>
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero dashboard-section" id="home">
+            <div class="hero-image">
+                <img src="files/images/bg-pallete2.png" alt="background">
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <!-- Logo above content -->
+                <div class="hero-logo">
+                    <img src="files/images/lotus-dev.png" alt="LOTUS Development">
                 </div>
-
-                <div class="chart-card scale-in" style="transition-delay: 0.1s;">
-                    <div class="chart-value">₱35,061,227.17</div>
-                    <p class="chart-label">Gross Revenue</p>
-                    <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <polyline points="0,60 40,45 80,55 120,35 160,30 200,25 240,35 280,50" 
-                                  fill="none" stroke="#586740" stroke-width="3"/>
-                    </svg>
+                
+                <!-- Replace text with image -->
+                <div class="hero-title-image">
+                    <img src="files/images/we-provide-image.png" alt="We provide Business Opportunities for all">
                 </div>
+                
+                <div class="hero-underline"></div>
+                <p>From Community Malls to Shopping Plazas, Wet & Dry Markets, and Bazaar & Pop-Ups - discover your perfect business space with Lotus Development.</p>
+            </div>
+        </section>
+        
+        <!--fixing this currently-->
+        <!-- Dashboard Section -->
+        <section class="main dashboard-section" id="dashboard">
+            <div class="summary-header">
+                    <div class="section-header fade-in">
+                        <h2>Team Performance Overview</h2>
+                        <p>Dashboard displaying team metrics and goals.</p>
+                    </div>
+            </div>
+            
+            <!-- Top Stats Carousel -->
+            <div class="stats-carousel-container">
+                <div class="stats-row" id="statsCarousel">
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Technical Team</h3>
+                            <span class="stat-value tech">10%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill tech" style="width: 10%"></div>
+                        </div>
+                    </div>
 
-                <div class="chart-card scale-in" style="transition-delay: 0.2s;">
-                    <div class="chart-value">₱22,900,266.12</div>
-                    <p class="chart-label">Total Operating Expense</p>
-                    <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <polyline points="0,50 40,45 80,70 120,65 160,60 200,55 240,50 280,55" 
-                                  fill="none" stroke="#e5bb22" stroke-width="3"/>
-                    </svg>
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Accounting Team</h3>
+                            <span class="stat-value acc">20%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill acc" style="width: 20%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>LRAD Team</h3>
+                            <span class="stat-value lrad">30%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill lrad" style="width: 30%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Quality Team</h3>
+                            <span class="stat-value qual">80%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill qual" style="width: 80%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>DC Team</h3>
+                            <span class="stat-value dc">23%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill dc" style="width: 23%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>IT Team</h3>
+                            <span class="stat-value it">45%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill it" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Opportunity Team</h3>
+                            <span class="stat-value opp">37%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill opp" style="width: 37%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Marcom Team</h3>
+                            <span class="stat-value marc">47%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill marc" style="width: 47%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Audit Team</h3>
+                            <span class="stat-value aud">54%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill aud" style="width: 54%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Gathering Team</h3>
+                            <span class="stat-value gath">27%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill gath" style="width: 27%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card fade-in" style="transition-delay: 0.1s;">
+                        <div class="stat-header">
+                            <h3>Operations Team</h3>
+                            <span class="stat-value oper">77%</span>
+                        </div>
+                        <p class="stat-subtitle">Overall Score</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill oper" style="width: 77%"></div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="chart-card scale-in" style="transition-delay: 0.3s;">
-                    <div class="chart-value">₱21,432,212.12</div>
-                    <p class="chart-label">Other Expenses</p>
-                    <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
-                        <polyline points="0,60 40,30 80,50 120,45 160,55 200,50 240,45 280,45" 
-                                  fill="none" stroke="#525552" stroke-width="3"/>
-                    </svg>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" id="carouprevBtn">‹</button>
+                        <span class="carousel-indicator" id="caroupageIndicator">1 / 3</span>
+                    <button class="carousel-btn" id="carounextBtn">›</button>
                 </div>
             </div>
 
-            <!-- Right Column - Bandwidth Reports -->
-            <div class="charts-column-right">
-                <div class="bandwidth-card fade-in">
-                    <div class="bandwidth-header">
-                        <span class="icon">📊</span>
-                        <h3>BANDWIDTH REPORTS</h3>
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- Left Column - 4 small charts -->
+                <div class="charts-column-left">
+                    <div class="chart-card scale-in">
+                        <div class="chart-value">₱9,766,410.44</div>
+                        <p class="chart-label">Net Profit</p>
+                        <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+                            <polyline points="0,60 30,50 60,55 90,40 120,45 150,30 180,20 210,50 240,35 270,40 300,60" 
+                                    fill="none" stroke="#96a840" stroke-width="3"/>
+                        </svg>
                     </div>
 
-                    <div class="bandwidth-stats">
-                        <div class="bandwidth-stat">
-                            <div class="stat-value-large">63%</div>
-                            <p class="stat-label-small">Server Errors</p>
-                            <div class="progress-bar-thick">
-                                <div class="progress-fill-thick purple" style="width: 61%"></div>
-                            </div>
-                            <span class="percentage">61%</span>
-                            <p class="stat-label-small">Server Target</p>
-                        </div>
-
-                        <div class="bandwidth-stat">
-                            <div class="stat-value-large">$ 1893</div>
-                            <p class="stat-label-small">Total Income</p>
-                            <div class="progress-bar-thick">
-                                <div class="progress-fill-thick pink" style="width: 71%"></div>
-                            </div>
-                            <span class="percentage pink">71%</span>
-                            <p class="stat-label-small">Income Target</p>
-                        </div>
+                    <div class="chart-card scale-in" style="transition-delay: 0.1s;">
+                        <div class="chart-value">₱35,061,227.17</div>
+                        <p class="chart-label">Gross Revenue</p>
+                        <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+                            <polyline points="0,60 40,45 80,55 120,35 160,30 200,25 240,35 280,50" 
+                                    fill="none" stroke="#586740" stroke-width="3"/>
+                        </svg>
                     </div>
 
-                    <div class="area-chart">
-                        <svg viewBox="0 0 500 150" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#e5bb22;stop-opacity:0.6" />
-                                    <stop offset="100%" style="stop-color:#e5bb22;stop-opacity:0.1" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M0,80 Q50,70 100,75 T200,60 T300,50 T400,40 T500,55 L500,150 L0,150 Z" 
-                                  fill="url(#areaGradient)"/>
-                            <polyline points="0,80 50,70 100,75 150,65 200,60 250,55 300,50 350,45 400,40 450,45 500,55" 
-                                      fill="none" stroke="#e5bb22" stroke-width="2"/>
+                    <div class="chart-card scale-in" style="transition-delay: 0.2s;">
+                        <div class="chart-value">₱22,900,266.12</div>
+                        <p class="chart-label">Total Operating Expense</p>
+                        <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+                            <polyline points="0,50 40,45 80,70 120,65 160,60 200,55 240,50 280,55" 
+                                    fill="none" stroke="#e5bb22" stroke-width="3"/>
+                        </svg>
+                    </div>
+
+                    <div class="chart-card scale-in" style="transition-delay: 0.3s;">
+                        <div class="chart-value">₱21,432,212.12</div>
+                        <p class="chart-label">Other Expenses</p>
+                        <svg class="chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+                            <polyline points="0,60 40,30 80,50 120,45 160,55 200,50 240,45 280,45" 
+                                    fill="none" stroke="#525552" stroke-width="3"/>
                         </svg>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- TenYear Plan Section -->
-    <section class="ten-year-plan" id="ten-year-plan">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2>Our 10-Year Vision</h2>
-                <p>Strategic roadmap to become a leading community developer by December 31, 2035</p>
-            </div>
-            <div class="plan-content">
-                <div class="plan-image-wrapper slide-left">
-                    <div class="plan-image">
-                        <img src="files/images/vision.png" alt="Our Vision">
-                        <div class="experience-badge">
-                            <div class="experience-number">10</div>
-                            <div class="experience-text">YEAR<br>VISION</div>
+                <!-- Right Column - Bandwidth Reports -->
+                <div class="charts-column-right">
+                    <div class="bandwidth-card fade-in">
+                        <div class="bandwidth-header">
+                            <span class="icon">📊</span>
+                            <h3>BANDWIDTH REPORTS</h3>
+                        </div>
+
+                        <div class="bandwidth-stats">
+                            <div class="bandwidth-stat">
+                                <div class="stat-value-large">63%</div>
+                                <p class="stat-label-small">Server Errors</p>
+                                <div class="progress-bar-thick">
+                                    <div class="progress-fill-thick purple" style="width: 61%"></div>
+                                </div>
+                                <span class="percentage">61%</span>
+                                <p class="stat-label-small">Server Target</p>
+                            </div>
+
+                            <div class="bandwidth-stat">
+                                <div class="stat-value-large">$ 1893</div>
+                                <p class="stat-label-small">Total Income</p>
+                                <div class="progress-bar-thick">
+                                    <div class="progress-fill-thick pink" style="width: 71%"></div>
+                                </div>
+                                <span class="percentage pink">71%</span>
+                                <p class="stat-label-small">Income Target</p>
+                            </div>
+                        </div>
+
+                        <div class="area-chart">
+                            <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#e5bb22;stop-opacity:0.6" />
+                                        <stop offset="100%" style="stop-color:#e5bb22;stop-opacity:0.1" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M0,80 Q50,70 100,75 T200,60 T300,50 T400,40 T500,55 L500,150 L0,150 Z" 
+                                    fill="url(#areaGradient)"/>
+                                <polyline points="0,80 50,70 100,75 150,65 200,60 250,55 300,50 350,45 400,40 450,45 500,55" 
+                                        fill="none" stroke="#e5bb22" stroke-width="2"/>
+                            </svg>
                         </div>
                     </div>
-                    <div class="projects-badge">
-                        <div class="projects-number">100+</div>
-                        <div class="projects-text">SITES TARGET</div>
-                    </div>
                 </div>
-                <div class="plan-text slide-right">
-                    <h3>Empowering Communities Through LIVE. WORK. PLAY.</h3>
-                    <p>Our mission is to transform communities into places of Fulfillment & Joy by developing properties that Gather & Grow communities. We operate through FEC anchors (Playspacio), Social Space, Kidzspace, and the Handaan ecosystem (H.café, Bakery by Handaan), running on LotusDŌ + LeadzZen platforms.</p>
-                    
-                    <div class="plan-features">
-                        <div class="feature-item">
-                            <div class="feature-icon">
-                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <circle cx="9" cy="7" r="4" stroke-width="2"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+            </div>
+        </section>
+
+        <!-- TenYear Plan Section -->
+        <section class="ten-year-plan dashboard-section" id="ten-year-plan">
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2>Our 10-Year Vision</h2>
+                    <p>Strategic roadmap to become a leading community developer by December 31, 2035</p>
+                </div>
+                <div class="plan-content">
+                    <div class="plan-image-wrapper slide-left">
+                        <div class="plan-image">
+                            <img src="files/images/vision.png" alt="Our Vision">
+                            <div class="experience-badge">
+                                <div class="experience-number">10</div>
+                                <div class="experience-text">YEAR<br>VISION</div>
                             </div>
-                            <div class="feature-content">
-                                <h4>Gather Communities</h4>
-                                <p>Community KOLs, Business Beginners, Environmental champions, Local Talents & Creatives, Government partnerships, Corporate institutions, and Community-Based Organizations.</p>
+                        </div>
+                        <div class="projects-badge">
+                            <div class="projects-number">100+</div>
+                            <div class="projects-text">SITES TARGET</div>
+                        </div>
+                    </div>
+                    <div class="plan-text slide-right">
+                        <h3>Empowering Communities Through LIVE. WORK. PLAY.</h3>
+                        <p>Our mission is to transform communities into places of Fulfillment & Joy by developing properties that Gather & Grow communities. We operate through FEC anchors (Playspacio), Social Space, Kidzspace, and the Handaan ecosystem (H.café, Bakery by Handaan), running on LotusDŌ + LeadzZen platforms.</p>
+                        
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="9" cy="7" r="4" stroke-width="2"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Gather Communities</h4>
+                                    <p>Community KOLs, Business Beginners, Environmental champions, Local Talents & Creatives, Government partnerships, Corporate institutions, and Community-Based Organizations.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Grow Communities</h4>
+                                    <p>Community Development, Personal Empowerment, Co-creating Culture through First platform and Local Community Co-hosting, and Empowering Systems via GIF's, LotusDŌ, and LeadzZen.</p>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="feature-item">
-                            <div class="feature-icon">
-                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                        <ul class="plan-checklist">
+                            <li>100+ sites operated as Boutique LIVE. WORK. PLAY projects</li>
+                            <li>≥30% Business Beginners with ≥70% weekly utilization</li>
+                            <li>≥70% Internal Managers with ≥80% Founder/Architect/Creative roles</li>
+                            <li>Proven Marketing Strategy across Community, Target, and LotusDŌ platforms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Three Year Plan Section -->
+        <section class="three-year-plan dashboard-section" id="three-year-plan">
+            <div class="section-header fade-in">
+                <h2>Our Three Year Plan</h2>
+                <p>Strategic goals and metrics to drive our growth</p>
+            </div>
+            
+            <div class="plan-container">
+                <!-- Tab Navigation -->
+                <div class="plan-tabs">
+                    <button class="tab-btn active" data-tab="1">
+                        <span class="tab-number">01</span>
+                        <div class="tab-content">
+                            <h4>Advocates</h4>
+                            <p>Loved Brand</p>
+                        </div>
+                    </button>
+                    <button class="tab-btn" data-tab="2">
+                        <span class="tab-number">02</span>
+                        <div class="tab-content">
+                            <h4>Innovator</h4>
+                            <p>Living Centers</p>
+                        </div>
+                    </button>
+                    <button class="tab-btn" data-tab="3">
+                        <span class="tab-number">03</span>
+                        <div class="tab-content">
+                            <h4>Sages</h4>
+                            <p>Everlasting Team</p>
+                        </div>
+                    </button>
+                    <button class="tab-btn" data-tab="4">
+                        <span class="tab-number">04</span>
+                        <div class="tab-content">
+                            <h4>Essentialists</h4>
+                            <p>Empowering System</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Tab Content Area -->
+                <div class="plan-content-wrapper">
+                    <!-- TAB 1: ADVOCATES -->
+                    <div class="plan-tab-content active" data-content="1">
+                        <div class="content-layout">
+                            <div class="content-left">
+                                <div class="content-header">
+                                    <div class="icon advocates">🎯</div>
+                                    <div>
+                                        <h3>Advocates (Sales)</h3>
+                                        <span class="subtitle">Loved Brand</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="vision-text">
+                                    <p>Boutique LIVE–WORK–PLAY opportunity platform loved by families, top-of-mind for business beginners & local talents.</p>
+                                    <p class="highlight">Known as prominent & boutique, top-of-mind choice for community developer by Dec 2024</p>
+                                </div>
+
+                                <div class="metrics-section">
+                                    <div class="metric-item">
+                                        <div class="metric-value">145%</div>
+                                        <div class="metric-label">INNOVATION RATE</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">28K</div>
+                                        <div class="metric-label">IDEAS GENERATED</div>
+                                    </div>
+                                </div>
+
+                                <div class="quick-points">
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>18–22 active sites across 6+ provinces</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Community NPS ≥58 with beginner share ≥25%</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Target occupancy ≥92% across all locations</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="feature-content">
-                                <h4>Grow Communities</h4>
-                                <p>Community Development, Personal Empowerment, Co-creating Culture through First platform and Local Community Co-hosting, and Empowering Systems via GIF's, LotusDŌ, and LeadzZen.</p>
+
+                            <div class="content-right">
+                                <div class="image-card">
+                                    <img src="files/images/temp-advocates.png" alt="Advocates Strategy">
+                                </div>
+                                
+                                <div class="detailed-metrics">
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lag)</h4>
+                                        <ul>
+                                            <li>18–22 active sites (6+ provinces)</li>
+                                            <li>8+ Yspace Creative Parks</li>
+                                            <li>9–12 FEC sites</li>
+                                            <li>12–18 Bakery kiosks</li>
+                                            <li>4–6 Handaan/H Café units</li>
+                                            <li>Beginner share ≥25%/site</li>
+                                            <li>Community NPS ≥58</li>
+                                        </ul>
+                                    </div>
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lead)</h4>
+                                        <ul>
+                                            <li><strong>NEW</strong> Occupancy ≥92%</li>
+                                            <li><strong>NEW</strong> Business Beginners ≥25%</li>
+                                            <li>NPS ≥60 / FEC ≥70 / Handaan ≥65</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <ul class="plan-checklist">
-                        <li>100+ sites operated as Boutique LIVE. WORK. PLAY projects</li>
-                        <li>≥30% Business Beginners with ≥70% weekly utilization</li>
-                        <li>≥70% Internal Managers with ≥80% Founder/Architect/Creative roles</li>
-                        <li>Proven Marketing Strategy across Community, Target, and LotusDŌ platforms</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="three-year-plan">
-        <div class="section-header">
-            <h2>Our Three Year Plan (2028)</h2>
-            <p>Strategic goals and metrics to drive our growth</p>
-        </div>
-        
-        <div class="plan-grid">
-            <!-- ADVOCATES (SALES) -->
-            <div class="plan-card scale-in" style="transition-delay: 0.4s;">
-                <div class="card-header advocates ">
-                    <div class="icon">🎯</div>
-                    <h3>Advocates (Sales)</h3>
-                    <span class="subtitle">Loved Brand</span>
-                </div>
-                <div class="card-content fade-in">
-                    <div class="vision">
-                        <p>Boutique LIVE–WORK–PLAY opportunity platform loved by families, top-of-mind for business beginners & local talents.</p>
-                        <p class="highlight">Known as prominent & boutique, top-of-mind choice for community developer by Dec 2024</p>
-                    </div>
-                    <div class="metrics">
-                        <div class="metric-group">
-                            <h4>3 Year Metrics (Lag)</h4>
-                            <ul>
-                                <li>18–22 active sites (6+ provinces)</li>
-                                <li>8+ Yspace Creative Parks</li>
-                                <li>9–12 FEC sites</li>
-                                <li>12–18 Bakery kiosks</li>
-                                <li>4–6 Handaan/H Café units</li>
-                                <li>Beginner share ≥25%/site</li>
-                                <li>Community NPS ≥58</li>
-                            </ul>
-                        </div>
-                        <div class="metric-group lead">
-                            <h4>3 Year Metrics (Lead)</h4>
-                            <ul>
-                                <li><strong>NEW</strong> Occupancy ≥92%</li>
-                                <li><strong>NEW</strong> Business Beginners ≥25%</li>
-                                <li>NPS ≥60 / FEC ≥70 / Handaan ≥65</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <!-- TAB 2: INNOVATOR -->
+                    <div class="plan-tab-content" data-content="2">
+                        <div class="content-layout">
+                            <div class="content-left">
+                                <div class="content-header">
+                                    <div class="icon innovator">💡</div>
+                                    <div>
+                                        <h3>Innovator (Profit)</h3>
+                                        <span class="subtitle">Living Centers</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="vision-text">
+                                    <p>Distinct concepts & experiences make our Living Centers the home of community life.</p>
+                                    <p class="highlight">Top choice for all major community events. Known to house unique concepts and Experiences</p>
+                                </div>
 
-            <!-- INNOVATOR (PROFIT) -->
-            <div class="plan-card scale-in" style="transition-delay: 0.5s;">
-                <div class="card-header innovator">
-                    <div class="icon">💡</div>
-                    <h3>Innovator (Profit)</h3>
-                    <span class="subtitle">Living Centers</span>
-                </div>
-                <div class="card-content fade-in">
-                    <div class="vision">
-                        <p>Distinct concepts & experiences make our Living Centers the home of community life.</p>
-                        <p class="highlight">Top choice for all major community events. Known to house unique concepts and Experiences</p>
-                    </div>
-                    <div class="metrics">
-                        <div class="metric-group">
-                            <h4>3 Year Metrics (Lag)</h4>
-                            <ul>
-                                <li>Utilization ≥65%</li>
-                                <li>Calendars 8–12 weeks</li>
-                                <li>Foot traffic?</li>
-                            </ul>
-                        </div>
-                        <div class="metric-group lead">
-                            <h4>3 Year Metrics (Lead)</h4>
-                            <ul>
-                                <li><strong>NEW</strong> Utilization % (Booked ÷ Available)</li>
-                                <li><strong>NEW</strong> Event pipeline (weeks)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <div class="metrics-section">
+                                    <div class="metric-item">
+                                        <div class="metric-value">65%</div>
+                                        <div class="metric-label">UTILIZATION TARGET</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">8-12</div>
+                                        <div class="metric-label">WEEKS CALENDAR</div>
+                                    </div>
+                                </div>
 
-            <!-- SAGES (PEOPLE) -->
-            <div class="plan-card scale-in" style="transition-delay: 0.6s;">
-                <div class="card-header sages">
-                    <div class="icon">👥</div>
-                    <h3>Sages (People)</h3>
-                    <span class="subtitle">Everlasting Team</span>
-                </div>
-                <div class="card-content fade-in">
-                    <div class="vision">
-                        <p>A culture that creates legends and changemakers, leaders who grow leaders.</p>
-                        <p class="highlight">Team co-elevating environment. Known for unique culture that creates Legends</p>
-                    </div>
-                    <div class="metrics">
-                        <div class="metric-group">
-                            <h4>3 Year Metrics (Lag)</h4>
-                            <ul>
-                                <li>eNPS strong</li>
-                                <li>Internal managers ≥70%</li>
-                                <li>L10 ≥8/10</li>
-                            </ul>
-                        </div>
-                        <div class="metric-group lead">
-                            <h4>3 Year Metrics (Lead)</h4>
-                            <ul>
-                                <li><strong>NEW</strong> L10 quality score (1–10)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <div class="quick-points">
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Distinct concepts creating unique experiences</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Home of major community events</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>8–12 weeks event pipeline maintained</p>
+                                    </div>
+                                </div>
 
-            <!-- ESSENTIALISTS (PROCESS) -->
-            <div class="plan-card scale-in" style="transition-delay: 0.7s;">
-                <div class="card-header essentialists">
-                    <div class="icon">⚙️</div>
-                    <h3>Essentialists (Process)</h3>
-                    <span class="subtitle">Empowering System</span>
-                </div>
-                <div class="card-content fade-in">
-                    <div class="vision">
-                        <p>A process that empowers the way— organize, simplify, and set the standard.</p>
-                        <p class="highlight">Transformed industry-standard Systems with unique Empowering System that becomes the norm</p>
-                    </div>
-                    <div class="metrics">
-                        <div class="metric-group">
-                            <h4>3 Year Metrics (Lag)</h4>
-                            <ul>
-                                <li>LotusOS ≥85%</li>
-                                <li>OTIF ≥98%</li>
-                                <li>EBITDA +2–3 pts</li>
-                                <li>MTTR ↓</li>
-                            </ul>
+                            </div>
+
+                            <div class="content-right">
+                                <div class="image-card">
+                                    <img src="files/images/temp-innovator.png" alt="Innovator Strategy">
+                                </div>
+                                
+                                <div class="detailed-metrics">
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lag)</h4>
+                                        <ul>
+                                            <li>Utilization ≥65%</li>
+                                            <li>Calendars 8–12 weeks</li>
+                                            <li>Foot traffic measurement</li>
+                                        </ul>
+                                    </div>
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lead)</h4>
+                                        <ul>
+                                            <li><strong>NEW</strong> Utilization % (Booked ÷ Available)</li>
+                                            <li><strong>NEW</strong> Event pipeline (weeks)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="metric-group lead">
-                            <h4>3 Year Metrics (Lead)</h4>
-                            <ul>
-                                <li><strong>NEW</strong> LotusOS adoption %</li>
-                                <li><strong>NEW</strong> OTIF %</li>
-                                <li><strong>NEW</strong> EBITDA margin</li>
-                                <li><strong>NEW</strong> Breakdowns + MTTR</li>
-                            </ul>
+                    </div>
+
+                    <!-- TAB 3: SAGES (WITH IMAGE SWITCHER) -->
+                    <div class="plan-tab-content" data-content="3">
+                        <div class="content-layout">
+                            <div class="content-left">
+                                <div class="content-header">
+                                    <div class="icon sages">👥</div>
+                                    <div>
+                                        <h3>Sages (People)</h3>
+                                        <span class="subtitle">Everlasting Team</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="vision-text">
+                                    <p>A culture that creates legends and changemakers, leaders who grow leaders.</p>
+                                    <p class="highlight">Team co-elevating environment. Known for unique culture that creates Legends</p>
+                                </div>
+
+                                <div class="metrics-section">
+                                    <div class="metric-item">
+                                        <div class="metric-value">70%</div>
+                                        <div class="metric-label">INTERNAL MANAGERS</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">8/10</div>
+                                        <div class="metric-label">L10 QUALITY</div>
+                                    </div>
+                                </div>
+
+                                <div class="quick-points">
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Culture creating legends and changemakers</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Leaders who grow leaders philosophy</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Strong eNPS and team co-elevation</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="content-right">
+                                <div class="image-card testimonial-slider" data-slider="sages">
+                                    <div class="testimonial-images">
+                                        <img src="files/images/temp-sages1.png" alt="Sages Strategy 1" class="testimonial-img active">
+                                        <img src="files/images/temp-sages2.png" alt="Sages Strategy 2" class="testimonial-img">
+                                    </div>
+                                </div>
+                                
+                                <div class="detailed-metrics">
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lag)</h4>
+                                        <ul>
+                                            <li>eNPS strong</li>
+                                            <li>Internal managers ≥70%</li>
+                                            <li>L10 ≥8/10</li>
+                                        </ul>
+                                    </div>
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lead)</h4>
+                                        <ul>
+                                            <li><strong>NEW</strong> L10 quality score (1–10)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: ESSENTIALISTS (WITH IMAGE SWITCHER) -->
+                    <div class="plan-tab-content" data-content="4">
+                        <div class="content-layout">
+                            <div class="content-left">
+                                <div class="content-header">
+                                    <div class="icon essentialists">⚙️</div>
+                                    <div>
+                                        <h3>Essentialists (Process)</h3>
+                                        <span class="subtitle">Empowering System</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="vision-text">
+                                    <p>A process that empowers the way— organize, simplify, and set the standard.</p>
+                                    <p class="highlight">Transformed industry-standard Systems with unique Empowering System that becomes the norm</p>
+                                </div>
+
+                                <div class="metrics-section">
+                                    <div class="metric-item">
+                                        <div class="metric-value">85%</div>
+                                        <div class="metric-label">LOTUSOS ADOPTION</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">98%</div>
+                                        <div class="metric-label">OTIF TARGET</div>
+                                    </div>
+                                </div>
+
+                                <div class="quick-points">
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Organize, simplify, set the standard</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>EBITDA improvement +2–3 points</p>
+                                    </div>
+                                    <div class="point-item">
+                                        <span class="arrow">→</span>
+                                        <p>Reduced MTTR across all systems</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="content-right">
+                                <div class="image-card testimonial-slider" data-slider="essentialists">
+                                    <div class="testimonial-images">
+                                        <img src="files/images/temp-essen1.png" alt="Essentialists Strategy 1" class="testimonial-img active">
+                                        <img src="files/images/temp-essen2.png" alt="Essentialists Strategy 2" class="testimonial-img">
+                                    </div>
+                                </div>
+                                
+                                <div class="detailed-metrics">
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lag)</h4>
+                                        <ul>
+                                            <li>LotusOS ≥85%</li>
+                                            <li>OTIF ≥98%</li>
+                                            <li>EBITDA +2–3 pts</li>
+                                            <li>MTTR ↓</li>
+                                        </ul>
+                                    </div>
+                                    <div class="metric-column">
+                                        <h4>3 Year Metrics (Lead)</h4>
+                                        <ul>
+                                            <li><strong>NEW</strong> LotusOS adoption %</li>
+                                            <li><strong>NEW</strong> OTIF %</li>
+                                            <li><strong>NEW</strong> EBITDA margin</li>
+                                            <li><strong>NEW</strong> Breakdowns + MTTR</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 </body>
 </html>
