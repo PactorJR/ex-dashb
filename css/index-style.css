@@ -391,18 +391,26 @@
             background: #fffff5;
             color: #525552;
         }
-        
+
+        .summary-header {
+            max-width: 1500px; /* or your desired width */
+            width: 100%;
+            margin: 0 auto; /* centers it if you want */
+        }
+
         .summary-header .section-header {
             text-align: left;
-            max-width: none;
+            justify-content: flex-start;
+            display: flex;
+            flex-direction: column;
+            width: 100%; /* takes full width of parent */
         }
 
         .summary-header .section-header h2 {
-            font-size: 48px;
-            font-weight: 700;
+            font-size: 36px;
+            color: var(--primary-color);
             margin-bottom: 16px;
             line-height: 1.2;
-            color: #586740;
         }
 
         .summary-header .section-header p {
@@ -531,7 +539,7 @@
         .section-header h2 {
             font-size: 36px;
             color: var(--primary-color);
-            font-weight: 700;
+            font-weight: 1000;
         }
 
         .section-header p {
@@ -541,7 +549,6 @@
 
         /* Ten Year Plan Section */
         .ten-year-plan {
-            padding: 100px 0;
             background: var(--white);
         }
 
@@ -774,11 +781,10 @@
         }
 
         .three-year-plan .section-header h2 {
-            font-size: 48px;
-            font-weight: 700;
+            font-size: 36px;
             margin-bottom: 16px;
             line-height: 1.2;
-            color: #586740;
+            color: var(--primary-color);
         }
 
         .three-year-plan .section-header p {
@@ -1206,22 +1212,13 @@
             padding-top: 100px 0;
         }
         
-        .summary-header {
-                
-        }
-
-        .summary-header h3 {
-            font-size: 24px;
-            color: var(--primary-color);
-            font-weight: 600;
-            margin: 0;
-        }
 
         /* Carousel Controls */
         .carousel-controls {
             display: flex;
             align-items: center;
             gap: -15px;
+            padding: 10px;
         }
 
         .carousel-btn {
@@ -1238,7 +1235,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            padding: 0px;
         }
 
         .carousel-btn:hover:not(:disabled) {
@@ -1264,11 +1261,13 @@
         .stats-carousel-container {
             overflow: hidden;
             margin-bottom: 30px;
+            width: 1280px; /* Fixed width to show exactly 4 cards */
+            position: relative;
         }
 
         .stats-row {
             display: flex;
-            width: 1300px;
+            width: fit-content; /* Changed from fixed 1300px */
             gap: 20px;
             transition: transform 0.5s ease;
         }
@@ -1277,6 +1276,7 @@
             background: white;
             padding: 20px;
             width: 300px;
+            flex-shrink: 0; /* Add this to prevent cards from shrinking */
             height: 90px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(88, 103, 64, 0.1);
@@ -1292,26 +1292,29 @@
 
         .stat-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            justify-content: center; /* Changed from space-between */
+            align-items: center;
+            gap: 10px; /* Space between title and percentage */
             margin-bottom: 8px;
+            text-align: center;
         }
 
         .stat-header h3 {
             font-size: 14px;
-            color: var(--white);
+            color: var(--text-color);
             font-weight: 500;
         }
 
         .stat-card p {
             font-size: 12px;
-            color: var(--white);
+            color: var(--text-color);
             font-weight: 500;
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: 600;
+            padding-left: 100px;
         }
 
         .stat-value.tech { color: #ff94ad; }
@@ -1345,6 +1348,7 @@
             border-radius: 4px;
             background: var(--secondary-color);
             transition: width 1s ease-out;
+            width: 0%; /* Add this for initial state - will be animated by JS */
         }
 
         .progress-fill.tech { background: #ff94ad; }
@@ -1375,8 +1379,8 @@
         .chart-card {
             background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(88, 103, 64, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(88, 103, 64, 0.3);
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
@@ -1414,8 +1418,8 @@
         .bandwidth-card {
             background: white;
             padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(88, 103, 64, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(88, 103, 64, 0.3);
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -1557,7 +1561,7 @@
         }
 
         .section-header p {
-            color: #525552;
+            color: rgba(82, 85, 82, 0.8);
             font-size: clamp(0.8em, 0.95vw, 0.95em);
         }
 
@@ -1616,10 +1620,75 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #586740 0%, #96a840 100%);
+            background: #f5f5f0; 
+            border: 1px solid rgba(88, 103, 64, 0.3);
             border-radius: 16px;
             padding: 1.2vh 1.2vw;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--fill-width, 0%);
+            background: linear-gradient(135deg, #586740 0%, #96a840 100%);
+            transition: width 1s ease-out;
+            z-index: 0;
+            border-radius: 16px;
+        }
+
+        .stat-card.tech::before {
+            background: linear-gradient(135deg, #586740 0%, #ff94ad 100%);
+        }
+
+        .stat-card.acc::before {
+            background: linear-gradient(135deg, #586740 0%, #C9A66C 100%);
+        }
+
+        .stat-card.lrad::before {
+            background: linear-gradient(135deg, #586740 0%, #FFDB48 100%);
+        }
+
+        .stat-card.qual::before {
+            background: linear-gradient(135deg, #586740 0%, #3D85C6 100%);
+        }
+
+        .stat-card.dc::before {
+            background: linear-gradient(135deg, #586740 0%, #aff598 100%);
+        }
+
+        .stat-card.it::before {
+            background: linear-gradient(135deg, #586740 0%, #5c5c5c 100%);
+        }
+
+        .stat-card.opp::before {
+            background: linear-gradient(135deg, #586740 0%, #aba1c0 100%);
+        }
+
+        .stat-card.marc::before {
+            background: linear-gradient(135deg, #586740 0%, #EDED00 100%);
+        }
+
+        .stat-card.aud::before {
+            background: linear-gradient(135deg, #586740 0%, #CC4125 100%);
+        }
+
+        .stat-card.gath::before {
+            background: linear-gradient(135deg, #586740 0%, #7960c4 100%);
+        }
+
+        .stat-card.oper::before {
+            background: linear-gradient(135deg, #586740 0%, #8B9B5B 100%);
+        }
+
+        .stat-card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .stat-label {

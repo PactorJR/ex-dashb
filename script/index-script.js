@@ -36,21 +36,37 @@
 
         let currentPage = 0;
         const cardsPerPage = 4;
-        const totalCards = carousel.children.length;
-        const totalPages = Math.ceil(totalCards / cardsPerPage);
 
         function updateCarousel() {
+            const totalCards = carousel.children.length;
+            const totalPages = Math.ceil(totalCards / cardsPerPage);
+            
             const offset = currentPage * cardsPerPage;
-            const cardWidth = carousel.children[0].offsetWidth;
-            const gap = 20; // Gap between cards
+            const cardWidth = 300;
+            const gap = 20;
             const translateX = -(offset * (cardWidth + gap));
             
             carousel.style.transform = `translateX(${translateX}px)`;
             caroupageIndicator.textContent = `${currentPage + 1} / ${totalPages}`;
             
-            // Disable buttons at boundaries
             carouprevBtn.disabled = currentPage === 0;
-            carounextBtn.disabled = currentPage === totalPages - 1;
+            carounextBtn.disabled = currentPage >= totalPages - 1;
+            
+            if (carouprevBtn.disabled) {
+                carouprevBtn.style.opacity = '0.5';
+                carouprevBtn.style.cursor = 'not-allowed';
+            } else {
+                carouprevBtn.style.opacity = '1';
+                carouprevBtn.style.cursor = 'pointer';
+            }
+            
+            if (carounextBtn.disabled) {
+                carounextBtn.style.opacity = '0.5';
+                carounextBtn.style.cursor = 'not-allowed';
+            } else {
+                carounextBtn.style.opacity = '1';
+                carounextBtn.style.cursor = 'pointer';
+            }
         }
 
         carouprevBtn.addEventListener('click', () => {
@@ -61,17 +77,63 @@
         });
 
         carounextBtn.addEventListener('click', () => {
+            const totalCards = carousel.children.length;
+            const totalPages = Math.ceil(totalCards / cardsPerPage);
             if (currentPage < totalPages - 1) {
                 currentPage++;
                 updateCarousel();
             }
         });
 
-        // Initialize
-        updateCarousel();
+        // Function to update progress bars based on stat values
+        function updateProgressBars() {
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            statCards.forEach(card => {
+                const statValueElement = card.querySelector('.stat-value');
+                const progressFill = card.querySelector('.progress-fill');
+                
+                if (statValueElement) {
+                    const percentageText = statValueElement.textContent.trim();
+                    const percentage = parseFloat(percentageText.replace('%', ''));
+                    
+                    // Get the team class from stat-value or progress-fill
+                    const teamClass = statValueElement.className.split(' ').find(cls => 
+                        ['tech', 'acc', 'lrad', 'qual', 'dc', 'it', 'opp', 'marc', 'aud', 'gath', 'oper'].includes(cls)
+                    ) || progressFill?.className.split(' ').find(cls => 
+                        ['tech', 'acc', 'lrad', 'qual', 'dc', 'it', 'opp', 'marc', 'aud', 'gath', 'oper'].includes(cls)
+                    );
+                    
+                    // Add team class to card if found
+                    if (teamClass) {
+                        card.classList.add(teamClass);
+                    }
+                    
+                    if (!isNaN(percentage)) {
+                        card.style.setProperty('--fill-width', `${percentage}%`);
+                        if (progressFill) {
+                            progressFill.style.width = `${percentage}%`;
+                        }
+                    }
+                }
+            });
+        }
 
-        // Handle window resize
-        window.addEventListener('resize', updateCarousel);
+        // Initialize everything when DOM is ready
+        function initialize() {
+            updateProgressBars();
+            updateCarousel();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+
+        window.addEventListener('resize', () => {
+            updateCarousel();
+        });
 
         // Auto-hiding navbar functionality
         document.addEventListener('DOMContentLoaded', function() {

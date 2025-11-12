@@ -67,6 +67,12 @@
             overflow: hidden;
         }
 
+        .leader-card.active {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(229, 187, 34, 0.4);
+            border: 2px solid var(--secondary-color);
+        }
+
         .leader-card::before {
             content: '';
             position: absolute;
@@ -112,6 +118,7 @@
         .leader-card:nth-child(8) .leader-icon { background: linear-gradient(135deg, #00b894, #00cec9); }
         .leader-card:nth-child(9) .leader-icon { background: linear-gradient(135deg, #d63031, #c0392b); }
         .leader-card:nth-child(10) .leader-icon { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+        .leader-card:nth-child(11) .leader-icon { background: linear-gradient(135deg, #ff7675, #d63031); }
 
         .leader-name {
             color: var(--text-color);
@@ -204,6 +211,57 @@
             animation: fadeInUp 0.8s ease-out;
         }
 
+        /* Section Switch Button */
+        .section-switch {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-switch::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-switch.active {
+            background: var(--light-bg);
+        }
+
+        .section-switch.active::before {
+            transform: translateX(40px);
+        }
+
+        .section-switch::after {
+            content: 'Profile';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: var(--text-color);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .section-switch.active::after {
+            content: 'Ops';
+        }
+
         /* Team Members Section */
         .members-section {
             background: white;
@@ -216,7 +274,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 0px;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -231,6 +289,7 @@
             position: relative;
             flex: 1;
             max-width: 300px;
+            padding-bottom: 15px;
         }
 
         .search-box input {
@@ -248,15 +307,6 @@
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px rgba(229, 187, 34, 0.2);
             transform: scale(1.02);
-        }
-
-        .search-box::before {
-            content: '🔍';
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px;
         }
 
         .table-header {
@@ -325,6 +375,152 @@
             font-weight: 500;
         }
 
+        /* Team Leader Profile Section */
+        .profile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(88, 103, 64, 0.05), rgba(150, 168, 64, 0.05));
+            border-radius: 15px;
+            border: 2px solid rgba(88, 103, 64, 0.1);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--secondary-color), var(--light-bg));
+            z-index: -1;
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        .profile-header-info {
+            flex: 1;
+        }
+
+        .profile-header-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .profile-header-title {
+            font-size: 18px;
+            color: var(--light-bg);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .profile-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .profile-stat-label {
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid var(--light-bg);
+            transition: all 0.3s ease;
+        }
+
+        .profile-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(88, 103, 64, 0.1);
+        }
+
+        .profile-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-label::before {
+            content: '▸';
+            color: var(--secondary-color);
+        }
+
+        .profile-value {
+            color: var(--text-color);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 10px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
         /* Reports Section */
         .reports-section {
             display: flex;
@@ -391,25 +587,32 @@
         .recover-area { fill: var(--light-bg); }
         .death-area { fill: #ff6b6b; }
 
-        .legend {
+        .team-breakdown {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .legend-item {
+        .team-item {
             display: flex;
             align-items: center;
             gap: 15px;
             animation: slideInRight 0.6s ease-out backwards;
         }
 
-        .legend-item:nth-child(1) { animation-delay: 0.2s; }
-        .legend-item:nth-child(2) { animation-delay: 0.3s; }
-        .legend-item:nth-child(3) { animation-delay: 0.4s; }
-        .legend-item:nth-child(4) { animation-delay: 0.5s; }
+        .team-item:nth-child(1) { animation-delay: 0.2s; }
+        .team-item:nth-child(2) { animation-delay: 0.3s; }
+        .team-item:nth-child(3) { animation-delay: 0.4s; }
+        .team-item:nth-child(4) { animation-delay: 0.5s; }
+        .team-item:nth-child(5) { animation-delay: 0.6s; }
+        .team-item:nth-child(6) { animation-delay: 0.7s; }
+        .team-item:nth-child(7) { animation-delay: 0.8s; }
+        .team-item:nth-child(8) { animation-delay: 0.9s; }
+        .team-item:nth-child(9) { animation-delay: 1.0s; }
+        .team-item:nth-child(10) { animation-delay: 1.1s; }
+        .team-item:nth-child(11) { animation-delay: 1.2s; }
 
-        .legend-bar {
+        .team-bar {
             height: 8px;
             border-radius: 4px;
             flex: 1;
@@ -418,13 +621,13 @@
             background: #f8f9fa;
         }
 
-        .legend-bar-fill {
+        .team-bar-fill {
             height: 100%;
             border-radius: 4px;
             animation: expandBar 1.5s ease-out backwards;
         }
 
-        .legend-label {
+        .team-label {
             min-width: 60px;
             color: var(--text-color);
             font-size: 13px;
@@ -530,6 +733,15 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
         }
 
         @media (max-width: 768px) {
@@ -545,6 +757,16 @@
 
             .leaders-grid {
                 grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+
+            .profile-header-name {
+                font-size: 24px;
             }
         }
 
@@ -581,52 +803,57 @@
         <!-- Team Leaders Section -->
         <div class="leaders-section">
             <div class="leaders-grid">
-                <div class="leader-card">
+                <div class="leader-card" data-leader="sarah-mitchell" data-name="Sarah Mitchell" data-title="Technical Team" data-roles="Technical Lead, Senior Developer" data-contributions="Led 15 successful projects, Improved system efficiency by 40%" data-icon="⚙️">
                     <div class="leader-icon">⚙️</div>
                     <div class="leader-name">Sarah Mitchell</div>
                     <div class="leader-title">Technical Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="marcus-chen" data-name="Marcus Chen" data-title="Accounting Team" data-roles="Financial Analyst, Budget Manager" data-contributions="Optimized budget allocation, Reduced expenses by 20%" data-icon="📡">
                     <div class="leader-icon">📡</div>
                     <div class="leader-name">Marcus Chen</div>
+                    <div class="leader-title">Accounting Team</div>
+                </div>
+                <div class="leader-card" data-leader="james-peterson" data-name="James Peterson" data-title="LRAD Team" data-roles="LRAD Specialist, Research Coordinator" data-contributions="Conducted 25 research initiatives, Published 8 technical papers" data-icon="📡">
+                    <div class="leader-icon">📡</div>
+                    <div class="leader-name">James Peterson</div>
                     <div class="leader-title">LRAD Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="emily-rodriguez" data-name="Emily Rodriguez" data-title="Quality Team" data-roles="Quality Assurance Lead, Process Auditor" data-contributions="Reduced defects by 35%, Implemented ISO standards" data-icon="✓">
                     <div class="leader-icon">✓</div>
                     <div class="leader-name">Emily Rodriguez</div>
                     <div class="leader-title">Quality Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="david-patterson" data-name="David Patterson" data-title="DC Team" data-roles="Data Center Manager, Infrastructure Lead" data-contributions="Achieved 99.9% uptime, Reduced costs by 25%" data-icon="📊">
                     <div class="leader-icon">📊</div>
                     <div class="leader-name">David Patterson</div>
                     <div class="leader-title">DC Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="jennifer-lee" data-name="Jennifer Lee" data-title="IT Team" data-roles="IT Director, Systems Architect" data-contributions="Modernized IT infrastructure, Led digital transformation" data-icon="💻">
                     <div class="leader-icon">💻</div>
                     <div class="leader-name">Jennifer Lee</div>
                     <div class="leader-title">IT Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="robert-thompson" data-name="Robert Thompson" data-title="Opportunity Team" data-roles="Business Development Lead, Strategy Manager" data-contributions="Generated $5M in new revenue, Secured 20 key partnerships" data-icon="🎯">
                     <div class="leader-icon">🎯</div>
                     <div class="leader-name">Robert Thompson</div>
                     <div class="leader-title">Opportunity Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="amanda-white" data-name="Amanda White" data-title="Marcom Team" data-roles="Marketing Director, Communications Lead" data-contributions="Increased brand awareness by 50%, Managed 30+ campaigns" data-icon="📢">
                     <div class="leader-icon">📢</div>
                     <div class="leader-name">Amanda White</div>
                     <div class="leader-title">Marcom Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="michael-johnson" data-name="Michael Johnson" data-title="Audit Team" data-roles="Chief Auditor, Compliance Officer" data-contributions="Zero audit findings, Improved compliance by 45%" data-icon="📋">
                     <div class="leader-icon">📋</div>
                     <div class="leader-name">Michael Johnson</div>
                     <div class="leader-title">Audit Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="lisa-anderson" data-name="Lisa Anderson" data-title="Gathering Team" data-roles="Data Analytics Lead, Intelligence Coordinator" data-contributions="Built comprehensive data platform, Improved decision-making speed" data-icon="📈">
                     <div class="leader-icon">📈</div>
                     <div class="leader-name">Lisa Anderson</div>
                     <div class="leader-title">Gathering Team</div>
                 </div>
-                <div class="leader-card">
+                <div class="leader-card" data-leader="kevin-martinez" data-name="Kevin Martinez" data-title="Operations Team" data-roles="Operations Director, Process Manager" data-contributions="Streamlined operations, Increased productivity by 30%" data-icon="⚡">
                     <div class="leader-icon">⚡</div>
                     <div class="leader-name">Kevin Martinez</div>
                     <div class="leader-title">Operations Team</div>
@@ -636,122 +863,29 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Team Members Section -->
-            <div class="members-section">
+            <!-- Team Operations Section -->
+            <div class="members-section" id="operationsSection">
                 <div class="section-header">
-                    <h2 class="section-title">Team Members</h2>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search members...">
-                    </div>
+                    <h2 class="section-title">Team Operations</h2>
+                    <button class="section-switch" id="sectionSwitch"></button>
                 </div>
 
-                <div class="table-header">
-                    <div>Member Name</div>
-                    <div>Team</div>
-                    <div>Join Date</div>
-                    <div>ID Number</div>
+                <div id="operationsContent" class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <div class="empty-state-text">Select a team leader to view operations</div>
+                </div>
+            </div>
+
+            <!-- Team Leader Profile Section -->
+            <div class="members-section hidden" id="profileSection">
+                <div class="section-header">
+                    <h2 class="section-title">Team Leader Profile</h2>
+                    <button class="section-switch" id="sectionSwitch2"></button>
                 </div>
 
-                <div id="membersList">
-                    <div class="member-row" data-name="alex thompson" data-team="technical team">
-                        <div class="member-info">
-                            <div class="member-avatar">AT</div>
-                            <div class="member-name">Alex Thompson</div>
-                        </div>
-                        <div>Technical Team</div>
-                        <div>03/15/2023</div>
-                        <div>TEC15432</div>
-                    </div>
-
-                    <div class="member-row" data-name="rachel kim" data-team="lrad team">
-                        <div class="member-info">
-                            <div class="member-avatar">RK</div>
-                            <div class="member-name">Rachel Kim</div>
-                        </div>
-                        <div>LRAD Team</div>
-                        <div>06/22/2023</div>
-                        <div>LRD22687</div>
-                    </div>
-
-                    <div class="member-row" data-name="james cooper" data-team="quality team">
-                        <div class="member-info">
-                            <div class="member-avatar">JC</div>
-                            <div class="member-name">James Cooper</div>
-                        </div>
-                        <div>Quality Team</div>
-                        <div>01/10/2023</div>
-                        <div>QLT10299</div>
-                    </div>
-
-                    <div class="member-row" data-name="maria santos" data-team="dc team">
-                        <div class="member-info">
-                            <div class="member-avatar">MS</div>
-                            <div class="member-name">Maria Santos</div>
-                        </div>
-                        <div>DC Team</div>
-                        <div>09/05/2022</div>
-                        <div>DCT05841</div>
-                    </div>
-
-                    <div class="member-row" data-name="christopher brown" data-team="it team">
-                        <div class="member-info">
-                            <div class="member-avatar">CB</div>
-                            <div class="member-name">Christopher Brown</div>
-                        </div>
-                        <div>IT Team</div>
-                        <div>11/18/2022</div>
-                        <div>ITT18956</div>
-                    </div>
-
-                    <div class="member-row" data-name="nina patel" data-team="opportunity team">
-                        <div class="member-info">
-                            <div class="member-avatar">NP</div>
-                            <div class="member-name">Nina Patel</div>
-                        </div>
-                        <div>Opportunity Team</div>
-                        <div>04/30/2023</div>
-                        <div>OPP30472</div>
-                    </div>
-
-                    <div class="member-row" data-name="daniel foster" data-team="marcom team">
-                        <div class="member-info">
-                            <div class="member-avatar">DF</div>
-                            <div class="member-name">Daniel Foster</div>
-                        </div>
-                        <div>Marcom Team</div>
-                        <div>02/14/2023</div>
-                        <div>MRC14583</div>
-                    </div>
-
-                    <div class="member-row" data-name="sophie zhang" data-team="audit team">
-                        <div class="member-info">
-                            <div class="member-avatar">SZ</div>
-                            <div class="member-name">Sophie Zhang</div>
-                        </div>
-                        <div>Audit Team</div>
-                        <div>07/21/2022</div>
-                        <div>AUD21794</div>
-                    </div>
-
-                    <div class="member-row" data-name="tyler davis" data-team="gathering team">
-                        <div class="member-info">
-                            <div class="member-avatar">TD</div>
-                            <div class="member-name">Tyler Davis</div>
-                        </div>
-                        <div>Gathering Team</div>
-                        <div>05/08/2023</div>
-                        <div>GAT08365</div>
-                    </div>
-
-                    <div class="member-row" data-name="olivia nguyen" data-team="operations team">
-                        <div class="member-info">
-                            <div class="member-avatar">ON</div>
-                            <div class="member-name">Olivia Nguyen</div>
-                        </div>
-                        <div>Operations Team</div>
-                        <div>08/12/2022</div>
-                        <div>OPS12647</div>
-                    </div>
+                <div id="profileContent" class="empty-state">
+                    <div class="empty-state-icon">👤</div>
+                    <div class="empty-state-text">Select a team leader to view profile</div>
                 </div>
             </div>
 
@@ -775,29 +909,71 @@
                 </div>
 
                 <div class="report-card">
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-label">Technical</div>
-                            <div class="legend-bar">
-                                <div class="legend-bar-fill" style="width: 85%; background: var(--light-bg);"></div>
+                    <div class="team-breakdown">
+                        <div class="team-item">
+                            <div class="team-label">Technical</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 85%; background: #ff94ad;"></div>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-label">Quality</div>
-                            <div class="legend-bar">
-                                <div class="legend-bar-fill" style="width: 78%; background: var(--primary-color); animation-delay: 0.2s;"></div>
+                        <div class="team-item">
+                            <div class="team-label">Accounting</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 85%; background: #C9A66C;"></div>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-label">Operations</div>
-                            <div class="legend-bar">
-                                <div class="legend-bar-fill" style="width: 65%; background: var(--secondary-color); animation-delay: 0.4s;"></div>
+                        <div class="team-item">
+                            <div class="team-label">LRAD</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 78%; background: #FFDB48; animation-delay: 0.2s;"></div>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-label">Others</div>
-                            <div class="legend-bar">
-                                <div class="legend-bar-fill" style="width: 72%; background: #ff6b6b; animation-delay: 0.6s;"></div>
+                        <div class="team-item">
+                            <div class="team-label">Quality</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #3D85C6; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">DC</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 72%; background: #aff598; animation-delay: 0.6s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">IT</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #5c5c5c; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">Opportunity</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #aba1c0; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">Marcom</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #EDED00; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">Audit</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #CC4125; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">Gathering</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #7960c4; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div class="team-item">
+                            <div class="team-label">Operations</div>
+                            <div class="team-bar">
+                                <div class="team-bar-fill" style="width: 65%; background: #8B9B5B; animation-delay: 0.4s;"></div>
                             </div>
                         </div>
                     </div>
@@ -824,6 +1000,110 @@
     </div>
 
     <script>
+        // Team Operations Data (simulated)
+        const teamOperationsData = {
+            'sarah-mitchell': [
+                { role: 'System Architecture', owner: 'John Smith', kra: 'Infrastructure Design' },
+                { role: 'Code Review', owner: 'Emma Davis', kra: 'Quality Assurance' },
+                { role: 'DevOps', owner: 'Michael Brown', kra: 'Deployment Automation' },
+                { role: 'Security', owner: 'Sarah Johnson', kra: 'Security Compliance' }
+            ],
+            'marcus-chen': [
+                { role: 'Budget Planning', owner: 'David Lee', kra: 'Financial Forecasting' },
+                { role: 'Financial Reporting', owner: 'Lisa Wang', kra: 'Monthly Reports' },
+                { role: 'Audit Coordination', owner: 'James Park', kra: 'Compliance' }
+            ],
+            'james-peterson': [
+                { role: 'Research Analysis', owner: 'Alex Turner', kra: 'Data Collection' },
+                { role: 'Technical Writing', owner: 'Sophie Chen', kra: 'Documentation' },
+                { role: 'Testing', owner: 'Mark Stevens', kra: 'Quality Testing' }
+            ],
+            'emily-rodriguez': [
+                { role: 'Quality Audits', owner: 'Robert Taylor', kra: 'Process Auditing' },
+                { role: 'Standards Compliance', owner: 'Maria Garcia', kra: 'ISO Certification' },
+                { role: 'Training', owner: 'Chris Wilson', kra: 'Staff Development' }
+            ],
+            'david-patterson': [
+                { role: 'Infrastructure Management', owner: 'Tom Anderson', kra: 'Server Maintenance' },
+                { role: 'Network Operations', owner: 'Susan Martinez', kra: 'Network Security' },
+                { role: 'Disaster Recovery', owner: 'Paul Robinson', kra: 'Backup Systems' }
+            ],
+            'jennifer-lee': [
+                { role: 'IT Strategy', owner: 'Kevin Chen', kra: 'Technology Planning' },
+                { role: 'System Integration', owner: 'Amy Liu', kra: 'Platform Integration' },
+                { role: 'User Support', owner: 'Brian Kim', kra: 'Help Desk Management' }
+            ],
+            'robert-thompson': [
+                { role: 'Business Development', owner: 'Rachel Green', kra: 'Client Acquisition' },
+                { role: 'Partnership Management', owner: 'Steve Rogers', kra: 'Strategic Alliances' },
+                { role: 'Market Research', owner: 'Diana Prince', kra: 'Market Analysis' }
+            ],
+            'amanda-white': [
+                { role: 'Campaign Management', owner: 'Tony Stark', kra: 'Marketing Campaigns' },
+                { role: 'Brand Strategy', owner: 'Natasha Romanoff', kra: 'Brand Development' },
+                { role: 'Content Creation', owner: 'Bruce Banner', kra: 'Content Strategy' }
+            ],
+            'michael-johnson': [
+                { role: 'Internal Audits', owner: 'Peter Parker', kra: 'Compliance Auditing' },
+                { role: 'Risk Assessment', owner: 'Wanda Maximoff', kra: 'Risk Management' },
+                { role: 'Regulatory Compliance', owner: 'Vision AI', kra: 'Policy Adherence' }
+            ],
+            'lisa-anderson': [
+                { role: 'Data Analysis', owner: 'Carol Danvers', kra: 'Analytics' },
+                { role: 'Reporting', owner: 'Scott Lang', kra: 'Business Intelligence' },
+                { role: 'Data Governance', owner: 'Hope Van Dyne', kra: 'Data Quality' }
+            ],
+            'kevin-martinez': [
+                { role: 'Process Optimization', owner: 'Sam Wilson', kra: 'Workflow Improvement' },
+                { role: 'Resource Planning', owner: 'Bucky Barnes', kra: 'Resource Allocation' },
+                { role: 'Performance Monitoring', owner: 'Nick Fury', kra: 'KPI Tracking' }
+            ]
+        };
+
+        // State management
+        let currentView = 'operations';
+        let selectedLeader = null;
+        let selectedLeaderData = null;
+
+        // Hide report cards initially on page load
+        function initializeReports() {
+            const reportCards = document.querySelectorAll('.report-card');
+            reportCards.forEach((card, index) => {
+                if (index === 0 || index === 2) {
+                    card.style.display = 'none';
+                }
+                if (index === 1) {
+                    card.style.display = 'block';
+                }
+            });
+        }
+
+        // Show report cards and hide legend when in operations view with selected leader
+        function showReportCards() {
+            const reportCards = document.querySelectorAll('.report-card');
+            reportCards.forEach((card, index) => {
+                if (index === 0 || index === 2) {
+                    card.style.display = 'block';
+                }
+                if (index === 1) {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Show only legend and hide other report cards
+        function showLegendOnly() {
+            const reportCards = document.querySelectorAll('.report-card');
+            reportCards.forEach((card, index) => {
+                if (index === 0 || index === 2) {
+                    card.style.display = 'none';
+                }
+                if (index === 1) {
+                    card.style.display = 'block';
+                }
+            });
+        }
+
         // Navigation bar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
@@ -834,24 +1114,203 @@
             }
         });
 
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        const memberRows = document.querySelectorAll('.member-row');
+        // Section switch functionality
+        const sectionSwitch = document.getElementById('sectionSwitch');
+        const sectionSwitch2 = document.getElementById('sectionSwitch2');
+        const operationsSection = document.getElementById('operationsSection');
+        const profileSection = document.getElementById('profileSection');
 
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-
-            memberRows.forEach(row => {
-                const name = row.getAttribute('data-name');
-                const team = row.getAttribute('data-team');
-                
-                if (name.includes(searchTerm) || team.includes(searchTerm)) {
-                    row.classList.remove('hidden');
+        function toggleSections() {
+            currentView = currentView === 'operations' ? 'profile' : 'operations';
+            
+            sectionSwitch.classList.toggle('active');
+            sectionSwitch2.classList.toggle('active');
+            
+            if (currentView === 'operations') {
+                operationsSection.classList.remove('hidden');
+                profileSection.classList.add('hidden');
+                if (selectedLeader) {
+                    showReportCards();
                 } else {
-                    row.classList.add('hidden');
+                    showLegendOnly();
                 }
+            } else {
+                operationsSection.classList.add('hidden');
+                profileSection.classList.remove('hidden');
+                showLegendOnly();
+            }
+        }
+
+        sectionSwitch.addEventListener('click', toggleSections);
+        sectionSwitch2.addEventListener('click', toggleSections);
+
+        // Team Leader selection functionality
+        const leaderCards = document.querySelectorAll('.leader-card');
+        
+        leaderCards.forEach(card => {
+            card.addEventListener('click', function() {
+                leaderCards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                selectedLeader = this.getAttribute('data-leader');
+                selectedLeaderData = {
+                    name: this.getAttribute('data-name'),
+                    title: this.getAttribute('data-title'),
+                    roles: this.getAttribute('data-roles'),
+                    contributions: this.getAttribute('data-contributions'),
+                    icon: this.getAttribute('data-icon')
+                };
+                
+                if (currentView === 'operations') {
+                    showReportCards();
+                } else {
+                    showLegendOnly();
+                }
+                
+                updateOperationsSection(selectedLeader, selectedLeaderData.title);
+                updateProfileSection(selectedLeaderData);
             });
         });
+
+        function updateOperationsSection(leaderId, teamName) {
+            const operationsContent = document.getElementById('operationsContent');
+            const operations = teamOperationsData[leaderId] || [];
+            
+            if (operations.length === 0) {
+                operationsContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <div class="empty-state-text">No operations data available</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search operations...">
+                </div>
+                <div class="table-header">
+                    <div>Role Title</div>
+                    <div>Role Owner</div>
+                    <div>Operational KRA</div>
+                    <div>Actions</div>
+                </div>
+                <div id="membersList">
+            `;
+            
+            operations.forEach((op, index) => {
+                html += `
+                    <div class="member-row" data-name="${op.owner.toLowerCase()}" data-team="${teamName.toLowerCase()}">
+                        <div class="member-info">
+                            <div class="member-avatar">${op.owner.charAt(0)}</div>
+                            <div class="member-name">${op.role}</div>
+                        </div>
+                        <div>${op.owner}</div>
+                        <div>${op.kra}</div>
+                        <div>▼</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            operationsContent.innerHTML = html;
+            
+            attachSearchFunctionality();
+        }
+
+        function updateProfileSection(data) {
+            const profileContent = document.getElementById('profileContent');
+            
+            const gradients = [
+                'linear-gradient(135deg, #ff6b6b, #ee5a6f)',
+                'linear-gradient(135deg, #4ecdc4, #44a6a0)',
+                'linear-gradient(135deg, #95e1d3, #6ec4b8)',
+                'linear-gradient(135deg, #74b9ff, #0984e3)',
+                'linear-gradient(135deg, #a29bfe, #6c5ce7)',
+                'linear-gradient(135deg, #fdcb6e, #f39c12)',
+                'linear-gradient(135deg, #fd79a8, #e84393)',
+                'linear-gradient(135deg, #00b894, #00cec9)',
+                'linear-gradient(135deg, #d63031, #c0392b)',
+                'linear-gradient(135deg, #6c5ce7, #a29bfe)',
+                'linear-gradient(135deg, #ff7675, #d63031)'
+            ];
+            
+            const cardIndex = Array.from(leaderCards).findIndex(card => 
+                card.getAttribute('data-leader') === selectedLeader
+            );
+            const gradientStyle = gradients[cardIndex] || gradients[0];
+            
+            profileContent.innerHTML = `
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <div class="profile-avatar" style="background: ${gradientStyle}">
+                            ${data.icon}
+                        </div>
+                        <div class="profile-header-info">
+                            <div class="profile-header-name">${data.name}</div>
+                            <div class="profile-header-title">${data.title}</div>
+                            <div class="profile-stats">
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">4.8</div>
+                                    <div class="profile-stat-label">Rating</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">5+</div>
+                                    <div class="profile-stat-label">Years Exp</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">12</div>
+                                    <div class="profile-stat-label">Team Size</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="profile-item">
+                            <div class="profile-label">Role Title(s)</div>
+                            <div class="profile-value">${data.roles}</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Key Contributions</div>
+                            <div class="profile-value">${data.contributions}</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Department</div>
+                            <div class="profile-value">${data.title}</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Contact</div>
+                            <div class="profile-value">${data.name.toLowerCase().replace(' ', '.')}@company.com</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function attachSearchFunctionality() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const memberRows = document.querySelectorAll('.member-row');
+
+                memberRows.forEach(row => {
+                    const name = row.getAttribute('data-name');
+                    const team = row.getAttribute('data-team');
+                    
+                    if (name.includes(searchTerm) || team.includes(searchTerm)) {
+                        row.classList.remove('hidden');
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initializeReports);
     </script>
 </body>
 </html>
