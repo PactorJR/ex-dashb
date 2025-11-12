@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Dashboard</title>
@@ -28,6 +26,9 @@
             --light-bg: #96a840;
             --white: #ffffff;
             --overlay: rgba(88, 103, 64, 0.4);
+            --cn-lead-color: #667eea;
+            --cn-lag-color: #f093fb;
+            --overall-weight-color: #9b59b6;
         }
 
         .navbar-container {
@@ -42,7 +43,6 @@
             padding: 0 20px;
         }
 
-        /* Team Leader Cards */
         .leaders-section {
             margin-bottom: 40px;
             animation: fadeInDown 0.6s ease-out;
@@ -65,31 +65,6 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-        }
-
-        .highlight-target {
-            position: relative;
-            overflow: visible !important;
-            z-index: 2;
-        }
-
-        .highlight-target::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: var(--highlight-radius, 16px);
-            padding: 3px;
-            background: #fffd94;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            animation: dotBounce 1.4s ease-in-out 5;
-            pointer-events: none;
-        }
-
-        .leader-card {
-            --highlight-radius: 18px;
         }
 
         .leader-card.active {
@@ -158,7 +133,6 @@
             opacity: 0.8;
         }
 
-        /* Navigation */
         .navbar {
             position: fixed;
             top: 0;
@@ -228,7 +202,6 @@
             background: var(--secondary-color);
         }
 
-        /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -236,7 +209,6 @@
             animation: fadeInUp 0.8s ease-out;
         }
 
-        /* Section Switch Button */
         .section-switch {
             position: relative;
             width: 80px;
@@ -287,7 +259,6 @@
             content: 'Ops';
         }
 
-        /* Team Members Section */
         .members-section {
             background: white;
             border-radius: 20px;
@@ -334,7 +305,6 @@
             transform: scale(1.02);
         }
 
-        /* Dropdown styles */
         .member-row {
             cursor: pointer;
         }
@@ -367,9 +337,8 @@
         }
 
         .sub-operation-item {
-            --highlight-radius: 12px;
             display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1.5fr;
             padding: 12px 20px;
             border-bottom: 1px solid #e0e0e0;
             transition: background 0.2s;
@@ -400,17 +369,49 @@
         .target-badge {
             display: inline-block;
             padding: 4px 12px;
-            background: linear-gradient(135deg, var(--light-bg), var(--secondary-color));
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-value.tech { color: #ff94ad; }
+        .stat-value.acc { color: #C9A66C; }
+        .stat-value.lrad { color: #FFDB48; }
+        .stat-value.qual { color: #3D85C6; }
+        .stat-value.dc { color: #aff598; }
+        .stat-value.it { color: #5c5c5c; }
+        .stat-value.opp { color: #aba1c0; }
+        .stat-value.marc { color: #EDED00; }
+        .stat-value.aud { color: #CC4125; }
+        .stat-value.gath { color: #7960c4; }
+        .stat-value.oper { color: #8B9B5B; }
+
+        .weight-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
         }
 
-        .weight-badge {
+        .cn-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, var(--cn-lead-color), var(--cn-lag-color));
+            color: white;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .weight-overall-badge {
             display: inline-block;
             padding: 4px 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: var(--overall-weight-color);
             color: white;
             border-radius: 12px;
             font-size: 12px;
@@ -452,7 +453,6 @@
         }
 
         .member-row {
-            --highlight-radius: 14px;
             display: grid;
             grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
             padding: 15px 20px;
@@ -507,7 +507,6 @@
             font-weight: 500;
         }
 
-        /* Team Leader Profile Section */
         .profile-content {
             display: flex;
             flex-direction: column;
@@ -653,7 +652,6 @@
             opacity: 0.6;
         }
 
-        /* Reports Section */
         .reports-section {
             display: flex;
             flex-direction: column;
@@ -766,7 +764,6 @@
             font-weight: 500;
         }
 
-        /* Animations */
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -831,19 +828,6 @@
             }
         }
 
-        @keyframes dotBounce {
-            0%,
-            80%,
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            40% {
-                transform: translateY(-3px);
-                opacity: 0.7;
-            }
-        }
-
         @keyframes drawLine {
             from {
                 stroke-dasharray: 1000;
@@ -873,7 +857,6 @@
             }
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -919,10 +902,9 @@
             display: none;
         }
     </style>
-</head>
+<script src="https://puc.poecdn.net/authenticated_preview_page/syncedState.3f7572448765332f3047.js"></script></head>
 <body>
 
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="nav-wrapper">
@@ -945,60 +927,59 @@
     </nav>
 
     <div class="container">
-        <!-- Team Leaders Section -->
         <div class="leaders-section">
             <div class="leaders-grid">
-                <div class="leader-card" data-leader="sarah-mitchell" data-name="Sarah Mitchell" data-title="Technical Team" data-roles="Technical Lead, Senior Developer" data-contributions="Led 15 successful projects, Improved system efficiency by 40%" data-icon="⚙️">
+                <div class="leader-card" data-leader="sarah-mitchell" data-name="Sarah Mitchell" data-title="Technical Team" data-roles="Technical Lead, Senior Developer" data-contributions="Led 15 successful projects, Improved system efficiency by 40%" data-icon="⚙️" data-team-class="tech">
                     <div class="leader-icon">⚙️</div>
                     <div class="leader-name">Sarah Mitchell</div>
                     <div class="leader-title">Technical Team</div>
                 </div>
-                <div class="leader-card" data-leader="marcus-chen" data-name="Marcus Chen" data-title="Accounting Team" data-roles="Financial Analyst, Budget Manager" data-contributions="Optimized budget allocation, Reduced expenses by 20%" data-icon="📡">
+                <div class="leader-card" data-leader="marcus-chen" data-name="Marcus Chen" data-title="Accounting Team" data-roles="Financial Analyst, Budget Manager" data-contributions="Optimized budget allocation, Reduced expenses by 20%" data-icon="📡" data-team-class="acc">
                     <div class="leader-icon">📡</div>
                     <div class="leader-name">Marcus Chen</div>
                     <div class="leader-title">Accounting Team</div>
                 </div>
-                <div class="leader-card" data-leader="james-peterson" data-name="James Peterson" data-title="LRAD Team" data-roles="LRAD Specialist, Research Coordinator" data-contributions="Conducted 25 research initiatives, Published 8 technical papers" data-icon="📡">
+                <div class="leader-card" data-leader="james-peterson" data-name="James Peterson" data-title="LRAD Team" data-roles="LRAD Specialist, Research Coordinator" data-contributions="Conducted 25 research initiatives, Published 8 technical papers" data-icon="📡" data-team-class="lrad">
                     <div class="leader-icon">📡</div>
                     <div class="leader-name">James Peterson</div>
                     <div class="leader-title">LRAD Team</div>
                 </div>
-                <div class="leader-card" data-leader="emily-rodriguez" data-name="Emily Rodriguez" data-title="Quality Team" data-roles="Quality Assurance Lead, Process Auditor" data-contributions="Reduced defects by 35%, Implemented ISO standards" data-icon="✓">
+                <div class="leader-card" data-leader="emily-rodriguez" data-name="Emily Rodriguez" data-title="Quality Team" data-roles="Quality Assurance Lead, Process Auditor" data-contributions="Reduced defects by 35%, Implemented ISO standards" data-icon="✓" data-team-class="qual">
                     <div class="leader-icon">✓</div>
                     <div class="leader-name">Emily Rodriguez</div>
                     <div class="leader-title">Quality Team</div>
                 </div>
-                <div class="leader-card" data-leader="david-patterson" data-name="David Patterson" data-title="DC Team" data-roles="Data Center Manager, Infrastructure Lead" data-contributions="Achieved 99.9% uptime, Reduced costs by 25%" data-icon="📊">
+                <div class="leader-card" data-leader="david-patterson" data-name="David Patterson" data-title="DC Team" data-roles="Data Center Manager, Infrastructure Lead" data-contributions="Achieved 99.9% uptime, Reduced costs by 25%" data-icon="📊" data-team-class="dc">
                     <div class="leader-icon">📊</div>
                     <div class="leader-name">David Patterson</div>
                     <div class="leader-title">DC Team</div>
                 </div>
-                <div class="leader-card" data-leader="jennifer-lee" data-name="Jennifer Lee" data-title="IT Team" data-roles="IT Director, Systems Architect" data-contributions="Modernized IT infrastructure, Led digital transformation" data-icon="💻">
+                <div class="leader-card" data-leader="jennifer-lee" data-name="Jennifer Lee" data-title="IT Team" data-roles="IT Director, Systems Architect" data-contributions="Modernized IT infrastructure, Led digital transformation" data-icon="💻" data-team-class="it">
                     <div class="leader-icon">💻</div>
                     <div class="leader-name">Jennifer Lee</div>
                     <div class="leader-title">IT Team</div>
                 </div>
-                <div class="leader-card" data-leader="robert-thompson" data-name="Robert Thompson" data-title="Opportunity Team" data-roles="Business Development Lead, Strategy Manager" data-contributions="Generated $5M in new revenue, Secured 20 key partnerships" data-icon="🎯">
+                <div class="leader-card" data-leader="robert-thompson" data-name="Robert Thompson" data-title="Opportunity Team" data-roles="Business Development Lead, Strategy Manager" data-contributions="Generated $5M in new revenue, Secured 20 key partnerships" data-icon="🎯" data-team-class="opp">
                     <div class="leader-icon">🎯</div>
                     <div class="leader-name">Robert Thompson</div>
                     <div class="leader-title">Opportunity Team</div>
                 </div>
-                <div class="leader-card" data-leader="amanda-white" data-name="Amanda White" data-title="Marcom Team" data-roles="Marketing Director, Communications Lead" data-contributions="Increased brand awareness by 50%, Managed 30+ campaigns" data-icon="📢">
+                <div class="leader-card" data-leader="amanda-white" data-name="Amanda White" data-title="Marcom Team" data-roles="Marketing Director, Communications Lead" data-contributions="Increased brand awareness by 50%, Managed 30+ campaigns" data-icon="📢" data-team-class="marc">
                     <div class="leader-icon">📢</div>
                     <div class="leader-name">Amanda White</div>
                     <div class="leader-title">Marcom Team</div>
                 </div>
-                <div class="leader-card" data-leader="michael-johnson" data-name="Michael Johnson" data-title="Audit Team" data-roles="Chief Auditor, Compliance Officer" data-contributions="Zero audit findings, Improved compliance by 45%" data-icon="📋">
+                <div class="leader-card" data-leader="michael-johnson" data-name="Michael Johnson" data-title="Audit Team" data-roles="Chief Auditor, Compliance Officer" data-contributions="Zero audit findings, Improved compliance by 45%" data-icon="📋" data-team-class="aud">
                     <div class="leader-icon">📋</div>
                     <div class="leader-name">Michael Johnson</div>
                     <div class="leader-title">Audit Team</div>
                 </div>
-                <div class="leader-card" data-leader="lisa-anderson" data-name="Lisa Anderson" data-title="Gathering Team" data-roles="Data Analytics Lead, Intelligence Coordinator" data-contributions="Built comprehensive data platform, Improved decision-making speed" data-icon="📈">
+                <div class="leader-card" data-leader="lisa-anderson" data-name="Lisa Anderson" data-title="Gathering Team" data-roles="Data Analytics Lead, Intelligence Coordinator" data-contributions="Built comprehensive data platform, Improved decision-making speed" data-icon="📈" data-team-class="gath">
                     <div class="leader-icon">📈</div>
                     <div class="leader-name">Lisa Anderson</div>
                     <div class="leader-title">Gathering Team</div>
                 </div>
-                <div class="leader-card" data-leader="kevin-martinez" data-name="Kevin Martinez" data-title="Operations Team" data-roles="Operations Director, Process Manager" data-contributions="Streamlined operations, Increased productivity by 30%" data-icon="⚡">
+                <div class="leader-card" data-leader="kevin-martinez" data-name="Kevin Martinez" data-title="Operations Team" data-roles="Operations Director, Process Manager" data-contributions="Streamlined operations, Increased productivity by 30%" data-icon="⚡" data-team-class="oper">
                     <div class="leader-icon">⚡</div>
                     <div class="leader-name">Kevin Martinez</div>
                     <div class="leader-title">Operations Team</div>
@@ -1006,9 +987,7 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Team Operations Section -->
             <div class="members-section" id="operationsSection">
                 <div class="section-header">
                     <h2 class="section-title">Team Operations</h2>
@@ -1021,7 +1000,6 @@
                 </div>
             </div>
 
-            <!-- Team Leader Profile Section -->
             <div class="members-section hidden" id="profileSection">
                 <div class="section-header">
                     <h2 class="section-title">Team Leader Profile</h2>
@@ -1034,21 +1012,19 @@
                 </div>
             </div>
 
-            <!-- Reports Section -->
             <div class="reports-section">
-                <!-- Total Performance Report -->
                 <div class="report-card">
                     <h3 class="report-title">Team Performance Report</h3>
                     <div class="chart-container">
                         <svg class="line-chart" viewBox="0 0 300 120" preserveAspectRatio="none">
                             <defs>
                                 <linearGradient id="recoverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#96a840;stop-opacity:0.3" />
-                                    <stop offset="100%" style="stop-color:#96a840;stop-opacity:0" />
+                                    <stop offset="0%" style="stop-color:#96a840;stop-opacity:0.3"></stop>
+                                    <stop offset="100%" style="stop-color:#96a840;stop-opacity:0"></stop>
                                 </linearGradient>
                             </defs>
-                            <path class="chart-area recover-area" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30 L 300,120 L 0,120 Z" fill="url(#recoverGradient)" />
-                            <path class="chart-line recover-line" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30" />
+                            <path class="chart-area recover-area" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30 L 300,120 L 0,120 Z" fill="url(#recoverGradient)"></path>
+                            <path class="chart-line recover-line" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30"></path>
                         </svg>
                     </div>
                 </div>
@@ -1124,19 +1100,18 @@
                     </div>
                 </div>
 
-                <!-- Team Metrics Report -->
                 <div class="report-card" style="animation-delay: 0.2s;">
                     <h3 class="report-title">Team Metrics Overview</h3>
                     <div class="chart-container">
                         <svg class="line-chart" viewBox="0 0 300 120" preserveAspectRatio="none">
                             <defs>
                                 <linearGradient id="deathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.3" />
-                                    <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0" />
+                                    <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.3"></stop>
+                                    <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0"></stop>
                                 </linearGradient>
                             </defs>
-                            <path class="chart-area death-area" d="M 0,70 L 30,55 L 60,45 L 90,60 L 120,50 L 150,65 L 180,40 L 210,55 L 240,75 L 270,90 L 300,65 L 300,120 L 0,120 Z" fill="url(#deathGradient)" />
-                            <path class="chart-line death-line" d="M 0,70 L 30,55 L 60,45 L 90,60 L 120,50 L 150,65 L 180,40 L 210,55 L 240,75 L 270,90 L 300,65" />
+                            <path class="chart-area death-area" d="M 0,70 L 30,55 L 60,45 L 90,60 L 120,50 L 150,65 L 180,40 L 210,55 L 240,75 L 270,90 L 300,65 L 300,120 L 0,120 Z" fill="url(#deathGradient)"></path>
+                            <path class="chart-line death-line" d="M 0,70 L 30,55 L 60,45 L 90,60 L 120,50 L 150,65 L 180,40 L 210,55 L 240,75 L 270,90 L 300,65"></path>
                         </svg>
                     </div>
                 </div>
@@ -1145,6 +1120,20 @@
     </div>
 
     <script>
+        const teamColorMap = {
+            'tech': '#ff94ad',
+            'acc': '#C9A66C',
+            'lrad': '#FFDB48',
+            'qual': '#3D85C6',
+            'dc': '#aff598',
+            'it': '#5c5c5c',
+            'opp': '#aba1c0',
+            'marc': '#EDED00',
+            'aud': '#CC4125',
+            'gath': '#7960c4',
+            'oper': '#8B9B5B'
+        };
+
         const performanceData = {
             'emily-rodriguez': {
                 '1. Team Target & Performance': {
@@ -1186,56 +1175,33 @@
                     }
                 }
             },
-            'amanda-white': {
-                'Team Budget and Expenses Management': {
-                    '% Within the Team\'s Budget': {
-                        current: 60,
-                        previous: 60
-                    },
-                    'FS Target : Marketing Expense': {
-                        current: null,
-                        previous: null,
-                    }
-                }
-            },
-            'marcus-chen': {
+            'sarah-mitchell': {
                 '1. Team Target & Performance': {
-                    'Score/Evaluation/NPS : Team Performance': {
-                        current: 80,
-                        previous: null
+                    '1a. System Uptime Score': {
+                        current: 99.9,
+                        previous: 99.5
                     },
-                    'Score/Evaluation/NPS : Team Members Performance': {
-                        current: 80,
-                        previous: null,
+                    '1b. Code Quality Score': {
+                        current: 92,
+                        previous: 88
                     },
-                    '% Score : Project/Work Orders': {
-                        current: 85,
-                        previous: null,
+                    '1c. Sprint Completion Rate': {
+                        current: 96,
+                        previous: 91
                     },
-                    '# of Team\'s I.C.A.R.E (Audit Findings)': {
-                        current: 0,
-                        previous: null,
-                    }
-                },
-                '2. Team Budget and Expenses Management': {
-                    '% Within the Team\'s Budget': {
-                        current: 100,
-                        previous: 100
-                    },
-                    'FS Target : Total Operating Expense': {
-                        current: 22956972.14,
-                        previous: null,
-                    },
-                    'FS Target : Total Gross Revenue': {
-                        current: 37264091.75,
-                        previous: null,
-                    },
-                    'FS Target : Net Profit': {
-                        current: 10455576.64,
-                        previous: null,
+                    '1d. Bug Resolution Time': {
+                        current: 89,
+                        previous: 85
                     }
                 }
-            },
+            }
+        };
+
+        const criticalNumberTypes = {
+            'emily-rodriguez': {
+                'Score/Evaluation/NPS : SMD Projects': 'TL CN (Lead)',
+                'Score/Evaluation/NPS : SID Projects': 'TL CN (Lead)'
+            }
         };
 
         const teamDropdownData = {
@@ -1244,217 +1210,131 @@
                     {
                         kpi: 'Score/Evaluation/NPS : Team Performance',
                         target: '85%',
-                        weight: '5%'
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
                         kpi: 'Score/Evaluation/NPS : Team Members Performance',
                         target: '82%',
-                        weight: '5%'
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
                         kpi: '% Score : Project/Work Orders',
                         target: '88%',
-                        weight: '5%'
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
                         kpi: '# of Team\'s I.C.A.R.E (Audit Findings)',
                         target: '92%',
-                        weight: '10%'
+                        weight: '10%',
+                        overallWeight: '10%'
                     }
                 ],
                 '2. Team Budget and Expenses Management': [
                     {
                         kpi: '% Within the Team\'s Budget',
                         target: '95%',
-                        weight: '25%'
+                        weight: '25%',
+                        overallWeight: '25%'
                     }
                 ],
                 '3. LotusOS (RP+Lotuszen+PT+KDB [PM+F]) Development, Innovation, and Performance': [
                     {
                         kpi: 'Score/Evaluation/NPS : SMD Projects',
                         target: '87%',
-                        weight: '20%'
+                        weight: '40%',
+                        overallWeight: '20%',
+                        cnType: 'TL CN (Lead)'
                     },
                     {
                         kpi: 'Score/Evaluation/NPS : SID Projects',
                         target: '84%',
-                        weight: '20%'
+                        weight: '40%',
+                        overallWeight: '20%',
+                        cnType: 'TL CN (Lead)'
                     },
                     {
                         kpi: 'Score/Evaluation/NPS : LotusOS NPS',
                         target: '86%',
-                        weight: '10%'
+                        weight: '20%',
+                        overallWeight: '10%'
                     },
                 ]
             },
-            'amanda-white': {
-                '1. Team Budget and Expenses Management': [
-                    {
-                        kpi: '% Within the Team\'s Budget',
-                        target: '60%/60',
-                        weight: '5%'
-                    },
-                    {
-                        kpi: 'FS Target : Marketing Expense',
-                        target: 'Pull from GMPT',
-                        weight: '5%'
-                    },
-                ],
-            },
-            'marcus-chen': {
+            'sarah-mitchell': {
                 '1. Team Target & Performance': [
                     {
-                        kpi: 'Score/Evaluation/NPS : Team Performance',
-                        target: '80%/80%',
-                        weight: '5%'
+                        kpi: '1a. System Uptime Score',
+                        target: '99.9%',
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
-                        kpi: 'Score/Evaluation/NPS : Team Members Performance',
-                        target: '80%/80%',
-                        weight: '5%'
+                        kpi: '1b. Code Quality Score',
+                        target: '90%',
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
-                        kpi: '% Score : Project/Work Orders',
-                        target: '85%/85%',
-                        weight: '5%'
+                        kpi: '1c. Sprint Completion Rate',
+                        target: '95%',
+                        weight: '5%',
+                        overallWeight: '5%'
                     },
                     {
-                        kpi: '# of Team\'s I.C.A.R.E (Audit Findings)',
-                        target: '0.00/0.00',
-                        weight: '5%'
-                    },
-                ],
-                '2. Team Budget and Expenses Management': [
-                    {
-                        kpi: '% Within the Team\'s Budget',
-                        target: '100%/100',
-                        weight: '20%'
-                    },
-                    {
-                        kpi: 'FS Target : Total Operating Expense',
-                        target: '322,956,972.14',
-                        weight: '20%'
-                    },
-                    {
-                        kpi: 'FS Target : Total Gross Revenue',
-                        target: '37,264,091.75',
-                        weight: '20%'
-                    },
-                    {
-                        kpi: 'FS Target : Net Profit',
-                        target: '10,455,576.64',
-                        weight: '20%'
-                    },
+                        kpi: '1d. Bug Resolution Time',
+                        target: '24hrs',
+                        weight: '10%',
+                        overallWeight: '10%'
+                    }
                 ],
             }
-
         };
 
-        function parseNumericValue(value) {
-            if (value === null || value === undefined) {
-                return null;
-            }
-
-            if (typeof value === 'number') {
-                return Number.isFinite(value) ? value : null;
-            }
-
-            if (typeof value === 'string') {
-                const trimmed = value.trim();
-                if (!trimmed || trimmed.toLowerCase().includes('pull from')) {
-                    return null;
-                }
-
-                const sanitized = trimmed
-                    .replace(/₱/g, '')
-                    .replace(/,/g, '')
-                    .replace(/\s+/g, '');
-
-                if (sanitized === '' || Number.isNaN(Number(sanitized))) {
-                    return null;
-                }
-
-                return Number(sanitized);
-            }
-
-            return null;
-        }
-
-        function formatPesoIfNeeded(value, force = false) {
-            if (value === null || value === undefined) {
-                return typeof value === 'string' ? value : '';
-            }
-
-            if (typeof value === 'string') {
-                const trimmed = value.trim();
-                if (!trimmed) {
-                    return '';
-                }
-
-                const hasPesoMarker = trimmed.includes('₱') || trimmed.toLowerCase().includes('php');
-                const hasAlphaOrPercent = /[a-zA-Z%/]/.test(trimmed);
-
-                if (!force && hasPesoMarker) {
-                    return trimmed;
-                }
-
-                if (!force && hasAlphaOrPercent) {
-                    return trimmed;
+        const weightComparisonData = {
+            'emily-rodriguez': {
+                '1. Team Target & Performance': {
+                    'Score/Evaluation/NPS : Team Performance': {
+                        weight: 5,
+                        overallWeight: 5
+                    },
+                    'Score/Evaluation/NPS : Team Members Performance': {
+                        weight: 5,
+                        overallWeight: 5
+                    },
+                    '% Score : Project/Work Orders': {
+                        weight: 5,
+                        overallWeight: 5
+                    },
+                    '# of Team\'s I.C.A.R.E (Audit Findings)': {
+                        weight: 10,
+                        overallWeight: 10
+                    }
+                },
+                '2. Team Budget and Expenses Management': {
+                    '% Within the Team\'s Budget': {
+                        weight: 25,
+                        overallWeight: 25
+                    }
+                },
+                '3. LotusOS (RP+Lotuszen+PT+KDB [PM+F]) Development, Innovation, and Performance': {
+                    'Score/Evaluation/NPS : SMD Projects': {
+                        weight: 40,
+                        overallWeight: 20
+                    },
+                    'Score/Evaluation/NPS : SID Projects': {
+                        weight: 40,
+                        overallWeight: 20
+                    },
+                    'Score/Evaluation/NPS : LotusOS NPS': {
+                        weight: 20,
+                        overallWeight: 10
+                    }
                 }
             }
-
-            const numericValue = parseNumericValue(value);
-
-            if (numericValue === null) {
-                return typeof value === 'string' ? value : String(value);
-            }
-
-            const shouldFormat = force || Math.abs(numericValue) >= 1000;
-
-            if (!shouldFormat) {
-                if (typeof value === 'string') {
-                    return value;
-                }
-
-                return numericValue.toLocaleString('en-US', {
-                    minimumFractionDigits: numericValue % 1 === 0 ? 0 : 2,
-                    maximumFractionDigits: 2
-                });
-            }
-
-            const formattedNumber = numericValue.toLocaleString('en-PH', {
-                minimumFractionDigits: numericValue % 1 === 0 ? 0 : 2,
-                maximumFractionDigits: 2
-            });
-
-            return `₱${formattedNumber}`;
-        }
-
-        function formatMetricValueForDisplay(value) {
-            if (value === null || value === undefined) {
-                return 'N/A';
-            }
-
-            const numericValue = parseNumericValue(value);
-
-            if (numericValue === null) {
-                if (typeof value === 'string' && value.trim() !== '') {
-                    return value;
-                }
-                return 'N/A';
-            }
-
-            if (Math.abs(numericValue) >= 1000) {
-                return formatPesoIfNeeded(numericValue, true);
-            }
-
-            const formattedPercent = numericValue.toLocaleString('en-US', {
-                minimumFractionDigits: numericValue % 1 === 0 ? 0 : 2,
-                maximumFractionDigits: 2
-            });
-
-            return `${formattedPercent}%`;
-        }
+        };
 
         const teamOperationsData = {
             'sarah-mitchell': [
@@ -1464,8 +1344,8 @@
                 { role: 'Security', owner: 'Sarah Johnson', kra: 'Security Compliance' }
             ],
             'marcus-chen': [
-                { role: '1. Team Target & Performance', owner: '-', kra: '-' },
-                { role: '2. Team Budget and Expenses Management', owner: '-', kra: '-' },
+                { role: 'Budget Planning', owner: 'David Lee', kra: 'Financial Forecasting' },
+                { role: 'Financial Reporting', owner: 'Lisa Wang', kra: 'Monthly Reports' },
                 { role: 'Audit Coordination', owner: 'James Park', kra: 'Compliance' }
             ],
             'james-peterson': [
@@ -1474,9 +1354,9 @@
                 { role: 'Testing', owner: 'Mark Stevens', kra: 'Quality Testing' }
             ],
             'emily-rodriguez': [
-                { role: '1. Team Target & Performance', owner: 'Robert Taylor', kra: '-' },
-                { role: '2. Team Budget and Expenses Management', owner: 'Maria Garcia', kra: '-' },
-                { role: '3. LotusOS (RP+Lotuszen+PT+KDB [PM+F]) Development, Innovation, and Performance', owner: 'Chris Wilson', kra: '-' }
+                    { role: '1. Team Target & Performance', owner: 'Robert Taylor', kra: '-' },
+                    { role: '2. Team Budget and Expenses Management', owner: 'Maria Garcia', kra: '-' },
+                    { role: '3. LotusOS (RP+Lotuszen+PT+KDB [PM+F]) Development, Innovation, and Performance', owner: 'Chris Wilson', kra: '-' }
                 ],
             'david-patterson': [
                 { role: 'Infrastructure Management', owner: 'Tom Anderson', kra: 'Server Maintenance' },
@@ -1494,7 +1374,7 @@
                 { role: 'Market Research', owner: 'Diana Prince', kra: 'Market Analysis' }
             ],
             'amanda-white': [
-                { role: '1. Team Budget and Expenses Management', owner: 'I. Marketing Communications Team Leader ', kra: '-' },
+                { role: 'Campaign Management', owner: 'Tony Stark', kra: 'Marketing Campaigns' },
                 { role: 'Brand Strategy', owner: 'Natasha Romanoff', kra: 'Brand Development' },
                 { role: 'Content Creation', owner: 'Bruce Banner', kra: 'Content Strategy' }
             ],
@@ -1515,218 +1395,120 @@
             ]
         };
 
-        // Helpers to compute weights and render the Team Metrics Overview chart
-        function parsePercentToNumber(text) {
-            if (typeof text !== 'string') return 0;
-            const match = text.match(/-?\d+(\.\d+)?/);
-            return match ? Number(match[0]) : 0;
-        }
-
-        function computeWeightsSummary(leaderId) {
-            const roles = teamOperationsData[leaderId] || [];
-            const roleToWeight = {};
-            let overall = 0;
-
-            roles.forEach(r => {
-                const items = teamDropdownData[leaderId]?.[r.role] || [];
-                const roleSum = items.reduce((sum, it) => sum + parsePercentToNumber(it.weight), 0);
-                roleToWeight[r.role] = roleSum;
-                overall += roleSum;
-            });
-
-            return { overall, roleToWeight };
-        }
-
-        function updateWeightsOverview(leaderId, selectedRole = null) {
-            // Find the "Team Metrics Overview" card's SVG (third report-card)
-            const reportCards = document.querySelectorAll('.report-card');
-            const metricsCard = reportCards[2];
-            if (!metricsCard) return;
-            const svg = metricsCard.querySelector('svg.line-chart');
-            if (!svg) return;
-
-            const { overall, roleToWeight } = computeWeightsSummary(leaderId);
-            const selectedValue = selectedRole ? (roleToWeight[selectedRole] || 0) : null;
-
-            // SVG helpers
-            const toY = v => 120 - (v * 1.0); // 0–100 -> approx fit to 120px height
-            const buildPath = y => `M 0,${y} L 50,${y-5} L 100,${y+3} L 150,${y-2} L 200,${y+5} L 250,${y-8} L 300,${y}`;
-
-            const defs = `
-                <defs>
-                    <linearGradient id="overallGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0" />
-                    </linearGradient>
-                </defs>
-            `;
-
-            const overallY = toY(Math.max(0, Math.min(100, overall)));
-            const overallPath = buildPath(overallY);
-
-            const parts = [
-                defs,
-                `<path class="chart-area" d="${overallPath} L 300,120 L 0,120 Z" fill="url(#overallGradient)" />`,
-                `<path class="chart-line" d="${overallPath}" style="stroke:#ff6b6b;stroke-width:3;fill:none;" />`
-            ];
-
-            if (selectedValue !== null) {
-                const sel = Math.max(0, Math.min(100, selectedValue));
-                const selY = toY(sel);
-                const selPath = buildPath(selY);
-                parts.push(
-                    `<path class="chart-line" d="${selPath}" style="stroke:#586740;stroke-width:3;fill:none;" />`
-                );
-            }
-
-            svg.innerHTML = parts.join('');
-
-            // Update the title with quick legend
-            const title = metricsCard.querySelector('.report-title');
-            if (title) {
-                const overallLabel = `${overall}%`;
-                const legendItems = [
-                    `<span style="color:#ff6b6b;">● Total Weight: ${overallLabel}</span>`
-                ];
-                if (selectedValue !== null) {
-                    legendItems.push(
-                        `<span style="color:#586740;">● ${selectedRole}: ${selectedValue}%</span>`
-                    );
-                }
-                title.innerHTML = `
-                    Team Metrics Overview
-                    <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                        ${legendItems.join('')}
-                    </div>
-                `;
-            }
-        }
-
-        function updatePerformanceGraph(leaderId, operationRole, kpiName) {
-        const data = performanceData[leaderId]?.[operationRole]?.[kpiName];
-        if (!data) {
-            console.log('No data available');
+        function updatePerformanceGraph(leaderId, operationRole, kpiName, teamClass) {
+        const performanceChartData = performanceData[leaderId]?.[operationRole]?.[kpiName];
+        const weightData = weightComparisonData[leaderId]?.[operationRole]?.[kpiName];
+        
+        if (!performanceChartData) {
+            console.log('No performance data available');
             return;
         }
 
-        // Coerce non-numeric (e.g., strings like "Pull from GMPT") to null
-        const rawCurrent = data.current;
-        const rawPrevious = data.previous;
-        const currentValue = (typeof rawCurrent === 'number' && isFinite(rawCurrent)) ? rawCurrent : null;
-        const previousValue = (typeof rawPrevious === 'number' && isFinite(rawPrevious)) ? rawPrevious : null;
-
-        if (currentValue === null && previousValue === null) {
-            console.log('No numeric data available');
-            const chartSvg = document.querySelector('.line-chart');
-            if (chartSvg) chartSvg.innerHTML = '';
-            const reportTitle = document.querySelector('.report-title');
-            if (reportTitle) {
-                reportTitle.innerHTML = `
-                     - ${kpiName}
-                    <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                        <span style="color: #96a840;">● Current: N/A</span>
-                        <span style="color: #e5bb22;">● Previous: N/A</span>
-                        <span style="color: #9ca3af;">Δ N/A</span>
-                    </div>
-                `;
-            }
-            return;
-        }
-
-        const chartSvg = document.querySelector('.line-chart');
-        if (!chartSvg) return;
-
-        // Helpers
-        const toY = v => 120 - (v * 1.2); // 0–100 -> fit 120px height, invert for SVG
-        const buildPath = y => `M 0,${y} L 50,${y-5} L 100,${y+3} L 150,${y-2} L 200,${y+5} L 250,${y-8} L 300,${y}`;
-
-        const defs = `
+        const currentValue = performanceChartData.current;
+        const previousValue = performanceChartData.previous;
+        const teamColor = teamColorMap[teamClass] || '#96a840';
+        
+        const performanceChartSvg = document.querySelectorAll('.line-chart')[0];
+        
+        const currentY = 120 - (currentValue * 1.2);
+        const previousY = 120 - (previousValue * 1.2);
+        
+        const currentPath = `M 0,${currentY} L 50,${currentY-5} L 100,${currentY+3} L 150,${currentY-2} L 200,${currentY+5} L 250,${currentY-8} L 300,${currentY}`;
+        const previousPath = `M 0,${previousY} L 50,${previousY-3} L 100,${previousY+5} L 150,${previousY-4} L 200,${previousY+2} L 250,${previousY-6} L 300,${previousY}`;
+        
+        performanceChartSvg.innerHTML = `
             <defs>
                 <linearGradient id="currentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#96a840;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#96a840;stop-opacity:0" />
+                    <stop offset="0%" style="stop-color:${teamColor};stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:${teamColor};stop-opacity:0" />
                 </linearGradient>
                 <linearGradient id="previousGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style="stop-color:#e5bb22;stop-opacity:0.3" />
                     <stop offset="100%" style="stop-color:#e5bb22;stop-opacity:0" />
                 </linearGradient>
             </defs>
+            
+            <path class="chart-area" d="${previousPath} L 300,120 L 0,120 Z" fill="url(#previousGradient)" />
+            <path class="chart-line" d="${previousPath}" 
+                style="stroke: #e5bb22; stroke-width: 2; fill: none; stroke-dasharray: 5,5;" />
+            
+            <path class="chart-area" d="${currentPath} L 300,120 L 0,120 Z" fill="url(#currentGradient)" />
+            <path class="chart-line recover-line" d="${currentPath}" style="stroke: ${teamColor};" />
+            
+            <circle cx="0" cy="${currentY}" r="4" fill="${teamColor}" />
+            <circle cx="300" cy="${currentY}" r="4" fill="${teamColor}" />
+            <circle cx="0" cy="${previousY}" r="3" fill="#e5bb22" />
+            <circle cx="300" cy="${previousY}" r="3" fill="#e5bb22" />
+        `;
+        
+        const performanceReportTitle = document.querySelectorAll('.report-title')[0];
+        performanceReportTitle.innerHTML = `
+            Team Performance Report - ${kpiName}
+            <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
+                <span style="color: ${teamColor};">● Current: ${currentValue}%</span>
+                <span style="color: #e5bb22;">● Previous: ${previousValue}%</span>
+                <span style="color: ${currentValue >= previousValue ? '#4ade80' : '#f87171'};">
+                    ${currentValue >= previousValue ? '↑' : '↓'} ${Math.abs(currentValue - previousValue).toFixed(1)}%
+                </span>
+            </div>
         `;
 
-        let parts = [defs];
-
-        // Previous series (if available)
-        if (previousValue !== null) {
-            const previousY = toY(previousValue);
-            const previousPath = buildPath(previousY);
-            parts.push(`
-                <path class="chart-area" d="${previousPath} L 300,120 L 0,120 Z" fill="url(#previousGradient)" />
-                <path class="chart-line" d="${previousPath}" style="stroke: #e5bb22; stroke-width: 2; fill: none; stroke-dasharray: 5,5;" />
-                <circle cx="0" cy="${previousY}" r="3" fill="#e5bb22" />
-                <circle cx="300" cy="${previousY}" r="3" fill="#e5bb22" />
-            `);
-        }
-
-        // Current series (if available)
-        if (currentValue !== null) {
-            const currentY = toY(currentValue);
-            const currentPath = buildPath(currentY);
-            parts.push(`
-                <path class="chart-area" d="${currentPath} L 300,120 L 0,120 Z" fill="url(#currentGradient)" />
-                <path class="chart-line recover-line" d="${currentPath}" />
-                <circle cx="0" cy="${currentY}" r="4" fill="#96a840" />
-                <circle cx="300" cy="${currentY}" r="4" fill="#96a840" />
-            `);
-        }
-
-        chartSvg.innerHTML = parts.join('');
-
-        // Title + legend
-        const reportTitle = document.querySelector('.report-title');
-        if (reportTitle) {
-            const isCurrencyMetric = (currentValue !== null && Math.abs(currentValue) >= 1000) ||
-                (previousValue !== null && Math.abs(previousValue) >= 1000);
-
-            const currentLabel = formatMetricValueForDisplay(currentValue);
-            const previousLabel = formatMetricValueForDisplay(previousValue);
-
-            let deltaText = 'Δ N/A';
-            let deltaColor = '#9ca3af';
-
-            if (currentValue !== null && previousValue !== null) {
-                const diff = currentValue - previousValue;
-                const up = diff >= 0;
-                deltaColor = up ? '#4ade80' : '#f87171';
-
-                if (isCurrencyMetric) {
-                    const formattedDiff = formatPesoIfNeeded(Math.abs(diff), true);
-                    deltaText = `${up ? '↑' : '↓'} ${formattedDiff}`;
-                } else {
-                    const formattedDiff = Math.abs(diff).toLocaleString('en-US', {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    });
-                    deltaText = `${up ? '↑' : '↓'} ${formattedDiff}%`;
-                }
-            }
-
-            reportTitle.innerHTML = `
-                KPI Target and Actual - ${kpiName}  
+        if (weightData) {
+            const metricsChartSvg = document.querySelectorAll('.line-chart')[1];
+            const weight = weightData.weight;
+            const overallWeight = weightData.overallWeight;
+            
+            const weightY = 120 - (weight * 1.2);
+            const overallWeightY = 120 - (overallWeight * 1.2);
+            
+            const weightPath = `M 0,${weightY} L 50,${weightY-3} L 100,${weightY+5} L 150,${weightY-2} L 200,${weightY+3} L 250,${weightY-5} L 300,${weightY}`;
+            const overallWeightPath = `M 0,${overallWeightY} L 50,${overallWeightY-5} L 100,${overallWeightY+3} L 150,${overallWeightY-4} L 200,${overallWeightY+6} L 250,${overallWeightY-3} L 300,${overallWeightY}`;
+            
+            metricsChartSvg.innerHTML = `
+                <defs>
+                    <linearGradient id="weightGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:${teamColor};stop-opacity:0.3" />
+                        <stop offset="100%" style="stop-color:${teamColor};stop-opacity:0" />
+                    </linearGradient>
+                    <linearGradient id="overallWeightGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:0.3" />
+                        <stop offset="100%" style="stop-color:#9b59b6;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+                
+                <path class="chart-area" d="${overallWeightPath} L 300,120 L 0,120 Z" fill="url(#overallWeightGradient)" />
+                <path class="chart-line" d="${overallWeightPath}" 
+                    style="stroke: #9b59b6; stroke-width: 2; fill: none; stroke-dasharray: 5,5;" />
+                
+                <path class="chart-area" d="${weightPath} L 300,120 L 0,120 Z" fill="url(#weightGradient)" />
+                <path class="chart-line" d="${weightPath}" 
+                    style="stroke: ${teamColor}; stroke-width: 3; fill: none;" />
+                
+                <circle cx="0" cy="${weightY}" r="4" fill="${teamColor}" />
+                <circle cx="300" cy="${weightY}" r="4" fill="${teamColor}" />
+                <circle cx="0" cy="${overallWeightY}" r="3" fill="#9b59b6" />
+                <circle cx="300" cy="${overallWeightY}" r="3" fill="#9b59b6" />
+            `;
+            
+            const metricsReportTitle = document.querySelectorAll('.report-title')[1];
+            metricsReportTitle.innerHTML = `
+                Team Metrics Overview - ${kpiName}
                 <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                    <span style="color: #96a840;">● Current: ${currentLabel}</span>
-                    <span style="color: #e5bb22;">● Previous: ${previousLabel}</span>
-                    <span style="color: ${deltaColor};">${deltaText}</span>
+                    <span style="color: ${teamColor};">● Operational KPI Weight: ${weight}%</span>
+                    <span style="color: #9b59b6;">● Overall Weight: ${overallWeight}%</span>
+                    <span style="color: ${weight >= overallWeight ? '#4ade80' : '#f87171'};">
+                        ${weight >= overallWeight ? '↑' : '↓'} ${Math.abs(weight - overallWeight).toFixed(1)}%
+                    </span>
                 </div>
             `;
         }
     }
 
-        // State management
         let currentView = 'operations';
         let selectedLeader = null;
         let selectedLeaderData = null;
+        let currentTeamClass = null;
 
-        // Hide report cards initially on page load
         function initializeReports() {
             const reportCards = document.querySelectorAll('.report-card');
             reportCards.forEach((card, index) => {
@@ -1739,7 +1521,6 @@
             });
         }
 
-        // Show report cards and hide legend when in operations view with selected leader
         function showReportCards() {
             const reportCards = document.querySelectorAll('.report-card');
             reportCards.forEach((card, index) => {
@@ -1752,7 +1533,6 @@
             });
         }
 
-        // Show only legend and hide other report cards
         function showLegendOnly() {
             const reportCards = document.querySelectorAll('.report-card');
             reportCards.forEach((card, index) => {
@@ -1765,7 +1545,6 @@
             });
         }
 
-        // Navigation bar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
@@ -1775,7 +1554,6 @@
             }
         });
 
-        // Section switch functionality
         const sectionSwitch = document.getElementById('sectionSwitch');
         const sectionSwitch2 = document.getElementById('sectionSwitch2');
         const operationsSection = document.getElementById('operationsSection');
@@ -1805,24 +1583,22 @@
         sectionSwitch.addEventListener('click', toggleSections);
         sectionSwitch2.addEventListener('click', toggleSections);
 
-        // Team Leader selection functionality
         const leaderCards = document.querySelectorAll('.leader-card');
         
         leaderCards.forEach(card => {
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('role', 'button');
-
             card.addEventListener('click', function() {
                 leaderCards.forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
                 
                 selectedLeader = this.getAttribute('data-leader');
+                currentTeamClass = this.getAttribute('data-team-class');
                 selectedLeaderData = {
                     name: this.getAttribute('data-name'),
                     title: this.getAttribute('data-title'),
                     roles: this.getAttribute('data-roles'),
                     contributions: this.getAttribute('data-contributions'),
-                    icon: this.getAttribute('data-icon')
+                    icon: this.getAttribute('data-icon'),
+                    teamClass: currentTeamClass
                 };
                 
                 if (currentView === 'operations') {
@@ -1831,21 +1607,12 @@
                     showLegendOnly();
                 }
                 
-                updateOperationsSection(selectedLeader, selectedLeaderData.title);
+                updateOperationsSection(selectedLeader, selectedLeaderData.title, currentTeamClass);
                 updateProfileSection(selectedLeaderData);
-                // Initialize the weights overview for the selected leader
-                updateWeightsOverview(selectedLeader, null);
-            });
-
-            card.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    this.click();
-                }
             });
         });
 
-        function updateOperationsSection(leaderId, teamName) {
+        function updateOperationsSection(leaderId, teamName, teamClass) {
         const operationsContent = document.getElementById('operationsContent');
         const operations = teamOperationsData[leaderId] || [];
         
@@ -1859,6 +1626,8 @@
             return;
         }
         
+        const teamColor = teamColorMap[teamClass] || '#96a840';
+        
         let html = `
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search operations...">
@@ -1866,8 +1635,8 @@
             <div class="table-header">
                 <div>Operational KPI</div>
                 <div>Role Owner</div>
-                <div>Target & Actual</div>
-                <div>% Weight</div>
+                <div>Set Target</div>
+                <div>% Operational KPI Weight</div>
             </div>
             <div id="membersList">
         `;
@@ -1887,27 +1656,35 @@
                 </div>
             `;
             
-            // Add dropdown content if available
             if (hasDropdown) {
                 const dropdownItems = teamDropdownData[leaderId][op.role];
-                html += `
-                    <div class="sub-operations" id="dropdown-${index}">
-                `;
+                const hasCN = dropdownItems.some(item => item.cnType !== undefined);
                 
-                dropdownItems.forEach(item => {
-                    const targetValue = item.hasOwnProperty('target') ? formatPesoIfNeeded(item.target) : '-';
-                    const weightValue = item.hasOwnProperty('weight') ? item.weight : '-';
+                if (hasCN) {
                     html += `
-                        <div class="sub-operation-item">
-                            <div class="sub-operation-label">${item.kpi}</div>
-                            <div>-</div>
-                            <div><span class="target-badge">${targetValue || '-'}</span></div>
-                            <div><span class="weight-badge">${weightValue || '-'}</span></div>
-                        </div>
+                        <div class="sub-operations" id="dropdown-${index}">
                     `;
-                });
-                
-                html += `</div>`;
+                    
+                    dropdownItems.forEach(item => {
+                        const isCN = item.cnType !== undefined;
+                        
+                        if (isCN) {
+                            const cnBadge = `<span class="cn-badge">${item.cnType}</span>`;
+                            
+                            html += `
+                                <div class="sub-operation-item">
+                                    <div class="sub-operation-label">${item.kpi}${cnBadge}</div>
+                                    <div>-</div>
+                                    <div><span class="target-badge" style="background: ${teamColor}; color: white;">${item.target}</span></div>
+                                    <div><span class="weight-badge">${item.weight}</span></div>
+                                    <div><span class="weight-overall-badge">${item.overallWeight}</span></div>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    html += `</div>`;
+                }
             }
         });
         
@@ -1915,13 +1692,10 @@
         operationsContent.innerHTML = html;
         
         attachSearchFunctionality();
-        attachDropdownFunctionality(leaderId);
-        // Render the overall weights overview on load
-        updateWeightsOverview(leaderId, null);
+        attachDropdownFunctionality(leaderId, teamClass);
     }
 
-        // Update the dropdown functionality to trigger graph update
-        function attachDropdownFunctionality(leaderId) {
+        function attachDropdownFunctionality(leaderId, teamClass) {
             const memberRows = document.querySelectorAll('.member-row.has-dropdown');
             
             memberRows.forEach(row => {
@@ -1933,7 +1707,6 @@
                     if (dropdown) {
                         const isExpanded = this.classList.contains('expanded');
                         
-                        // Close all other dropdowns
                         document.querySelectorAll('.member-row.has-dropdown').forEach(r => {
                             r.classList.remove('expanded');
                         });
@@ -1941,28 +1714,23 @@
                             d.classList.remove('show');
                         });
                         
-                        // Toggle current
                         if (!isExpanded) {
                             this.classList.add('expanded');
                             dropdown.classList.add('show');
-                            // Update overview line for this operation (sum of its sub-weights)
-                            updateWeightsOverview(leaderId, operationRole);
                             
-                            // Add click handlers to sub-operation items
                             const subItems = dropdown.querySelectorAll('.sub-operation-item');
                             subItems.forEach(item => {
                                 item.style.cursor = 'pointer';
                                 item.addEventListener('click', function(e) {
                                     e.stopPropagation();
                                     
-                                    // Remove active class from all items
                                     subItems.forEach(i => i.style.background = '');
                                     
-                                    // Highlight selected item
                                     this.style.background = 'rgba(229, 187, 34, 0.15)';
                                     
                                     const kpiName = this.querySelector('.sub-operation-label').textContent.replace('→', '').trim();
-                                    updatePerformanceGraph(leaderId, operationRole, kpiName);
+                                    const kpiNameClean = kpiName.replace(/TL CN \(Lead\)/g, '').replace(/TL CN \(Lag\)/g, '').replace(/Company CN \(Lead\)/g, '').replace(/Company CN \(Lag\)/g, '').trim();
+                                    updatePerformanceGraph(leaderId, operationRole, kpiNameClean, teamClass);
                                 });
                             });
                         }
@@ -2062,193 +1830,8 @@
             });
         }
 
-        function applyIncomingLeaderHighlight() {
-            const params = new URLSearchParams(window.location.search);
-            const leaderParam = params.get('highlightLeader');
-            const operationParam = params.get('highlightOperation');
-            const kpiParam = params.get('highlightKpi');
-
-            if (!leaderParam) {
-                return;
-            }
-
-            const leaderId = leaderParam.trim().toLowerCase();
-            if (!leaderId) {
-                return;
-            }
-
-            const targetCard = Array.from(leaderCards).find(card =>
-                card.getAttribute('data-leader')?.toLowerCase() === leaderId
-            );
-
-            if (!targetCard) {
-                return;
-            }
-
-            const originalTabindex = targetCard.getAttribute('tabindex');
-
-            const highlightCard = () => {
-                const highlightedElements = new Set();
-                const registerHighlight = (element) => {
-                    if (!element) {
-                        return;
-                    }
-                    element.classList.add('highlight-target');
-                    highlightedElements.add(element);
-                };
-
-                registerHighlight(targetCard);
-                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                targetCard.setAttribute('tabindex', '-1');
-
-                requestAnimationFrame(() => {
-                    targetCard.focus({ preventScroll: true });
-                });
-
-                if (!targetCard.classList.contains('active')) {
-                    targetCard.click();
-                }
-
-                let cleanupRan = false;
-                let fallbackTimeoutId = null;
-
-                const cleanup = () => {
-                    if (cleanupRan) {
-                        return;
-                    }
-                    cleanupRan = true;
-
-                    if (fallbackTimeoutId !== null) {
-                        clearTimeout(fallbackTimeoutId);
-                    }
-
-                    highlightedElements.forEach(element => {
-                        element.classList.remove('highlight-target');
-                    });
-                    highlightedElements.clear();
-
-                    if (targetCard.getAttribute('tabindex') === '-1') {
-                        targetCard.blur();
-                        if (originalTabindex !== null) {
-                            targetCard.setAttribute('tabindex', originalTabindex);
-                        } else {
-                            targetCard.removeAttribute('tabindex');
-                        }
-                    }
-
-                    if (window.history && window.history.replaceState) {
-                        const url = new URL(window.location.href);
-                        url.searchParams.delete('highlightLeader');
-                        if (operationParam) {
-                            url.searchParams.delete('highlightOperation');
-                        }
-                        if (kpiParam) {
-                            url.searchParams.delete('highlightKpi');
-                        }
-                        if (params.has('highlightSource')) {
-                            url.searchParams.delete('highlightSource');
-                        }
-                        window.history.replaceState({}, document.title, url.toString());
-                    }
-                };
-
-                const maybeHighlightOperation = () => {
-                    if (!operationParam || !kpiParam) {
-                        return;
-                    }
-
-                    const normalizedOperation = operationParam.trim().toLowerCase();
-                    const normalizedKpi = kpiParam.trim().toLowerCase();
-                    let operationHighlightComplete = false;
-
-                    const locateOperationRow = (attempt = 0) => {
-                        if (operationHighlightComplete || attempt > 15) {
-                            return;
-                        }
-
-                        const operationsContent = document.getElementById('operationsContent');
-                        if (!operationsContent) {
-                            setTimeout(() => locateOperationRow(attempt + 1), 150);
-                            return;
-                        }
-
-                        const operationRow = Array.from(operationsContent.querySelectorAll('.member-row.has-dropdown')).find(row => {
-                            const label = row.querySelector('.member-name');
-                            return label && label.textContent.trim().toLowerCase() === normalizedOperation;
-                        });
-
-                        if (!operationRow) {
-                            setTimeout(() => locateOperationRow(attempt + 1), 150);
-                            return;
-                        }
-
-                        registerHighlight(operationRow);
-
-                        const expandAndSelectKpi = (innerAttempt = 0) => {
-                            if (operationHighlightComplete || innerAttempt > 15) {
-                                return;
-                            }
-
-                            if (!operationRow.classList.contains('expanded')) {
-                                operationRow.click();
-                            }
-
-                            const dropdownId = operationRow.getAttribute('data-index');
-                            const dropdown = dropdownId ? document.getElementById(`dropdown-${dropdownId}`) : null;
-
-                            if (!dropdown || !dropdown.classList.contains('show')) {
-                                setTimeout(() => expandAndSelectKpi(innerAttempt + 1), 150);
-                                return;
-                            }
-
-                            const subOperationItems = Array.from(dropdown.querySelectorAll('.sub-operation-item'));
-                            const targetSubOperation = subOperationItems.find(item => {
-                                const label = item.querySelector('.sub-operation-label');
-                                return label && label.textContent.trim().toLowerCase() === normalizedKpi;
-                            });
-
-                            if (!targetSubOperation) {
-                                setTimeout(() => expandAndSelectKpi(innerAttempt + 1), 150);
-                                return;
-                            }
-
-                            operationHighlightComplete = true;
-
-                            registerHighlight(targetSubOperation);
-                            targetSubOperation.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                            targetSubOperation.click();
-                        };
-
-                        setTimeout(() => expandAndSelectKpi(), 120);
-                    };
-
-                    locateOperationRow();
-                };
-
-                const animationEndHandler = () => {
-                    cleanup();
-                    targetCard.removeEventListener('animationend', animationEndHandler);
-                };
-
-                targetCard.addEventListener('animationend', animationEndHandler, { once: true });
-
-                setTimeout(maybeHighlightOperation, 300);
-
-                const fallbackTimeoutMs = 5000;
-                fallbackTimeoutId = setTimeout(() => {
-                    cleanup();
-                }, fallbackTimeoutMs);
-            };
-
-            setTimeout(highlightCard, 400);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeReports();
-            applyIncomingLeaderHighlight();
-        });
+        window.addEventListener('DOMContentLoaded', initializeReports);
     </script>
-</body>
-</html>
+
+
+</body></html>

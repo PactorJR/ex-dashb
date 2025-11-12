@@ -81,35 +81,27 @@
         <!-- Section 1: Net Profit -->
         <section class="dashboard-section" id="profit">
             <div class="section-header fade-in-scale">
-                <h2>Net Profit Analysis</h2>
-                <p>Profitability trends and target achievement</p>
-            </div>
-
-            <!-- Summary Stats for Profit with staggered delays -->
-            <div class="summary-stats">
-                <div class="stat-card" style="animation-delay: 0.15s">
-                    <div class="stat-label">Target (Nov 2025)</div>
-                    <div class="stat-value">₱9.77M</div>
-                    <div class="stat-change">Monthly Goal</div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.3s">
-                    <div class="stat-label">Actual (Projected)</div>
-                    <div class="stat-value">₱9.87M</div>
-                    <div class="stat-change">Based on trends</div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.45s">
-                    <div class="stat-label">Variance</div>
-                    <div class="stat-value">+₱100K</div>
-                    <div class="stat-change">Above target</div>
-                </div>
+                <h2>Net Profit</h2>
+                <p>Accounting Team</p>
             </div>
 
             <div class="dashboard">
-                <!-- Profit Pie Chart -->
+                <!-- Net Profit Cards -->
                 <div class="card slide-in-left" style="animation-delay: 0.3s">
-                    <h3>Profit Breakdown - November 2025</h3>
-                    <div class="pie-chart-container">
-                        <canvas id="profitPieChart"></canvas>
+                    <h3>Profit Summary - November 2025</h3>
+                    <div class="summary-stats summary-stats-vertical">
+                        <div class="stat-card" style="animation-delay: 0.15s">
+                            <div class="stat-label">Target</div>
+                            <div class="stat-value">₱9.76M</div>
+                        </div>
+                        <div class="stat-card" style="animation-delay: 0.3s">
+                            <div class="stat-label">Actual</div>
+                            <div class="stat-value">₱9.72M</div>
+                        </div>
+                        <div class="highlight-variance stat-card " style="animation-delay: 0.45s">
+                            <div class="stat-label">Variance</div>
+                            <div class="stat-value">-0.4%</div>
+                        </div>
                     </div>
                 </div>
 
@@ -127,109 +119,36 @@
         <section class="dashboard-section" id="revenue">
             <div class="section-header slide-in-up">
                 <h2>Gross Revenue Analysis</h2>
-                <p>Year-over-year revenue comparison and performance metrics</p>
-            </div>
-
-            <!-- Summary Stats for Revenue with staggered delays -->
-            <div class="summary-stats">
-                <div class="stat-card" style="animation-delay: 0.1s">
-                    <div class="stat-icon" style="background:transparent; box-shadow: none;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">Total Revenue (Nov 2025)</div>
-                        <div class="stat-value">₱35.06M</div>
-                        <div class="stat-change neutral">Target: Not Available</div>
-                    </div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.2s">
-                    <div class="stat-icon" style="background:transparent; box-shadow: none;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">2024 Average</div>
-                        <div class="stat-value">₱34.05M</div>
-                        <div class="stat-change neutral">Monthly Average</div>
-                    </div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.3s">
-                    <div class="stat-icon" style="background:transparent; box-shadow: none;">>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">YoY Growth</div>
-                        <div class="stat-value" style="color: #fff;">+2.97%</div>
-                        <div class="stat-change neutral">vs Nov 2024 (₱34.0M)</div>
-                    </div>
-                </div>
+                <p>Accounting Team</p>
             </div>
 
             <div class="dashboard revenue-dashboard">
-                <!-- Revenue Distribution Card -->
-                <div class="card chart-card slide-in-left" style="animation-delay: 0.2s">
-                    <div class="card-header">
-                        <div>
-                            <h3>Revenue Distribution</h3>
-                            <p class="card-subtitle">November comparison: 2024 vs 2025</p>
+                <!-- Revenue Summary Card -->
+                <div class="card slide-in-left summary-card-compact" style="animation-delay: 0.3s">
+                    <h3>Revenue Summary - November 2025</h3>
+                    <div class="summary-stats summary-stats-vertical">
+                        <div class="stat-card" style="animation-delay: 0.15s">
+                            <div class="stat-label">Total Revenue</div>
+                            <div class="stat-value">₱35.06M</div>
                         </div>
-                        <div class="card-badge">
-                            <span class="badge-text">Current vs Previous</span>
+                        <div class="stat-card" style="animation-delay: 0.3s">
+                            <div class="stat-label">Average</div>
+                            <div class="stat-value">₱34.05M</div>
                         </div>
-                    </div>
-                    <div class="pie-chart-container">
-                        <canvas id="revenuePieChart"></canvas>
-                    </div>
-                    <div class="chart-insights">
-                        <div class="insight-item">
-                            <span class="insight-dot" style="background: #587340;"></span>
-                            <span class="insight-label">Nov 2025: <strong>₱35.06M</strong></span>
-                        </div>
-                        <div class="insight-item">
-                            <span class="insight-dot" style="background: #e5bb22;"></span>
-                            <span class="insight-label">Nov 2024: <strong>₱34.00M</strong></span>
+                        <div class="stat-card" style="animation-delay: 0.45s">
+                            <div class="stat-label">YoY Growth</div>
+                            <div class="stat-value" style="color: #fff;">+2.97%</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Monthly Revenue Comparison Card -->
-                <div class="card chart-card slide-in-right" style="animation-delay: 0.4s">
+                <div class="card slide-in-right" style="animation-delay: 0.5s">
                     <div class="card-header">
-                        <div>
-                            <h3>Monthly Revenue Comparison</h3>
-                            <p class="card-subtitle">Target vs Actual 2024 performance</p>
-                        </div>
-                        <div class="card-badge">
-                            <span class="badge-text">12 Months</span>
-                        </div>
+                        <h3>Monthly Revenue Comparison</h3>
                     </div>
                     <div class="chart-container">
                         <canvas id="revenueBarChart"></canvas>
-                    </div>
-                    <div class="chart-footer">
-                        <div class="footer-stat">
-                            <span class="footer-label">Avg Target</span>
-                            <span class="footer-value">₱32.8M</span>
-                        </div>
-                        <div class="footer-stat">
-                            <span class="footer-label">Avg Actual</span>
-                            <span class="footer-value">₱34.2M</span>
-                        </div>
-                        <div class="footer-stat">
-                            <span class="footer-label">Performance</span>
-                            <span class="footer-value" style="color: #587340;">+4.3%</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -239,7 +158,7 @@
         <section class="dashboard-section" id="collections">
             <div class="section-header slide-in-up">
                 <h2>Collection Performance</h2>
-                <p>Receivables collection rate and monthly performance tracking</p>
+                <p>Accounting Team</p>
             </div>
 
             <!-- Collection Rate Cards -->

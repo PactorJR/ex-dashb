@@ -119,10 +119,59 @@
             });
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSummaryNavigation();
+        });
+
+        function setupSummaryNavigation() {
+            const teamCardMap = {
+                'accounting team': {
+                    highlight: 'acc-variance'
+                }
+            };
+
+            const statCards = document.querySelectorAll('.stats-row .stat-card');
+
+            statCards.forEach(card => {
+                const header = card.querySelector('.stat-header h3');
+                if (!header) return;
+
+                const teamKey = header.textContent.trim().toLowerCase();
+                const targetConfig = teamCardMap[teamKey];
+
+                if (!targetConfig || card.dataset.summaryNavBound === 'true') {
+                    return;
+                }
+
+                const navigateToSummary = () => {
+                    const targetUrl = new URL('lag-lead-summ.html', window.location.href);
+                    targetUrl.search = '';
+                    if (targetConfig.highlight) {
+                        targetUrl.searchParams.set('highlight', targetConfig.highlight);
+                    }
+                    window.location.href = targetUrl.toString();
+                };
+
+                card.dataset.summaryNavBound = 'true';
+                card.classList.add('clickable-stat-card');
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+
+                card.addEventListener('click', navigateToSummary);
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        navigateToSummary();
+                    }
+                });
+            });
+        }
+
         // Initialize everything when DOM is ready
         function initialize() {
             updateProgressBars();
             updateCarousel();
+            setupSummaryNavigation();
         }
 
         if (document.readyState === 'loading') {

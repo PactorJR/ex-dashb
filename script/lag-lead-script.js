@@ -239,6 +239,171 @@
             requestAnimationFrame(animation);
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            applyIncomingHighlight();
+            setupVarianceCardNavigation();
+        });
+
+        function applyIncomingHighlight() {
+            const params = new URLSearchParams(window.location.search);
+            const highlightParam = params.get('highlight');
+
+            if (!highlightParam) {
+                removeVarianceHighlight();
+                return;
+            }
+
+            const highlightKey = highlightParam.trim().toLowerCase();
+
+            if (!highlightKey) {
+                removeVarianceHighlight();
+                return;
+            }
+
+            const highlightHandlers = {
+                'acc-variance': highlightAccountingVarianceCard
+            };
+
+            const handler = highlightHandlers[highlightKey];
+            if (typeof handler === 'function') {
+                // Slight delay to ensure all layouts are ready
+                setTimeout(handler, 5000);
+            }
+        }
+
+        function removeVarianceHighlight() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                const label = card.querySelector('.stat-label');
+                if (!label) return;
+
+                if (label.textContent.trim().toLowerCase() === 'variance') {
+                    card.classList.remove('highlight-variance');
+                    if (card.getAttribute('tabindex') === '-1') {
+                        card.removeAttribute('tabindex');
+                    }
+                }
+            });
+        }
+
+        function highlightAccountingVarianceCard() {
+            const statCards = document.querySelectorAll('.stat-card');
+            let targetCard = null;
+
+            statCards.forEach(card => {
+                if (targetCard) return;
+
+                const label = card.querySelector('.stat-label');
+                const value = card.querySelector('.stat-value');
+
+                if (!label || !value) return;
+
+                const isVarianceLabel = label.textContent.trim().toLowerCase() === 'variance';
+                const valueText = value.textContent.trim().replace(/\s+/g, '');
+                const numericValue = parseFloat(valueText.replace(/[^\d.-]/g, ''));
+                const isTargetValue = valueText.includes('-0.4') || numericValue === -0.4;
+
+                if (isVarianceLabel && isTargetValue) {
+                    targetCard = card;
+                }
+            });
+
+            if (!targetCard) {
+                return;
+            }
+
+            if (!targetCard.hasAttribute('tabindex')) {
+                targetCard.setAttribute('tabindex', '-1');
+            }
+
+            targetCard.classList.add('highlight-variance');
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            requestAnimationFrame(() => {
+                targetCard.focus({ preventScroll: true });
+            });
+
+            const removeHighlight = () => {
+                if (!targetCard.classList.contains('highlight-variance')) {
+                    return;
+                }
+
+                targetCard.classList.remove('highlight-variance');
+                if (targetCard.getAttribute('tabindex') === '-1') {
+                    targetCard.blur();
+                    targetCard.setAttribute('tabindex', '0');
+                }
+
+                if (window.history && window.history.replaceState) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('highlight');
+                    window.history.replaceState({}, document.title, url.toString());
+                }
+            };
+
+            const animationEndHandler = () => {
+                removeHighlight();
+                targetCard.removeEventListener('animationend', animationEndHandler);
+            };
+
+            targetCard.addEventListener('animationend', animationEndHandler, { once: true });
+
+            const fallbackTimeoutMs = 5000;
+            setTimeout(removeHighlight, fallbackTimeoutMs);
+        }
+
+        function setupVarianceCardNavigation() {
+            const statCards = document.querySelectorAll('.stat-card');
+            let varianceCard = null;
+
+            statCards.forEach(card => {
+                if (varianceCard) return;
+
+                const label = card.querySelector('.stat-label');
+                const value = card.querySelector('.stat-value');
+
+                if (!label || !value) return;
+
+                const isVarianceLabel = label.textContent.trim().toLowerCase() === 'variance';
+                const valueText = value.textContent.trim().replace(/\s+/g, '');
+                const numericValue = parseFloat(valueText.replace(/[^\d.-]/g, ''));
+                const matchesTargetValue = valueText.includes('-0.4') || numericValue === -0.4;
+
+                if (isVarianceLabel && matchesTargetValue) {
+                    varianceCard = card;
+                }
+            });
+
+            if (!varianceCard) {
+                return;
+            }
+
+            varianceCard.classList.add('stat-card-link');
+            varianceCard.setAttribute('role', 'link');
+            varianceCard.setAttribute('tabindex', '0');
+
+            const navigateToLeader = () => {
+                const params = new URLSearchParams({
+                    highlightLeader: 'marcus-chen',
+                    highlightOperation: '2. Team Budget and Expenses Management',
+                    highlightKpi: 'FS Target : Net Profit',
+                    highlightSource: 'lag-lead-summ'
+                });
+
+                window.location.href = `tl-scoring.html?${params.toString()}`;
+            };
+
+            varianceCard.addEventListener('click', navigateToLeader);
+            varianceCard.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToLeader();
+                }
+            });
+        }
+
+        
+
         // Function to stop auto-scrolling
         function stopAutoScroll() {
             isAutoScrolling = false;
@@ -251,13 +416,6 @@
                 toggleAutoScroll();
             }
         });
-
-        // (Removed old auto-scroll startup to avoid conflicts with presentation controls)
-
-
-        // (Removed scroll-based visibility handlers - presentation controls will manage section visibility)
-
-
         // Intersection Observer for scroll animations
         const observerOptions = {
             threshold: 0.1,
@@ -280,6 +438,138 @@
 
         // (Removed scroll-based nav highlighting)
 
+        function createBarDataLabelsPlugin(pluginId) {
+            return {
+                id: pluginId,
+                afterDatasetsDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.font = '11px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillStyle = '#525552';
+                    
+                    const labelLineHeight = 14; // Height of one line of text
+                    const minVerticalSpacing = 4; // Minimum vertical spacing between labels
+                    const labelOffset = 5; // Base distance above bar
+                    const maxLabelDistance = 25; // Max distance labels can move from bar top
+                    
+                    // Collect all bar labels with their positions
+                    const allLabels = [];
+                    
+                    chart.data.datasets.forEach((dataset, datasetIndex) => {
+                        const meta = chart.getDatasetMeta(datasetIndex);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data !== null && data !== undefined && bar.height > 20) {
+                                const value = '₱' + data + 'M';
+                                
+                                allLabels.push({
+                                    value: value,
+                                    barY: bar.y,
+                                    barHeight: bar.height,
+                                    barX: bar.x,
+                                    barTop: bar.y,
+                                    categoryIndex: index,
+                                    datasetIndex: datasetIndex
+                                });
+                            }
+                        });
+                    });
+                    
+                    // Sort all labels by category, then by bar height (tallest first within category)
+                    allLabels.sort((a, b) => {
+                        if (a.categoryIndex !== b.categoryIndex) {
+                            return a.categoryIndex - b.categoryIndex;
+                        }
+                        return a.barY - b.barY; // Lower y = taller bar
+                    });
+                    
+                    // Calculate final label positions with collision detection
+                    const labelPositions = [];
+                    
+                    // Process labels in order (by category, then by bar height)
+                    allLabels.forEach((label) => {
+                        // Start with label positioned directly above the bar
+                        let labelY = label.barTop - labelOffset;
+                        const textWidth = ctx.measureText(label.value).width;
+                        
+                        // Check for collisions with already placed labels
+                        // Find the highest required position to avoid all collisions
+                        let requiredY = labelY;
+                        
+                        for (let i = 0; i < labelPositions.length; i++) {
+                            const prev = labelPositions[i];
+                            const sameCategory = label.categoryIndex === prev.categoryIndex;
+                            
+                            // Calculate horizontal overlap based on text widths
+                            // Text is centered on bar, so check if bounding boxes would overlap
+                            const labelLeft = label.barX - textWidth / 2;
+                            const labelRight = label.barX + textWidth / 2;
+                            const prevLeft = prev.x - prev.textWidth / 2;
+                            const prevRight = prev.x + prev.textWidth / 2;
+                            const horizontalOverlap = !(labelRight < prevLeft || labelLeft > prevRight);
+                            
+                            // Determine if there's a collision
+                            let collision = false;
+                            
+                            if (sameCategory) {
+                                // Labels in same category must always be vertically separated
+                                // Check against the initial position first
+                                const verticalDistInitial = Math.abs(labelY - prev.y);
+                                if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
+                                    collision = true;
+                                }
+                            } else {
+                                // Labels in different categories collide if they overlap both vertically AND horizontally
+                                // Only check if they're horizontally close enough to potentially overlap
+                                if (horizontalOverlap) {
+                                    const verticalDistInitial = Math.abs(labelY - prev.y);
+                                    if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
+                                        collision = true;
+                                    }
+                                }
+                            }
+                            
+                            if (collision) {
+                                // Calculate required Y position to avoid this collision
+                                const neededY = prev.y - (labelLineHeight + minVerticalSpacing);
+                                // Use the highest required position (smallest y value)
+                                if (neededY < requiredY) {
+                                    requiredY = neededY;
+                                }
+                            }
+                        }
+                        
+                        // Use the calculated required position
+                        labelY = requiredY;
+                        
+                        // Ensure label doesn't go too high (stay within reasonable bounds)
+                        const minY = label.barTop - labelOffset - maxLabelDistance;
+                        if (labelY < minY) {
+                            labelY = minY;
+                        }
+                        
+                        // Store the final position
+                        labelPositions.push({
+                            x: label.barX,
+                            y: labelY,
+                            value: label.value,
+                            categoryIndex: label.categoryIndex,
+                            textWidth: textWidth
+                        });
+                    });
+                    
+                    // Draw all labels at their calculated positions
+                    labelPositions.forEach((pos) => {
+                        ctx.fillText(pos.value, pos.x, pos.y);
+                    });
+                    
+                    ctx.restore();
+                }
+            };
+        }
+
         // ============================================
         // SECTION 1: NET PROFIT CHARTS
         // ============================================
@@ -292,8 +582,8 @@
                 label: 'Net Profit',
                 data: [9766410.44, 9866410, 0],
                 backgroundColor: [
-                    'rgba(88, 103, 64, 0.85)',    // Blue
-                    'rgba(229, 187, 34, 0.85)',    // Orange
+                    'rgba(88, 103, 64, 0.85)',   
+                    'rgba(229, 187, 34, 0.85)',    
                     'rgba(150, 168, 64, 0.85)'
                 ],
                 borderColor: [
@@ -376,6 +666,14 @@
                     borderColor: 'rgba(229, 187, 34, 1)',
                     borderWidth: 0,
                     borderRadius: 8
+                },
+                {
+                    label: 'Year 2025',
+                    data: [9.0, 9.4, 9.1, 8.0, 8.7, 9.0, 10.2, 10.0, 10.3, 11.0, 9.9, 9.5],
+                    backgroundColor: 'rgba(150, 168, 64, 0.85)',
+                    borderColor: 'rgba(150, 168, 64, 1)',
+                    borderWidth: 0,
+                    borderRadius: 8
                 }
             ]
         };
@@ -386,6 +684,14 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                datasets: {
+                    bar: {
+                      barThickness: 28,    
+                      maxBarThickness: 25,    
+                      categoryPercentage: 0.9,
+                      barPercentage: 0.95
+                    }
+                  },
                 plugins: {
                     legend: {
                         position: 'top',
@@ -443,7 +749,8 @@
                         }
                     }
                 }
-            }
+            },
+            plugins: [createBarDataLabelsPlugin('profitBarDataLabels')]
         };
 
         // ============================================
@@ -510,16 +817,24 @@
                 {
                     label: 'Current Year Target',
                     data: [31.3, 31.1, 31.74, 30.4, 32.8, 32.2, 33.2, 33.3, 33.5, 35.6, 34.4, 34.8],
-                    backgroundColor: 'rgba(150, 168, 64, 0.85)',
-                    borderColor: 'rgba(150, 168, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.85)',
+                    borderColor: 'rgba(88, 103, 64, 1)',
                     borderWidth: 0,
                     borderRadius: 8
                 },
                 {
                     label: 'Year 2024',
                     data: [33.2, 32.9, 33.3, 32.8, 34.4, 34.4, 34.7, 34.7, 35.2, 34.7, 35.1, 35.3],
-                    backgroundColor: 'rgba(88, 103, 64, 0.85)',
-                    borderColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(229, 187, 34, 0.85)',
+                    borderColor: 'rgba(229, 187, 34, 1)',
+                    borderWidth: 0,
+                    borderRadius: 8
+                },
+                {
+                    label: 'Year 2025',
+                    data: [33.2, 32.9, 33.3, 32.8, 34.4, 34.4, 34.7, 34.7, 35.2, 34.7, 35.1, 35.3],
+                    backgroundColor: 'rgba(150, 168, 64, 0.85)',
+                    borderColor: 'rgba(150, 168, 64, 1)',
                     borderWidth: 0,
                     borderRadius: 8
                 }
@@ -532,6 +847,14 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                datasets: {
+                    bar: {
+                      barThickness: 28,    
+                      maxBarThickness: 25,    
+                      categoryPercentage: 0.9,
+                      barPercentage: 0.95
+                    }
+                  },
                 plugins: {
                     legend: {
                         position: 'top',
@@ -589,7 +912,8 @@
                         }
                     }
                 }
-            }
+            },
+            plugins: [createBarDataLabelsPlugin('revenueBarDataLabels')]
         };
 
         // ============================================
@@ -1025,20 +1349,9 @@
             monthlyCollectionConfig
         );
 
-        // Initialize all charts
-        const revenuePieChart = new Chart(
-            document.getElementById('revenuePieChart'),
-            revenuePieConfig
-        );
-
         const revenueBarChart = new Chart(
             document.getElementById('revenueBarChart'),
             revenueBarConfig
-        );
-
-        const profitPieChart = new Chart(
-            document.getElementById('profitPieChart'),
-            profitPieConfig
         );
 
         const profitBarChart = new Chart(
@@ -1273,4 +1586,35 @@
 
         document.querySelectorAll('.stat-card').forEach(card => {
             progressObserver.observe(card);
+        });
+
+        // Color variance and YoY Growth stat values based on sign: negative red, positive green, zero white
+        document.addEventListener('DOMContentLoaded', () => {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach((el) => {
+                const statCard = el.closest('.stat-card');
+                if (!statCard) return;
+                const labelEl = statCard.querySelector('.stat-label');
+                const labelText = (labelEl ? labelEl.textContent : '').toLowerCase();
+                const isVarianceMetric = labelText.includes('variance');
+                const isYoYGrowthMetric = labelText.includes('yoy growth');
+                if (!isVarianceMetric && !isYoYGrowthMetric) return;
+
+                const text = (el.textContent || '').trim();
+                // Detect explicit minus sign or parsed negative number
+                const startsWithMinus = /^[\-\u2212]/.test(text);
+                const numericValue = parseFloat(text.replace(/[^\d.\-]/g, ''));
+                const isNegative = startsWithMinus || (!isNaN(numericValue) && numericValue < 0);
+                if (isNegative) {
+                    el.style.color = '#ff3146';
+                    return;
+                }
+                if (!isNaN(numericValue)) {
+                    if (numericValue > 0) {
+                        el.style.color = '#81f31d';
+                    } else if (numericValue === 0) {
+                        el.style.color = '#ffffff';
+                    }
+                }
+            });
         });
