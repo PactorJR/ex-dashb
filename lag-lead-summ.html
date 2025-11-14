@@ -32,40 +32,6 @@
         </div>
     </nav>
     
-    <!-- Navigation Buttons (hidden unless hovered) -->
-    <div class="nav-hover-zone" aria-hidden="false">
-        <!-- small visible handle so users can find the nav area -->
-        <button class="nav-handle" aria-label="Open navigation" title="Open navigation"></button>
-        <div class="nav-buttons">
-            <button class="nav-btn prev-btn" id="prevBtn" onclick="previousSection()" aria-label="Previous">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </button>
-            <button class="nav-btn play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play/Pause">
-                <svg class="play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-                <svg class="pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    style="display:none;">
-                    <line x1="6" y1="4" x2="6" y2="20"></line>
-                    <line x1="18" y1="4" x2="18" y2="20"></line>
-                </svg>
-            </button>
-            <button class="nav-btn restart-btn" id="restartBtn" onclick="restartPresentation()" aria-label="Restart">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                    <path d="M3 3v5h5"></path>
-                </svg>
-            </button>
-            <button class="nav-btn next-btn" id="nextBtn" onclick="nextSection()" aria-label="Next">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </button>
-        </div>
-    </div>
-
     <!-- Floating Scroll to Top Button Container (Bottom Right) -->
     <div class="top-btn-container" id="topBtnContainer">
         <button class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()">
@@ -77,184 +43,1674 @@
 
     <!-- Main Content -->
     <main class="main-content">
-
-        <!-- Section 1: Net Profit -->
-        <section class="dashboard-section" id="profit">
-            <div class="section-header fade-in-scale">
-                <h2>Net Profit</h2>
-                <p>Accounting Team</p>
-            </div>
-
-            <div class="dashboard">
-                <!-- Net Profit Cards -->
-                <div class="card slide-in-left" style="animation-delay: 0.3s">
-                    <h3>Profit Summary - November 2025</h3>
-                    <div class="summary-stats summary-stats-vertical">
-                        <div class="stat-card" style="animation-delay: 0.15s">
-                            <div class="stat-label">Target</div>
-                            <div class="stat-value">₱9.76M</div>
-                        </div>
-                        <div class="stat-card" style="animation-delay: 0.3s">
-                            <div class="stat-label">Actual</div>
-                            <div class="stat-value">₱9.72M</div>
-                        </div>
-                        <div class="highlight-variance stat-card " style="animation-delay: 0.45s">
-                            <div class="stat-label">Variance</div>
-                            <div class="stat-value">-0.4%</div>
-                        </div>
+        <!-- Top Stats Carousel -->
+        <div class="stats-carousel-container">
+            <div class="stats-row" id="statsCarousel">
+                <div class="stat-card-carousel tech fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="tech" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>Technical Team</h3>
+                        <span class="stat-value-carousel tech">10%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill tech" style="width: 10%"></div>
                     </div>
                 </div>
 
-                <!-- Profit Bar Chart -->
-                <div class="card slide-in-right" style="animation-delay: 0.5s">
-                    <h3>Monthly Profit Performance (2024)</h3>
-                    <div class="chart-container">
-                        <canvas id="profitBarChart"></canvas>
+                <div class="stat-card-carousel acc fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="accounting" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>Accounting Team</h3>
+                        <span class="stat-value-carousel acc">20%</span>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 2: Gross Revenue -->
-        <section class="dashboard-section" id="revenue">
-            <div class="section-header slide-in-up">
-                <h2>Gross Revenue Analysis</h2>
-                <p>Accounting Team</p>
-            </div>
-
-            <div class="dashboard revenue-dashboard">
-                <!-- Revenue Summary Card -->
-                <div class="card slide-in-left summary-card-compact" style="animation-delay: 0.3s">
-                    <h3>Revenue Summary - November 2025</h3>
-                    <div class="summary-stats summary-stats-vertical">
-                        <div class="stat-card" style="animation-delay: 0.15s">
-                            <div class="stat-label">Total Revenue</div>
-                            <div class="stat-value">₱35.06M</div>
-                        </div>
-                        <div class="stat-card" style="animation-delay: 0.3s">
-                            <div class="stat-label">Average</div>
-                            <div class="stat-value">₱34.05M</div>
-                        </div>
-                        <div class="stat-card" style="animation-delay: 0.45s">
-                            <div class="stat-label">YoY Growth</div>
-                            <div class="stat-value" style="color: #fff;">+2.97%</div>
-                        </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill acc" style="width: 20%"></div>
                     </div>
                 </div>
 
-                <!-- Monthly Revenue Comparison Card -->
-                <div class="card slide-in-right" style="animation-delay: 0.5s">
-                    <div class="card-header">
-                        <h3>Monthly Revenue Comparison</h3>
+                <div class="stat-card-carousel lrad fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="lrad" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>LRAD Team</h3>
+                        <span class="stat-value-carousel lrad">30%</span>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="revenueBarChart"></canvas>
+                    <div class="progress-bar">
+                        <div class="progress-fill lrad" style="width: 30%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel qual fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="quality" data-team-type="lead">
+                    <div class="stat-header">
+                        <h3>Quality Team</h3>
+                        <span class="stat-value-carousel qual">80%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill qual" style="width: 80%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel dc fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="dc" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>DC Team</h3>
+                        <span class="stat-value-carousel dc">23%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill dc" style="width: 23%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel it fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="it">
+                    <div class="stat-header">
+                        <h3>IT Team</h3>
+                        <span class="stat-value-carousel it">45%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill it" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel opp fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="opportunity" data-team-type="lead">
+                    <div class="stat-header">
+                        <h3>Opportunity Team</h3>
+                        <span class="stat-value-carousel opp">37%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill opp" style="width: 37%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel marc fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="marcom" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>Marcom Team</h3>
+                        <span class="stat-value-carousel marc">47%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill marc" style="width: 47%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel aud fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="audit" data-team-type="lead">
+                    <div class="stat-header">
+                        <h3>Audit Team</h3>
+                        <span class="stat-value-carousel aud">54%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill aud" style="width: 54%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel gath fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="gathering" data-team-type="lead">
+                    <div class="stat-header">
+                        <h3>Gathering Team</h3>
+                        <span class="stat-value-carousel gath">27%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill gath" style="width: 27%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card-carousel oper fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="operations" data-team-type="lag">
+                    <div class="stat-header">
+                        <h3>Operations Team</h3>
+                        <span class="stat-value-carousel oper">77%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill oper" style="width: 77%"></div>
                     </div>
                 </div>
             </div>
-        </section>
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="carouprevBtn">‹</button>
+                    <span class="carousel-indicator" id="caroupageIndicator">1 / 3</span>
+                <button class="carousel-btn" id="carounextBtn">›</button>
+            </div>
+        </div>
 
-        <!-- Section 3: Collection Rate & Monthly Collections -->
-        <section class="dashboard-section" id="collections">
-            <div class="section-header slide-in-up">
-                <h2>Collection Performance</h2>
-                <p>Accounting Team</p>
+        <!-- Company Lag/Lead Toggle Section -->
+        <div class="company-toggle-section">
+            <div class="company-toggle-container">
+                <button class="company-toggle-btn active" data-view="lag">Company Lag</button>
+                <button class="company-toggle-btn" data-view="lead">Company Lead</button>
+            </div>
+        </div>
+
+        <!-- Occupancy Rate Section - Company Lead Only -->
+        <div class="dashboard-grid" data-company-type="lead" style="display: none;">
+            <!-- Occupancy Rate Section Header -->
+            <div class="team-section" style="grid-column: 1 / -1; border-bottom: 2px solid #81f31d; margin-bottom: 20px;">
+                <h2 style="color: #81f31d;">Occupancy Rate</h2>
             </div>
 
-            <!-- Collection Rate Cards -->
-            <div class="collection-rate-grid">
-                <div class="collection-card negative slide-in-left" style="animation-delay: 0.1s">
-                    <h4>Collection Rate</h4>
-                    <div class="collection-value">-89.7%</div>
-                    <p class="collection-subtitle">Below Target</p>
+            <!-- Opportunity Team Section -->
+            <div class="team-section opp" id="opportunity-team-section-lead" style="grid-column: 1 / -1;">
+                <h2>Opportunity Team</h2>
+            </div>
+
+            <!-- Critical Numbers Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Critical Numbers Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">881.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">970.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+10.1%</div>
+                    </div>
                 </div>
-                <div class="collection-card positive slide-in-up" style="animation-delay: 0.2s">
-                    <h4>Collection Rate</h4>
-                    <div class="collection-value">100.0%</div>
-                    <p class="collection-subtitle">Target Achievement</p>
+            </div>
+
+            <!-- Occupancy Rate (Unit) Chart - Company Lead -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Occupancy Rate (Unit)</h3>
+                    </div>
                 </div>
-                <div class="collection-card neutral slide-in-right" style="animation-delay: 0.3s">
-                    <h4>Collection Rate</h4>
-                    <div class="collection-value">10.3%</div>
-                    <p class="collection-subtitle">Current Performance</p>
+                <div class="chart-container">
+                    <canvas id="occupancyRateLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Occupancy Rate (Area) Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Occupancy Rate (Area) Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Occupancy Rate (Area) Chart - Company Lead -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Occupancy Rate (Area)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="occupancyRateAreaLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Occupancy Rate (P-Value) Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Occupancy Rate (P-Value) Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Occupancy Rate (P-Value) Chart - Company Lead -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Occupancy Rate (P-Value)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="occupancyRatePValueLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Closed Inquiries Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Closed Inquiries</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱15.0M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">₱13.1M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">-13%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Closed Inquiries Chart - Company Lead -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Closed Inquiries (P-Value)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="closedInquiriesLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pullout Aversion Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-right" style="animation-delay: 0.5s">
+                <h3>Pullout Aversion</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱7.0M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">₱5.8M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">-17%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pullout Aversion Chart - Company Lead -->
+            <div class="card slide-in-left" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Pullout Aversion (P-Value)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pulloutAversionLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Foot Traffic per Site Section -->
+            <div class="team-section" style="grid-column: 1 / -1; border-bottom: 2px solid #81f31d; margin: 40px 0 10px;">
+                <h2 style="color: #81f31d;">Foot Traffic per Site</h2>
+            </div>
+
+            <div class="team-section gath" id="gathering-team-section-lead" style="grid-column: 1 / -1; margin-top: 0;">
+                <h2>Gathering Team</h2>
+            </div>
+
+            <!-- Lotus Mall Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Lotus Mall Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-15.5%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">13,783</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">11,647</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lotus Mall Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Lotus Mall Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="lotusFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Portal Mall Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Portal Mall Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+85.9%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">4,937</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">9,177</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portal Mall Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Portal Mall Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="portalFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stadium Shopping Strip Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Stadium Shopping Strip Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-20.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">7,052</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">5,639</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadium Shopping Strip Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Stadium Shopping Strip Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="stadiumFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ySpacio Creative Park Carbag Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>ySpacio Creative Park Carbag Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">571</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ySpacio Creative Park Carbag Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>ySpacio Creative Park Carbag Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="yspacioFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ySpacio Creative Park Alapan Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>ySpacio Creative Park Alapan Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-36.9%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">4,428</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">2,796</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ySpacio Creative Park Alapan Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>ySpacio Creative Park Alapan Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="yspacioAlapanFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Lumina Foot Traffic Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Lumina Foot Traffic</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+29.3%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">11,319</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">14,640</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lumina Foot Traffic Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Lumina Foot Traffic</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="luminaFootTrafficChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Number of Pax per Event Section Header -->
+            <div class="team-section gath" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>NUMBER OF PAX PER EVENT</h2>
+            </div>
+
+            <!-- Lotus Mall Pax Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Lotus Mall - Pax per Event</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">500.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">1,000.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lotus Mall Pax Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Lotus Mall - Pax per Event</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="lotusPaxChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Portal Mall Pax Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Portal Mall - Pax per Event</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">500.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">1,000.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portal Mall Pax Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Portal Mall - Pax per Event</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="portalPaxChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stadium Shopping Strip Pax Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Stadium Shopping Strip - Pax per Event</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">500.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">1,000.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadium Shopping Strip Pax Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Stadium Shopping Strip - Pax per Event</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="stadiumPaxChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Offline Inquiries Summary Card - Company Lead -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Closed Inquiry - Offline Inquiries</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+100%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">60%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">50%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offline Inquiries Chart - Company Lead -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Offline Inquiries (Conversion)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="offlineInquiriesLeadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Marcom Team Header -->
+            <div class="team-section marc" id="marcom-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>MARCOM Team</h2>
+            </div>
+
+            <!-- FB Page Followers Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>FB Page Followers</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-30%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">60%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">40%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FB Page Followers Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>FB Page Followers</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="fbFollowersChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Audit Team Header -->
+            <div class="team-section aud" id="audit-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>Audit Team</h2>
+            </div>
+
+            <!-- I.C.A.R.E Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>I.C.A.R.E. (All Teams)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+30%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">10%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">40%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- I.C.A.R.E Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>I.C.A.R.E. (All Teams)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="icareChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gathering Team Header -->
+            <div class="team-section gath" id="gathering-team-section-lead-2" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>Gathering Team</h2>
+            </div>
+
+            <!-- Site Quality Monitoring Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Site Quality Monitoring</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+50%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">20%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">30%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site Quality Monitoring Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Site Quality Monitoring</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="siteQualityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Insurance Claim Monitoring Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Insurance Claim Monitoring</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+70%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">30%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">50%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insurance Claim Monitoring Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Insurance Claim Monitoring</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="insuranceClaimChart"></canvas>
+                </div>
+            </div>
+
+            <!-- LRAD Team Header -->
+            <div class="team-section lrad" id="lrad-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>LRAD Team</h2>
+            </div>
+
+            <!-- Regular Events Plan Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Regular Events Plan</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-20%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">40%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">60%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regular Events Plan Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Regular Events Plan</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="regularEventsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Culture Development Activities Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Culture Dev't Activities Plan</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+20%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">10%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">20%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Culture Development Activities Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Culture Dev't Activities Plan</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="cultureDevChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Quality Team Header -->
+            <div class="team-section qual" id="quality-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>Quality Team</h2>
+            </div>
+
+            <!-- SMD Projects Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>SMD Projects</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-40%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">70%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">50%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMD Projects Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>SMD Projects</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="smdProjectsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Design and Construction Team Header -->
+            <div class="team-section dc" id="dc-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>Design and Construction Team</h2>
+            </div>
+
+            <!-- Budget: Projects (E&D) Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Budget: Projects (E&D)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-40%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">50%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">20%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget: Projects (E&D) Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Budget: Projects (E&D)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="budgetProjectsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Team/Section's Targets Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Team/Section's Targets</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-10%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">30%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">20%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team/Section's Targets Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Team/Section's Targets</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="teamTargetsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Technical Team Header -->
+            <div class="team-section tech" id="technical-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;">
+                <h2>Technical Team</h2>
+            </div>
+
+            <!-- Number of Breakdowns Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Number of Breakdowns</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">+45%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">23%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">75%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Breakdowns Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Number of Breakdowns</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="breakdownsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid" data-company-type="lag">
+            <!-- Revenue Section Header -->
+            <div class="team-section revenue-header" style="border-bottom-color: #81f31d;">
+                <h2 style="color: #81f31d;">Revenue</h2>
+            </div>
+
+            <!-- Accounting Team Section -->
+            <div class="team-section acc" id="accounting-team-section">
+                <h2>Accounting Team</h2>
+            </div>
+
+            <!-- Row 1: Net Profit -->
+            <!-- Net Profit Summary Card -->
+            <div class="card slide-in-left" style="animation-delay: 0.3s">
+                <h3>Net Profit Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱9.76M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">₱9.72M</div>
+                    </div>
+                    <div class="highlight-variance stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">-0.4%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit Bar Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Monthly Profit Performance (2024)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="profitBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 2: Gross Revenue -->
+            <!-- Revenue Summary Card -->
+            <div class="card slide-in-left summary-card-compact" style="animation-delay: 0.3s">
+                <h3>Revenue Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-value">₱35.06M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Average</div>
+                        <div class="stat-value">₱34.05M</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">YoY Growth</div>
+                        <div class="stat-value" style="color: #fff;">+2.97%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Revenue Comparison Card -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <h3>Monthly Revenue Comparison</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 3: Collection Performance -->
+            <!-- Collection Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Collection Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target Rate</div>
+                        <div class="stat-value" data-metric="collection-target">--</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual Rate</div>
+                        <div class="stat-value" data-metric="collection-actual">--</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="collection-variance">--</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Monthly Collection Chart -->
-            <div class="monthly-collection-card slide-in-up" style="animation-delay: 0.4s">
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
                 <div class="card-header">
                     <div>
-                        <h3>Monthly Collection Overview</h3>
-                        <p class="card-subtitle">Total Receivables vs Total Collected (2024)</p>
-                    </div>
-                    <div class="card-badge">
-                        <span class="badge-text">Year 2024</span>
+                        <h3>Monthly Collection</h3>
                     </div>
                 </div>
-                <div class="collection-chart-container">
+                <div class="chart-container collection-chart-container">
                     <canvas id="monthlyCollectionChart"></canvas>
                 </div>
-                <div class="chart-footer">
-                    <div class="footer-stat">
-                        <span class="footer-label">Avg Receivables</span>
-                        <span class="footer-value">₱12.9M</span>
+            </div>
+
+            <!-- Opportunity Team Section -->
+            <div class="team-section opp" id="opportunity-team-section">
+                <h2>Opportunity Team</h2>
+            </div>
+
+            <!-- Row 5: Rental Income -->
+            <!-- Rental Income Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Rental Income Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱19.55M</div>
                     </div>
-                    <div class="footer-stat">
-                        <span class="footer-label">Avg Collected</span>
-                        <span class="footer-value">₱8.6M</span>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">₱19.41M</div>
                     </div>
-                    <div class="footer-stat">
-                        <span class="footer-label">Collection Rate</span>
-                        <span class="footer-value" style="color: #587340;">66.7%</span>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value">-0.7%</div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Section 4: Rental Income -->
-        <section class="dashboard-section" id="rental">
-            <div class="section-header fade-in-scale">
-                <h2>Rental Income Analysis</h2>
-                <p>Rental revenue trends and performance comparison</p>
-            </div>
-
-            <!-- Summary Stats for Rental Income with staggered delays -->
-            <div class="summary-stats">
-                <div class="stat-card" style="animation-delay: 0.15s">
-                    <div class="stat-label">Target</div>
-                    <div class="stat-value">₱19.55M</div>
-                    <div class="stat-change">19,553,683.32</div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.3s">
-                    <div class="stat-label">Actual</div>
-                    <div class="stat-value">₱19.41M</div>
-                    <div class="stat-change">19,412,471.33</div>
-                </div>
-                <div class="stat-card" style="animation-delay: 0.45s">
-                    <div class="stat-label">Variance</div>
-                    <div class="stat-value">-0.7%</div>
-                    <div class="stat-change negative">Below target</div>
-                </div>
-            </div>
-
-            <div class="dashboard">
-                <!-- Rental Income Area Chart -->
-                <div class="card slide-in-left" style="animation-delay: 0.3s">
-                    <h3>Rental Income Composition Over Time</h3>
-                    <div class="chart-container">
-                        <canvas id="rentalAreaChart"></canvas>
+            <!-- Rental Income Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Rental Income</h3>
                     </div>
                 </div>
+                <div class="chart-container">
+                    <canvas id="rentalComparisonChart"></canvas>
+                </div>
+            </div>
 
-                <!-- Rental Income Comparison Chart -->
-                <div class="card slide-in-right" style="animation-delay: 0.5s">
-                    <h3>Monthly Rental Income Comparison</h3>
-                    <div class="chart-container">
-                        <canvas id="rentalComparisonChart"></canvas>
+            <!-- Gathering Team Section -->
+            <div class="team-section gath" id="gathering-team-section">
+                <h2>Gathering Team</h2>
+            </div>
+
+            <!-- Row 5: Venue (P-Value) -->
+            <!-- Venue Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>Venue (P-Value) Summary - November 2025</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱81.6K</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value">₱0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Venue (P-Value) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>Venue (P-Value)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="venueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 6: Studio (P-Value) -->
+            <!-- Studio Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>STUDIO (P-VALUE)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-99.1%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱58,560.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱500.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Studio (P-Value) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>STUDIO (P-VALUE)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="studioChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 7: Sports Arena (P-Value) -->
+            <!-- Sports Arena Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>SPORTS ARENA (P-VALUE)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-97.2%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱401,760.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱11,450.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sports Arena (P-Value) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>SPORTS ARENA (P-VALUE)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sportsArenaChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Operations Team Section -->
+            <div class="team-section oper" id="operations-team-section">
+                <h2>Operations Team</h2>
+            </div>
+
+            <!-- Row 8: Parking Income -->
+            <!-- Parking Income Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>PARKING INCOME</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-14.4%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱1,374,053.26</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱1,175,548.57</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parking Income Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>PARKING INCOME</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="parkingIncomeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Expenses Section Header -->
+            <div class="team-section expenses-header" style="border-bottom-color: #ff3146;">
+                <h2 style="color: #ff3146;">Expenses</h2>
+            </div>
+            <!-- Accounting Team Section -->
+            <div class="team-section acc" id="accounting-team-section-expenses">
+                <h2>Accounting Team</h2>
+            </div>
+
+            <!-- Row 4: Total Operating Expense -->
+            <!-- Total Operating Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>TOTAL OPERATING EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+4.1%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱21,996,437.04</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱22,900,266.12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Operating Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>TOTAL OPERATING EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="totalOperatingExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Operations Team Section (Expenses) -->
+            <div class="team-section oper" id="operations-team-section-expenses">
+                <h2>Operations Team</h2>
+            </div>
+
+            <!-- Row 10: Electricity Expense -->
+            <!-- Electricity Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>ELECTRICITY EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+1.6%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱8,417,857.53</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱8,289,142.67</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Electricity Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>ELECTRICITY EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="electricityExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 11: Water Expense -->
+            <!-- Water Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>WATER EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+18.4%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱220,091.14</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱260,600.34</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>WATER EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="waterExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 12: Security Expense -->
+            <!-- Security Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>SECURITY EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+6.7%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱3,581,881.95</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱3,356,811.39</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>SECURITY EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="securityExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 13: Agency Expense -->
+            <!-- Agency Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>AGENCY EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-0.1%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱3,155,128.69</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱3,153,100.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agency Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>AGENCY EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="agencyExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- LRAD Team Section (Expenses) -->
+            <div class="team-section lrad" id="lrad-team-section-expenses">
+                <h2>LRAD Team</h2>
+            </div>
+
+            <!-- Row 14: Salary Expense -->
+            <!-- Salary Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>SALARY EXPENSE</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-12.7%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱3,079,566.71</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱3,528,055.65</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>SALARY EXPENSE</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salaryExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- MARCOM Team Section (Expenses) -->
+            <div class="team-section marc" id="marcom-team-section-expenses">
+                <h2>Marcom Team</h2>
+            </div>
+
+            <!-- Row 15: Marketing Expense -->
+            <!-- Marketing Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+185.5%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱209,855.85</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱73,500.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing Expense Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>MARKETING EXPENSE (MARCOM)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="marketingExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gathering Team Section (Expenses) -->
+            <div class="team-section gath" id="gathering-team-section-expenses">
+                <h2>Gathering Team</h2>
+            </div>
+
+            <!-- Row 16: Marketing Expense (Gathering) -->
+            <!-- Marketing Expense Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+280.1%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱592,252.25</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value">₱155,800.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing Expense (Gathering) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>MARKETING EXPENSE (GATHERING)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="marketingExpenseGatheringChart"></canvas>
+                </div>
+            </div>
+
+            <!-- DC Team Section (Expenses) -->
+            <div class="team-section dc" id="dc-team-section-expenses">
+                <h2>Design and Construction Team</h2>
+            </div>
+
+            <!-- Row 17: Repairs & Maintenance (Labor) -->
+            <!-- Repairs & Maintenance (Labor) Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱0.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱93,900.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repairs & Maintenance (Labor) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>DCD: REPAIRS & MAINTENANCE (LABOR)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="repairsMaintenanceLaborChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 18: Repairs & Maintenance (Materials) -->
+            <!-- Repairs & Maintenance (Materials) Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-71.3%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱111,750.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱32,079.81</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repairs & Maintenance (Materials) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>DCD: REPAIRS & MAINTENANCE (MATERIALS)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="repairsMaintenanceMaterialsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Technical Team Section (Expenses) -->
+            <div class="team-section tech" id="technical-team-section-expenses">
+                <h2>Technical Team</h2>
+            </div>
+
+            <!-- Row 19: Repairs & Maintenance (Labor) - Technical -->
+            <!-- Repairs & Maintenance (Labor) Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #81f31d;">+7.1%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱156,500.00</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱167,539.28</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repairs & Maintenance (Labor) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>TECHNICAL: REPAIRS & MAINTENANCE (LABOR)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="repairsMaintenanceLaborTechnicalChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 20: Repairs & Maintenance (Materials) - Technical -->
+            <!-- Repairs & Maintenance (Materials) Summary Card -->
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+                <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
+                <div class="summary-stats summary-stats-vertical">
+                    <div class="stat-card" style="animation-delay: 0.15s">
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" style="color: #ff3146;">-32.6%</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.3s">
+                        <div class="stat-label">Current</div>
+                        <div class="stat-value">₱126,539.50</div>
+                    </div>
+                    <div class="stat-card" style="animation-delay: 0.45s">
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value">₱187,750.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repairs & Maintenance (Materials) Comparison Chart -->
+            <div class="card slide-in-right" style="animation-delay: 0.5s">
+                <div class="card-header">
+                    <div>
+                        <h3>TECHNICAL: REPAIRS & MAINTENANCE (MATERIALS)</h3>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="repairsMaintenanceMaterialsTechnicalChart"></canvas>
+                </div>
+            </div>
+        </div>
     </main>
 </body>
 
