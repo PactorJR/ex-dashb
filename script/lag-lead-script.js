@@ -9180,61 +9180,10 @@
 
         // Carousel functionality
         const carousel = document.getElementById('statsCarousel');
-        const carouprevBtn = document.getElementById('carouprevBtn');
-        const carounextBtn = document.getElementById('carounextBtn');
-        const caroupageIndicator = document.getElementById('caroupageIndicator');
 
-        if (carousel && carouprevBtn && carounextBtn && caroupageIndicator) {
-            let currentPage = 0;
-            const cardsPerPage = 4;
-
-            function updateCarousel() {
-                const totalCards = carousel.children.length;
-                const totalPages = Math.ceil(totalCards / cardsPerPage);
-                
-                const offset = currentPage * cardsPerPage;
-                const cardWidth = 300;
-                const gap = 20;
-                const translateX = -(offset * (cardWidth + gap));
-                
-                carousel.style.transform = `translateX(${translateX}px)`;
-                caroupageIndicator.textContent = `${currentPage + 1} / ${totalPages}`;
-                
-                carouprevBtn.disabled = currentPage === 0;
-                carounextBtn.disabled = currentPage >= totalPages - 1;
-                
-                if (carouprevBtn.disabled) {
-                    carouprevBtn.style.opacity = '0.5';
-                    carouprevBtn.style.cursor = 'not-allowed';
-                } else {
-                    carouprevBtn.style.opacity = '1';
-                    carouprevBtn.style.cursor = 'pointer';
-                }
-                
-                if (carounextBtn.disabled) {
-                    carounextBtn.style.opacity = '0.5';
-                    carounextBtn.style.cursor = 'not-allowed';
-                } else {
-                    carounextBtn.style.opacity = '1';
-                    carounextBtn.style.cursor = 'pointer';
-                }
-            }
-
-            carouprevBtn.addEventListener('click', () => {
-                if (currentPage > 0) {
-                    currentPage--;
-                    updateCarousel();
-                }
-            });
-
-            carounextBtn.addEventListener('click', () => {
-                const totalCards = carousel.children.length;
-                const totalPages = Math.ceil(totalCards / cardsPerPage);
-                if (currentPage < totalPages - 1) {
-                    currentPage++;
-                    updateCarousel();
-                }
-            });
+        if (carousel) {
+            // Reset transform to show all cards
+            carousel.style.transform = 'translateX(0)';
 
             // Function to sync team breakdown bars in tl-scoring.html with carousel values
             function syncTeamBreakdownBars() {
@@ -9339,7 +9288,6 @@
             // Initialize carousel when DOM is ready
             function initializeCarousel() {
                 updateProgressBars();
-                updateCarousel();
                 syncTeamBreakdownBars(); // Sync team breakdown bars with carousel values
             }
 
@@ -9369,10 +9317,6 @@
                     characterData: true
                 });
             }
-
-            window.addEventListener('resize', () => {
-                updateCarousel();
-            });
         }
 
 

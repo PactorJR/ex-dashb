@@ -43,15 +43,15 @@ body {
 
 .leaders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
     margin-bottom: 30px;
 }
 
 .leader-card {
     background: white;
-    border-radius: 15px;
-    padding: 25px 15px;
+    border-radius: 12px;
+    padding: 15px 10px;
     text-align: center;
     box-shadow: 0 5px 15px rgba(88, 103, 64, 0.1);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -112,15 +112,15 @@ body {
 }
 
 .leader-icon {
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    margin: 0 auto 15px;
+    margin: 0 auto 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 32px;
+    font-size: 20px;
     font-weight: bold;
     position: relative;
     animation: pulse 2s infinite;
@@ -141,14 +141,16 @@ body {
 .leader-name {
     color: var(--text-color);
     font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 14px;
+    margin-bottom: 3px;
+    font-size: 11px;
+    line-height: 1.3;
 }
 
 .leader-title {
     color: var(--primary-color);
-    font-size: 12px;
+    font-size: 10px;
     opacity: 0.8;
+    line-height: 1.2;
 }
 
 /* Navigation */
@@ -224,9 +226,19 @@ body {
 /* Main Content */
 .main-content {
     display: grid;
-    grid-template-columns: 2.5fr 1fr;
-    gap: 30px;
+    grid-template-columns: 1.3fr 1.7fr;
+    gap: 25px;
+    align-items: start;
     animation: fadeInUp 0.8s ease-out;
+}
+
+.main-content .members-section {
+    grid-column: 1;
+}
+
+.reports-section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
 }
 
 /* Section Switch Button */
@@ -284,7 +296,7 @@ body {
 .members-section {
     background: white;
     border-radius: 20px;
-    padding: 30px;
+    padding: 15px;
     box-shadow: 0 10px 40px rgba(88, 103, 64, 0.1);
 }
 
@@ -299,7 +311,7 @@ body {
 
 .section-title {
     color: var(--primary-color);
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -307,7 +319,7 @@ body {
     position: relative;
     flex: 1;
     max-width: 300px;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 
 .search-box input {
@@ -495,10 +507,11 @@ body {
     grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
     background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
     color: white;
-    padding: 15px 20px;
+    padding: 10px 15px;
     border-radius: 12px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .header-group {
@@ -539,12 +552,13 @@ body {
     --highlight-radius: 14px;
     display: grid;
     grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
-    padding: 15px 20px;
+    padding: 10px 15px;
     align-items: center;
     border-radius: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     transition: all 0.3s;
     animation: slideInLeft 0.5s ease-out backwards;
+    font-size: 14px;
 }
 
 .member-row:nth-child(1) { animation-delay: 0.1s; }
@@ -748,32 +762,189 @@ body {
 .reports-section {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 15px;
 }
 
 .report-card {
     background: white;
     border-radius: 20px;
-    padding: 30px;
+    padding: 15px;
     box-shadow: 0 10px 40px rgba(88, 103, 64, 0.1);
     animation: fadeInRight 0.8s ease-out;
 }
 
+.performance-report-card {
+    padding: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #f9faf4 100%);
+    border: 1px solid #e7ead8;
+    overflow: hidden;
+    position: relative;
+}
+
+.performance-report-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(150, 168, 64, 0.12), transparent 55%);
+    pointer-events: none;
+}
+
+.performance-report-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.report-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.report-card-header-text {
+    flex: 1;
+}
+
+.report-card-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+
+.report-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.report-card-pill {
+    background: rgba(88, 103, 64, 0.08);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-weight: 600;
+    color: #586740;
+}
+
+.report-card-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 12px 0 18px;
+}
+
 .report-title {
     color: var(--primary-color);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 .chart-container {
     position: relative;
-    height: 250px;
-    margin-bottom: 20px;
+    height: 240px;
+    margin-bottom: 10px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-insight {
+    display: none;
+}
+
+.chart-insight strong {
+    color: #525552;
+}
+
+.chart-insight .positive {
+    color: #81f31d;
+}
+
+.chart-insight .negative {
+    color: #ff3146;
+}
+
+.report-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+.report-legend.muted {
+    color: #9ca3af;
+}
+
+.report-legend.modern {
+    justify-content: flex-start;
+    gap: 24px;
+    font-weight: 600;
+}
+
+.report-legend .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.report-legend .legend-dot.legend-2025 {
+    background: #8faf3c;
+    box-shadow: 0 0 0 4px rgba(143, 175, 60, 0.15);
+}
+
+.report-legend .legend-dot.legend-2024 {
+    background: #f2c737;
+    box-shadow: 0 0 0 4px rgba(242, 199, 55, 0.2);
+}
+
+.report-legend .legend-dot.legend-target {
+    background: #3f4a2e;
+    border: 2px solid #c5cfb1;
+}
+
+.chart-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.y-axis-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 6px;
+}
+
+.monthly-profit-chart {
+    flex: 1;
+    height: 240px;
+    background: linear-gradient(180deg, rgba(143, 175, 60, 0.02), rgba(88, 103, 64, 0.02));
+    border-radius: 18px;
+    border: 1px solid #e3e7d6;
+    padding: 12px 12px 0 12px;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .line-chart {
@@ -786,6 +957,36 @@ body {
 .line-chart svg {
     width: 100%;
     height: 100%;
+}
+
+.bar-chart {
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    position: relative;
+}
+
+.bar-chart svg {
+    width: 100%;
+    height: 100%;
+}
+
+.bar {
+    animation: growBar 1.5s ease-out backwards;
+    filter: drop-shadow(0 2px 4px rgba(150, 168, 64, 0.3));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.bar-chart rect.bar:nth-of-type(1) { animation-delay: 0.1s; }
+.bar-chart rect.bar:nth-of-type(2) { animation-delay: 0.2s; }
+.bar-chart rect.bar:nth-of-type(3) { animation-delay: 0.3s; }
+.bar-chart rect.bar:nth-of-type(4) { animation-delay: 0.4s; }
+.bar-chart rect.bar:nth-of-type(5) { animation-delay: 0.5s; }
+.bar-chart rect.bar:nth-of-type(6) { animation-delay: 0.6s; }
+
+.bar:hover {
+    opacity: 0.8;
+    filter: drop-shadow(0 4px 8px rgba(150, 168, 64, 0.5));
 }
 
 .chart-line {
@@ -969,6 +1170,19 @@ body {
     }
 }
 
+@keyframes growBar {
+    from {
+        transform: scaleY(0);
+        transform-origin: bottom;
+        opacity: 0;
+    }
+    to {
+        transform: scaleY(1);
+        transform-origin: bottom;
+        opacity: 1;
+    }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .main-content {
@@ -997,7 +1211,8 @@ body {
     }
 
     .leaders-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
     }
 
     .profile-avatar {

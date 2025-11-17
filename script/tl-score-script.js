@@ -233,6 +233,13 @@ const performanceData = {
             return null;
         }
 
+        function escapeAttributeValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            return String(value).replace(/"/g, '&quot;');
+        }
+
         function formatPesoIfNeeded(value, force = false) {
             if (value === null || value === undefined) {
                 return typeof value === 'string' ? value : '';
@@ -322,6 +329,146 @@ const performanceData = {
                 // Add % sign if it's a percentage
                 return isPercentage ? `${formatted}%` : formatted;
             }
+        }
+
+        function formatMillionsLabel(value) {
+            const numeric = Number(value);
+            if (Number.isNaN(numeric)) {
+                return '';
+            }
+            return `₱${numeric.toLocaleString('en-PH', {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            })}M`;
+        }
+
+        function resolveDataLabelColor(color, index) {
+            if (Array.isArray(color)) {
+                return color[index] || color[0] || '#525552';
+            }
+            if (typeof color === 'string' && color.trim() !== '') {
+                return color;
+            }
+            return '#525552';
+        }
+
+        function createBarDataLabelsPlugin(pluginId) {
+            return {
+                id: pluginId,
+                afterDatasetsDraw(chart) {
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.font = '11px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    const labelLineHeight = 14;
+                    const minVerticalSpacing = 4;
+                    const labelOffset = 5;
+                    const maxLabelDistance = 25;
+
+                    const allLabels = [];
+
+                    chart.data.datasets.forEach((dataset, datasetIndex) => {
+                        const meta = chart.getDatasetMeta(datasetIndex);
+                        if (!meta || meta.type !== 'bar') {
+                            return;
+                        }
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data !== null && data !== undefined && typeof bar.height === 'number' && bar.height > 0) {
+                                const customFormatter = dataset.dataLabelFormatter;
+                                const value = typeof customFormatter === 'function'
+                                    ? customFormatter(data, index, dataset)
+                                    : formatMillionsLabel(data);
+                                if (!value) {
+                                    return;
+                                }
+                                allLabels.push({
+                                    value,
+                                    barY: bar.y,
+                                    barHeight: bar.height,
+                                    barX: bar.x,
+                                    barTop: bar.y,
+                                    categoryIndex: index,
+                                    datasetIndex: datasetIndex,
+                                    labelColor: resolveDataLabelColor(dataset.dataLabelColor || dataset.backgroundColor, index)
+                                });
+                            }
+                        });
+                    });
+
+                    allLabels.sort((a, b) => {
+                        if (a.categoryIndex !== b.categoryIndex) {
+                            return a.categoryIndex - b.categoryIndex;
+                        }
+                        return a.barY - b.barY;
+                    });
+
+                    const labelPositions = [];
+
+                    allLabels.forEach((label) => {
+                        let labelY = label.barTop - labelOffset;
+                        const textWidth = ctx.measureText(label.value).width;
+                        let requiredY = labelY;
+
+                        for (let i = 0; i < labelPositions.length; i++) {
+                            const prev = labelPositions[i];
+                            const sameCategory = label.categoryIndex === prev.categoryIndex;
+
+                            const labelLeft = label.barX - textWidth / 2;
+                            const labelRight = label.barX + textWidth / 2;
+                            const prevLeft = prev.x - prev.textWidth / 2;
+                            const prevRight = prev.x + prev.textWidth / 2;
+                            const horizontalOverlap = !(labelRight < prevLeft || labelLeft > prevRight);
+
+                            let collision = false;
+
+                            if (sameCategory) {
+                                const verticalDistInitial = Math.abs(labelY - prev.y);
+                                if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
+                                    collision = true;
+                                }
+                            } else if (horizontalOverlap) {
+                                const verticalDistInitial = Math.abs(labelY - prev.y);
+                                if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
+                                    collision = true;
+                                }
+                            }
+
+                            if (collision) {
+                                const neededY = prev.y - (labelLineHeight + minVerticalSpacing);
+                                if (neededY < requiredY) {
+                                    requiredY = neededY;
+                                }
+                            }
+                        }
+
+                        labelY = requiredY;
+
+                        const minY = label.barTop - labelOffset - maxLabelDistance;
+                        if (labelY < minY) {
+                            labelY = minY;
+                        }
+
+                        labelPositions.push({
+                            x: label.barX,
+                            y: labelY,
+                            value: label.value,
+                            categoryIndex: label.categoryIndex,
+                            textWidth: textWidth,
+                            labelColor: label.labelColor
+                        });
+                    });
+
+                    labelPositions.forEach((pos) => {
+                        ctx.fillStyle = pos.labelColor;
+                        ctx.fillText(pos.value, pos.x, pos.y);
+                    });
+
+                    ctx.restore();
+                }
+            };
         }
 
         const teamOperationsData = {
@@ -1314,6 +1461,16 @@ const performanceData = {
                     contributions: this.getAttribute('data-contributions'),
                     icon: this.getAttribute('data-icon')
                 };
+
+                if (selectedLeader === 'sarah-mitchell') {
+                    resetTeamPerformanceVisuals({
+                        infoMessage: 'Select a Technical KPI to view its detailed monthly breakdown.'
+                    });
+                } else {
+                    resetTeamPerformanceVisuals({
+                        infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Pick a Technical KPI to see its monthly data.'
+                    });
+                }
                 
                 if (currentView === 'operations') {
                     showReportCards();
@@ -1373,30 +1530,14 @@ const performanceData = {
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search operations...">
             </div>
-            <div class="period-selector">
-                <label class="period-label">Period:</label>
-                <select id="periodMonthSelect" class="period-month-select">
-                    ${monthNames.map((month, idx) => 
-                        `<option value="${idx}" ${idx === selectedMonth ? 'selected' : ''}>${month}</option>`
-                    ).join('')}
-                </select>
-                <select id="periodYearSelect" class="period-year-select">
-                    ${Array.from({length: 10}, (_, i) => {
-                        const year = 2025 + i;
-                        return `<option value="${year}" ${year === selectedYear ? 'selected' : ''}>${year}</option>`;
-                    }).join('')}
-                </select>
-            </div>
             <div class="table-header">
                 <div>Operation KPI</div>
                 <div>KPI Owner</div>
                 <div class="header-group">
                     <div class="header-main">TARGET</div>
-                    <div class="header-sub period-display" id="targetPeriodDisplay">${currentMonthName} ${selectedYear}</div>
                 </div>
                 <div class="header-group">
                     <div class="header-main">ACTUAL</div>
-                    <div class="header-sub period-display" id="actualPeriodDisplay">${currentMonthName} ${selectedYear}</div>
                 </div>
             </div>
             <div id="membersList">
@@ -1473,7 +1614,6 @@ const performanceData = {
         
         attachSearchFunctionality();
         attachDropdownFunctionality(leaderId);
-        attachDateSelectorFunctionality('operations');
         attachMemberRowClickHandlers();
     }
 
@@ -1496,31 +1636,15 @@ const performanceData = {
             let html = `
                 <div class="search-box">
                     <input type="text" id="searchInputLead" placeholder="Search operations...">
-                </div>
-            <div class="period-selector">
-                <label class="period-label">Period:</label>
-                <select id="periodMonthSelectLead" class="period-month-select">
-                    ${monthNames.map((month, idx) => 
-                        `<option value="${idx}" ${idx === selectedMonth ? 'selected' : ''}>${month}</option>`
-                    ).join('')}
-                </select>
-                <select id="periodYearSelectLead" class="period-year-select">
-                    ${Array.from({length: 10}, (_, i) => {
-                        const year = 2025 + i;
-                        return `<option value="${year}" ${year === selectedYear ? 'selected' : ''}>${year}</option>`;
-                    }).join('')}
-                </select>
             </div>
                 <div class="table-header">
                     <div>Operation KPI</div>
                     <div>KPI Owner</div>
                     <div class="header-group">
                         <div class="header-main">TARGET</div>
-                    <div class="header-sub period-display" id="targetPeriodDisplayLead">${currentMonthName} ${selectedYear}</div>
                     </div>
                     <div class="header-group">
                         <div class="header-main">ACTUAL</div>
-                    <div class="header-sub period-display" id="actualPeriodDisplayLead">${currentMonthName} ${selectedYear}</div>
                     </div>
                 </div>
                 <div id="leadKpiList">
@@ -1564,298 +1688,437 @@ const performanceData = {
             profileContent.innerHTML = html;
         
         attachSearchFunctionalityLead();
-        attachDateSelectorFunctionality('lead');
         attachMemberRowClickHandlersLead();
     }
 
-        function updateTeamPerformanceBarChart(operationName, target, actual) {
-            const reportCards = document.querySelectorAll('.report-card');
-            const performanceCard = reportCards[0]; // First card is Team Performance Report
-            if (!performanceCard) return;
-            
-            const chartSvg = performanceCard.querySelector('svg.line-chart');
-            const reportTitle = performanceCard.querySelector('.report-title');
-            if (!chartSvg) return;
+        const teamPerformanceMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-            // If no data, show empty state
-            if (target === null || actual === null) {
-                chartSvg.innerHTML = '';
-                if (reportTitle) {
-                    reportTitle.innerHTML = `
-                        Team Performance Report
-                        <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                            Click an Operation KPI to show the graph
-                        </div>
-                    `;
+        const performanceReportCopy = {
+            defaultTitle: 'Monthly Profit Performance (2024)',
+            defaultSubtitle: "Tracking Year 2024 actuals against the 2025 run-rate and this year's stretch target."
+        };
+
+        const defaultTeamPerformanceSeries = {
+            title: performanceReportCopy.defaultTitle,
+            subtitle: performanceReportCopy.defaultSubtitle,
+            labels: teamPerformanceMonths,
+            // Values expressed in pesos
+            year2025: [9.2e6, 9.6e6, 9.4e6, 8.5e6, 9.0e6, 9.4e6, 9.7e6, 9.4e6, 10.8e6, 9.5e6, 9.8e6, 9.4e6],
+            year2024: [11.8e6, 9.3e6, 10.6e6, 8.6e6, 8.7e6, 10.7e6, 11.7e6, 8.7e6, 12.2e6, 10.5e6, 9.6e6, 8.7e6],
+            target: [8.8e6, 9.2e6, 8.6e6, 7.1e6, 8.1e6, 8.8e6, 10.8e6, 10.2e6, 10.5e6, 11.2e6, 9.7e6, 9.2e6],
+            narrative: 'Base financial view for the enterprise.'
+        };
+
+        const technicalTeamSeries = {
+            'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': {
+                title: 'Technical Labor Expense Trend',
+                subtitle: 'Monthly labor maintenance spend vs 2024 baseline.',
+                labels: teamPerformanceMonths,
+                // Values expressed in pesos (approximate thousands)
+                year2025: [135000, 132000, 130000, 127000, 125000, 123000, 121000, 120000, 119500, 119000, 118500, 118000],
+                year2024: [148000, 145000, 143000, 141000, 139000, 138000, 137000, 136000, 135000, 134000, 133000, 132000],
+                target: Array(12).fill(125000),
+                narrative: 'Labor expense has trended about 8% below last year and remains slightly under target for most months.'
+            },
+            'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense': {
+                title: 'Technical Materials Expense Trend',
+                subtitle: 'Materials procurement vs 2024 baseline.',
+                labels: teamPerformanceMonths,
+                year2025: [98000, 95000, 93000, 91000, 89000, 88000, 87000, 86000, 86500, 87000, 91200, 89500],
+                year2024: [110000, 108000, 106000, 105000, 103000, 102000, 101000, 100000, 99000, 98500, 98000, 97500],
+                target: Array(12).fill(87500),
+                narrative: 'Materials outlay dipped below target mid-year but has been inching upward since September.'
+            }
+        };
+
+        const teamPerformanceChartData = {
+            labels: defaultTeamPerformanceSeries.labels,
+            datasets: [
+                {
+                    label: 'Year 2025',
+                    type: 'bar',
+                    order: 1,
+                    data: [...defaultTeamPerformanceSeries.year2025],
+                    backgroundColor: '#8faf3c',
+                    borderColor: '#8faf3c',
+                    hoverBackgroundColor: '#97bb3f',
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    dataLabelColor: '#6f862e',
+                    dataLabelFormatter: (value) => formatMillionsLabel(value)
+                },
+                {
+                    label: 'Year 2024',
+                    type: 'bar',
+                    order: 2,
+                    data: [...defaultTeamPerformanceSeries.year2024],
+                    backgroundColor: '#f2c53d',
+                    borderColor: '#f2c53d',
+                    hoverBackgroundColor: '#f5cf5d',
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    dataLabelColor: '#cfa02a',
+                    dataLabelFormatter: (value) => formatMillionsLabel(value)
+                },
+                {
+                    label: 'Current Year Target',
+                    type: 'line',
+                    order: 3,
+                    data: [...defaultTeamPerformanceSeries.target],
+                    borderColor: '#3f4a2e',
+                    backgroundColor: '#3f4a2e',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#3f4a2e',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 5,
+                    tension: 0.35,
+                    fill: false,
+                    dataLabelColor: '#3f4a2e',
+                    dataLabelOffset: 14,
+                    dataLabelFormatter: (value) => formatMillionsLabel(value)
                 }
+            ]
+        };
+
+        const teamPerformanceBarLabelsPlugin = createBarDataLabelsPlugin('teamPerformanceBarLabels');
+
+        let activeTeamPerformanceSeries = defaultTeamPerformanceSeries;
+        let currentYAxisUnit = 'millions'; // 'millions' | 'thousands' | 'pesos'
+
+        function computeDatasetMaxValue() {
+            const values = [];
+            teamPerformanceChartData.datasets.forEach(dataset => {
+                if (Array.isArray(dataset.data)) {
+                    dataset.data.forEach(value => {
+                        if (typeof value === 'number' && Number.isFinite(value)) {
+                            values.push(value);
+                        }
+                    });
+                }
+            });
+            if (!values.length) {
+                return 0;
+            }
+            return Math.max(...values);
+        }
+
+        function updatePerformanceCardCopy(series = defaultTeamPerformanceSeries) {
+            const titleEl = document.querySelector('.performance-report-card .report-title');
+            const subtitleEl = document.querySelector('.performance-report-card .report-card-subtitle');
+            if (titleEl) {
+                titleEl.textContent = series?.title || performanceReportCopy.defaultTitle;
+            }
+            if (subtitleEl) {
+                subtitleEl.textContent = series?.subtitle || performanceReportCopy.defaultSubtitle;
+            }
+        }
+
+        function applyTeamPerformanceSeries(series = defaultTeamPerformanceSeries) {
+            activeTeamPerformanceSeries = series || defaultTeamPerformanceSeries;
+            const labels = activeTeamPerformanceSeries.labels || teamPerformanceMonths;
+            teamPerformanceChartData.labels = labels;
+
+            const [dataset2025, dataset2024, datasetTarget] = teamPerformanceChartData.datasets;
+            dataset2025.data = [...(activeTeamPerformanceSeries.year2025 || [])];
+            dataset2024.data = [...(activeTeamPerformanceSeries.year2024 || [])];
+            datasetTarget.data = [...(activeTeamPerformanceSeries.target || [])];
+
+            if (teamPerformanceChart) {
+                const yScale = teamPerformanceChart.options?.scales?.y;
+                if (yScale) {
+                    const maxValue = computeDatasetMaxValue();
+                    // Decide unit based on magnitude of the data
+                    if (maxValue >= 1_000_000) {
+                        currentYAxisUnit = 'millions';
+                    } else if (maxValue >= 1_000) {
+                        currentYAxisUnit = 'thousands';
+                    } else {
+                        currentYAxisUnit = 'pesos';
+                    }
+
+                    const paddedMax = maxValue > 0 ? maxValue * 1.15 : 1;
+                    yScale.suggestedMax = paddedMax;
+                    yScale.beginAtZero = true;
+                }
+                teamPerformanceChart.update();
+            }
+        }
+
+        function resetTeamPerformanceVisuals(insightContext) {
+            applyTeamPerformanceSeries(defaultTeamPerformanceSeries);
+            updatePerformanceCardCopy(defaultTeamPerformanceSeries);
+            updateTeamPerformanceInsight(insightContext);
+        }
+
+        function average(values) {
+            const valid = values.filter(value => typeof value === 'number' && !Number.isNaN(value));
+            if (!valid.length) {
+                return null;
+            }
+            return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+        }
+
+        function updateTeamPerformanceInsight(context = {}) {
+            const insightElement = document.getElementById('teamPerformanceInsight');
+            if (!insightElement) {
                 return;
             }
 
-            // Calculate difference
-            const difference = actual - target;
-            const diffPercent = ((difference / target) * 100).toFixed(1);
-            const isPositive = difference >= 0;
-            const isPercentageKpi = operationName.includes('%') || operationName.toLowerCase().includes('percent');
-            const isCurrency = !isPercentageKpi && (target >= 1000 || actual >= 1000);
-
-            // Donut chart dimensions - wider for better appearance
-            const chartWidth = 400;
-            const chartHeight = 200;
-            const centerX = chartWidth / 2;
-            const centerY = chartHeight / 2;
-            const outerRadius = 75;
-            const innerRadius = 45;
-            
-            // Calculate proportions for donut segments
-            const total = target + actual;
-            const targetPercent = (target / total) * 100;
-            const actualPercent = (actual / total) * 100;
-            
-            // Convert percentages to angles (starting from top, going clockwise)
-            const targetAngle = (targetPercent / 100) * 360;
-            const actualAngle = (actualPercent / 100) * 360;
-            
-            // Helper function to create arc path
-            const createArc = (startAngle, endAngle, radius) => {
-                const start = (startAngle - 90) * (Math.PI / 180); // Start from top
-                const end = (endAngle - 90) * (Math.PI / 180);
-                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-                
-                const x1 = centerX + radius * Math.cos(start);
-                const y1 = centerY + radius * Math.sin(start);
-                const x2 = centerX + radius * Math.cos(end);
-                const y2 = centerY + radius * Math.sin(end);
-                
-                return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-            };
-            
-            // Create donut segments
-            const targetStartAngle = 0;
-            const targetEndAngle = targetAngle;
-            const actualStartAngle = targetAngle;
-            const actualEndAngle = targetAngle + actualAngle;
-            
-            // Outer arcs
-            const targetOuterArc = createArc(targetStartAngle, targetEndAngle, outerRadius);
-            const actualOuterArc = createArc(actualStartAngle, actualEndAngle, outerRadius);
-            
-            // Inner arcs (for donut effect)
-            const targetInnerArc = createArc(targetStartAngle, targetEndAngle, innerRadius);
-            const actualInnerArc = createArc(actualStartAngle, actualEndAngle, innerRadius);
-            
-            // Create complete donut segments by combining outer and inner arcs
-            const createDonutSegment = (startAngle, endAngle) => {
-                const start = (startAngle - 90) * (Math.PI / 180);
-                const end = (endAngle - 90) * (Math.PI / 180);
-                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-                
-                const x1 = centerX + outerRadius * Math.cos(start);
-                const y1 = centerY + outerRadius * Math.sin(start);
-                const x2 = centerX + outerRadius * Math.cos(end);
-                const y2 = centerY + outerRadius * Math.sin(end);
-                const x3 = centerX + innerRadius * Math.cos(end);
-                const y3 = centerY + innerRadius * Math.sin(end);
-                const x4 = centerX + innerRadius * Math.cos(start);
-                const y4 = centerY + innerRadius * Math.sin(start);
-                
-                return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} 
-                        L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
-            };
-            
-            const targetSegment = createDonutSegment(targetStartAngle, targetEndAngle);
-            const actualSegment = createDonutSegment(actualStartAngle, actualEndAngle);
-
-            const defs = `
-                <defs>
-                    <filter id="donutShadow">
-                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
-                    </filter>
-                </defs>
-            `;
-
-            // Build chart parts
-            let parts = [defs];
-
-            // Tooltip group (initially hidden) - placed at end for higher z-index
-            const tooltipGroup = `
-                <g id="tooltip" opacity="0" style="pointer-events: none;">
-                    <defs>
-                        <filter id="tooltipShadow">
-                            <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
-                        </filter>
-                    </defs>
-                    <rect id="tooltipRect" x="0" y="0" width="140" height="55" rx="8" 
-                          fill="rgba(0, 0, 0, 0.75)" filter="url(#tooltipShadow)"/>
-                    <polygon id="tooltipArrow" points="60,55 65,65 55,65" 
-                             fill="rgba(0, 0, 0, 0.75)" filter="url(#tooltipShadow)"/>
-                    <text id="tooltipLabel" x="70" y="22" text-anchor="middle" 
-                          font-size="13" fill="white" font-weight="600"></text>
-                    <text id="tooltipValue" x="70" y="42" text-anchor="middle" 
-                          font-size="12" fill="#e5bb22" font-weight="500"></text>
-                </g>
-            `;
-
-            // Target segment (green)
-            parts.push(`
-                <path id="targetSegment" d="${targetSegment}" 
-                      fill="#96a840" 
-                      filter="url(#donutShadow)"
-                      style="cursor: pointer; transition: opacity 0.2s;"
-                      data-value="${target}"
-                      data-label="Target"
-                      data-percent="${targetPercent.toFixed(1)}" />
-            `);
-
-            // Actual segment (yellow)
-            parts.push(`
-                <path id="actualSegment" d="${actualSegment}" 
-                      fill="#e5bb22" 
-                      filter="url(#donutShadow)"
-                      style="cursor: pointer; transition: opacity 0.2s;"
-                      data-value="${actual}"
-                      data-label="Actual"
-                      data-percent="${actualPercent.toFixed(1)}" />
-            `);
-
-            // Center text showing difference
-            const diffColor = isPositive ? '#4ade80' : '#f87171';
-            const diffSymbol = isPositive ? '↑' : '↓';
-            let diffDisplay;
-            if (isCurrency) {
-                diffDisplay = formatPesoIfNeeded(Math.abs(difference));
-            } else if (isPercentageKpi) {
-                diffDisplay = Math.abs(difference).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + '%';
-            } else {
-                diffDisplay = Math.abs(difference).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            if (context.infoMessage) {
+                insightElement.textContent = context.infoMessage;
+                return;
             }
-            const centerText = `
-                <text x="${centerX}" y="${centerY - 5}" 
-                      text-anchor="middle" font-size="16" fill="${diffColor}" font-weight="700">
-                    ${diffSymbol} ${diffDisplay}
-                </text>
-                <text x="${centerX}" y="${centerY + 12}" 
-                      text-anchor="middle" font-size="11" fill="#6b7280" font-weight="500">
-                    ${Math.abs(diffPercent)}%
-                </text>
-            `;
-            parts.push(centerText);
-            
-            // Add tooltip at the end for higher z-index
-            parts.push(tooltipGroup);
 
-            chartSvg.innerHTML = parts.join('');
+            const year2025Data = teamPerformanceChartData.datasets[0]?.data || [];
+            const year2024Data = teamPerformanceChartData.datasets[1]?.data || [];
 
-            // Add tooltip event handlers
-            const targetPath = chartSvg.querySelector('#targetSegment');
-            const actualPath = chartSvg.querySelector('#actualSegment');
-            const tooltip = chartSvg.querySelector('#tooltip');
-            const tooltipLabel = chartSvg.querySelector('#tooltipLabel');
-            const tooltipValue = chartSvg.querySelector('#tooltipValue');
-            const tooltipRect = chartSvg.querySelector('#tooltipRect');
+            const avg2025 = average(year2025Data);
+            const avg2024 = average(year2024Data);
+            const avgDiff = (avg2025 !== null && avg2024 !== null) ? avg2025 - avg2024 : null;
 
-            const showTooltip = (event, segment) => {
-                const label = segment.getAttribute('data-label');
-                const value = segment.getAttribute('data-value');
-                const percent = segment.getAttribute('data-percent');
-                
-                tooltipLabel.textContent = label;
-                const valueNum = parseFloat(value);
-                // Check if it's a percentage KPI based on operationName
-                const isPercentageKpiTooltip = operationName.includes('%') || operationName.toLowerCase().includes('percent');
-                let valueDisplay;
-                if (valueNum >= 1000 && !isPercentageKpiTooltip) {
-                    valueDisplay = formatPesoIfNeeded(valueNum);
-                } else if (isPercentageKpiTooltip) {
-                    valueDisplay = valueNum.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + '%';
-                } else {
-                    valueDisplay = valueNum.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
-                }
-                tooltipValue.textContent = `${valueDisplay} (${percent}%)`;
-                
-                // Get mouse position relative to SVG
-                const svgRect = chartSvg.getBoundingClientRect();
-                const viewBox = chartSvg.viewBox.baseVal;
-                const scaleX = viewBox.width / svgRect.width;
-                const scaleY = viewBox.height / svgRect.height;
-                
-                const mouseX = (event.clientX - svgRect.left) * scaleX;
-                const mouseY = (event.clientY - svgRect.top) * scaleY;
-                
-                // Position tooltip near cursor
-                const tooltipWidth = 140;
-                const tooltipHeight = 55;
-                let tooltipX = mouseX - tooltipWidth / 2;
-                let tooltipY = mouseY - tooltipHeight - 20;
-                
-                // Keep tooltip within SVG bounds
-                if (tooltipX < 10) tooltipX = 10;
-                if (tooltipX + tooltipWidth > chartWidth - 10) tooltipX = chartWidth - tooltipWidth - 10;
-                
-                const arrow = tooltip.querySelector('#tooltipArrow');
-                if (tooltipY < 10) {
-                    tooltipY = mouseY + 25;
-                    // Flip arrow to top if tooltip is below cursor
-                    if (arrow) {
-                        arrow.setAttribute('points', '70,0 75,-10 65,-10');
-                        arrow.setAttribute('transform', `translate(${tooltipWidth/2 - 70}, ${tooltipHeight})`);
+            const peak2024Value = year2024Data.length ? Math.max(...year2024Data) : null;
+            const peak2024MonthIndex = peak2024Value !== null ? year2024Data.indexOf(peak2024Value) : -1;
+            const peak2024Month = peak2024MonthIndex >= 0 ? teamPerformanceMonths[peak2024MonthIndex] : null;
+
+            const sentences = [];
+
+            if (context.operationName) {
+                const leaderText = context.leaderName ? ` • ${context.leaderName}` : '';
+                sentences.push(`<strong>${context.operationName}</strong>${leaderText}`);
+            }
+
+            if (avg2025 !== null && avg2024 !== null && avgDiff !== null) {
+                const direction = avgDiff >= 0 ? 'ahead' : 'behind';
+                sentences.push(`Year 2025 is ${direction} of 2024 by ${formatMillionsLabel(Math.abs(avgDiff))} on average (${formatMillionsLabel(avg2025)} vs ${formatMillionsLabel(avg2024)}).`);
+            }
+
+            if (peak2024Value !== null && peak2024Month) {
+                sentences.push(`${peak2024Month} 2024 remained the peak month at ${formatMillionsLabel(peak2024Value)}.`);
+            }
+
+            const hasActual = context.actualValue !== null && context.actualValue !== undefined;
+            const hasTarget = context.targetValue !== null && context.targetValue !== undefined;
+            if (hasActual && hasTarget) {
+                const actualLabel = formatPesoIfNeeded(context.actualValue, true);
+                const targetLabel = formatPesoIfNeeded(context.targetValue, true);
+                sentences.push(`Current period actual is ${actualLabel} vs target ${targetLabel}.`);
+            }
+
+            if (context.additionalNarrative) {
+                sentences.push(context.additionalNarrative);
+            }
+
+            if (!sentences.length) {
+                sentences.push('Select a KPI to view its target vs actual details.');
+            }
+
+            insightElement.innerHTML = sentences.join(' ');
+        }
+
+        const teamPerformanceLineLabelsPlugin = {
+            id: 'teamPerformanceLineLabels',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    if (!meta || meta.hidden || meta.type !== 'line') {
+                        return;
                     }
-                } else {
-                    // Arrow pointing down (default)
-                    if (arrow) {
-                        arrow.setAttribute('points', '70,55 75,65 65,65');
-                        arrow.setAttribute('transform', `translate(${tooltipWidth/2 - 70}, 0)`);
+
+                    meta.data.forEach((point, index) => {
+                        const data = dataset.data[index];
+                        if (data === null || data === undefined) {
+                            return;
+                        }
+
+                        const customFormatter = dataset.dataLabelFormatter;
+                        const label = typeof customFormatter === 'function'
+                            ? customFormatter(data, index, dataset)
+                            : formatMillionsLabel(data);
+                        if (!label) {
+                            return;
+                        }
+
+                        const offset = dataset.dataLabelOffset || 12;
+                        ctx.fillStyle = resolveDataLabelColor(dataset.dataLabelColor || dataset.borderColor, index);
+                        ctx.fillText(label, point.x, point.y - offset);
+                    });
+                });
+
+                ctx.restore();
+            }
+        };
+
+        let teamPerformanceChart = null;
+
+        function initTeamPerformanceChart() {
+            if (typeof Chart === 'undefined') {
+                return;
+            }
+
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (!canvas) {
+                return;
+            }
+
+            if (teamPerformanceChart) {
+                teamPerformanceChart.destroy();
+            }
+
+            teamPerformanceChart = new Chart(canvas, {
+                type: 'bar',
+                data: teamPerformanceChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    layout: {
+                        padding: {
+                            top: 24,
+                            right: 24,
+                            left: 0,
+                            bottom: 12
+                        }
+                    },
+                    datasets: {
+                        bar: {
+                            barThickness: 16,
+                            maxBarThickness: 20,
+                            categoryPercentage: 0.65,
+                            barPercentage: 0.8,
+                            borderSkipped: false
+                        }
+                    },
+                    animation: {
+                        duration: 900,
+                        easing: 'cubicBezier(0.33, 1, 0.68, 1)',
+                        delay(context) {
+                            if (context.type === 'data' && context.mode === 'default' && context.dataIndex !== undefined) {
+                                return context.dataIndex * 40;
+                            }
+                            return 0;
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#ffffff',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                    return `${context.dataset.label}: ${formatPesoIfNeeded(value, true)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    weight: 600
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                padding: 10,
+                                callback: function(value) {
+                                    const numeric = Number(value) || 0;
+                                    if (currentYAxisUnit === 'millions') {
+                                        const millions = numeric / 1_000_000;
+                                        return `₱${millions.toFixed(1)}M`;
+                                    }
+                                    if (currentYAxisUnit === 'thousands') {
+                                        const thousands = numeric / 1_000;
+                                        return `₱${thousands.toLocaleString('en-US', { maximumFractionDigits: 0 })}K`;
+                                    }
+                                    return `₱${numeric.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+                                }
+                            },
+                            grid: {
+                                color: '#e4e8d7',
+                                drawTicks: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
                     }
+                },
+                plugins: [teamPerformanceBarLabelsPlugin, teamPerformanceLineLabelsPlugin]
+            });
+
+            applyTeamPerformanceSeries(activeTeamPerformanceSeries);
+            updateTeamPerformanceInsight();
+        }
+
+        function updateTeamPerformanceBarChart(operationName, target, actual) {
+            const leaderId = selectedLeader;
+            const leaderName = selectedLeaderData?.name || '';
+
+            if (!operationName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            if (leaderId === 'sarah-mitchell') {
+                const series = technicalTeamSeries[operationName];
+                if (series) {
+                    applyTeamPerformanceSeries(series);
+                    updatePerformanceCardCopy({
+                        title: series.title || operationName,
+                        subtitle: series.subtitle || performanceReportCopy.defaultSubtitle
+                    });
+                    updateTeamPerformanceInsight({
+                        operationName,
+                        leaderName,
+                        targetValue: target,
+                        actualValue: actual,
+                        additionalNarrative: series.narrative
+                    });
+                    return;
                 }
-                
-                tooltip.setAttribute('transform', `translate(${tooltipX}, ${tooltipY})`);
-                tooltip.setAttribute('opacity', '0.9');
-                
-                // Highlight segment
-                segment.setAttribute('opacity', '0.8');
-            };
 
-            const hideTooltip = (segment) => {
-                tooltip.setAttribute('opacity', '0');
-                if (segment) {
-                    segment.setAttribute('opacity', '1');
-                }
-            };
-
-            if (targetPath) {
-                targetPath.addEventListener('mouseenter', (e) => showTooltip(e, targetPath));
-                targetPath.addEventListener('mousemove', (e) => showTooltip(e, targetPath));
-                targetPath.addEventListener('mouseleave', () => hideTooltip(targetPath));
+                applyTeamPerformanceSeries(defaultTeamPerformanceSeries);
+                updatePerformanceCardCopy({
+                    title: operationName,
+                    subtitle: 'No monthly series has been configured for this KPI yet.'
+                });
+                updateTeamPerformanceInsight({
+                    infoMessage: 'No monthly breakdown available yet for this Technical KPI.'
+                });
+                return;
             }
 
-            if (actualPath) {
-                actualPath.addEventListener('mouseenter', (e) => showTooltip(e, actualPath));
-                actualPath.addEventListener('mousemove', (e) => showTooltip(e, actualPath));
-                actualPath.addEventListener('mouseleave', () => hideTooltip(actualPath));
-            }
-
-            // Update title with legend
-            if (reportTitle) {
-                const diffColor = isPositive ? '#4ade80' : '#f87171';
-                const diffSymbol = isPositive ? '↑' : '↓';
-                const shortName = operationName.length > 50 ? operationName.substring(0, 50) + '...' : operationName;
-                
-                reportTitle.innerHTML = `
-                    Team Performance Report - ${shortName}
-                    <div style="font-size: 12px; margin-top: 15px; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #96a840;"></span>
-                            <span style="color: #525552;">Target: ${formatValueForDisplay(target, isPercentageKpi)}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #e5bb22;"></span>
-                            <span style="color: #525552;">Actual: ${formatValueForDisplay(actual, isPercentageKpi)}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <span style="color: ${diffColor}; font-weight: 600;">${diffSymbol} ${diffDisplay} (${Math.abs(diffPercent)}%)</span>
-                        </div>
-                    </div>
-                `;
-            }
+            resetTeamPerformanceVisuals({
+                infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Select a Technical KPI to view monthly data.'
+            });
         }
 
         function attachMemberRowClickHandlers() {
@@ -2366,6 +2629,10 @@ const performanceData = {
 
         window.addEventListener('DOMContentLoaded', () => {
             initializeReports();
+            initTeamPerformanceChart();
+            resetTeamPerformanceVisuals({
+                infoMessage: 'Select a KPI to view its target vs actual details.'
+            });
             applyIncomingLeaderHighlight();
             syncTeamBreakdownFromCarousel(); // Sync team breakdown bars with carousel values
             

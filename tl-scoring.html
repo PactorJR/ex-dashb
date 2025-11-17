@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="css/tl-score-style.css">
     <script src="script/tl-score-script.js" defer></script>
 </head>
@@ -123,19 +124,36 @@
             <!-- Reports Section -->
             <div class="reports-section">
                 <!-- Total Performance Report -->
-                <div class="report-card">
-                    <h3 class="report-title">Team Performance Report</h3>
-                    <div class="chart-container">
-                        <svg class="line-chart" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
-                            <defs>
-                                <linearGradient id="recoverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#96a840;stop-opacity:0.3" />
-                                    <stop offset="100%" style="stop-color:#96a840;stop-opacity:0" />
-                                </linearGradient>
-                            </defs>
-                            <path class="chart-area recover-area" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30 L 300,120 L 0,120 Z" fill="url(#recoverGradient)" />
-                            <path class="chart-line recover-line" d="M 0,80 L 30,50 L 60,30 L 90,45 L 120,35 L 150,60 L 180,25 L 210,40 L 240,65 L 270,50 L 300,30" />
-                        </svg>
+                <div class="report-card performance-report-card">
+                    <div class="report-card-header">
+                        <div class="report-card-header-text">
+                            <p class="report-card-eyebrow">Executive overview</p>
+                            <h3 class="report-title">Monthly Profit Performance (2024)</h3>
+                        </div>
+                        <div class="report-card-meta">
+                            <span class="report-card-pill">Updated • YTD</span>
+                        </div>
+                    </div>
+
+                    <p class="report-card-subtitle">
+                        Tracking Year 2024 actuals against the 2025 run-rate and this year&apos;s stretch target.
+                    </p>
+
+                    <div class="report-legend modern">
+                        <span><span class="legend-dot legend-2025"></span>Year 2025</span>
+                        <span><span class="legend-dot legend-2024"></span>Year 2024</span>
+                        <span><span class="legend-dot legend-target"></span>Current Year Target</span>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <div class="y-axis-label">Net Profit (Millions ₱)</div>
+                        <div class="chart-container monthly-profit-chart">
+                            <canvas id="teamPerformanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-insight" id="teamPerformanceInsight">
+                        Loading insight…
                     </div>
                 </div>
 
