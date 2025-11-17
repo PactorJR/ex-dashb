@@ -9236,6 +9236,72 @@
                 }
             });
 
+            // Function to sync team breakdown bars in tl-scoring.html with carousel values
+            function syncTeamBreakdownBars() {
+                // Team name mapping from carousel data-team to team-label text
+                const teamNameMap = {
+                    'tech': 'Technical',
+                    'accounting': 'Accounting',
+                    'lrad': 'LRAD',
+                    'quality': 'Quality',
+                    'dc': 'DC',
+                    'it': 'IT',
+                    'opportunity': 'Opportunity',
+                    'marcom': 'Marcom',
+                    'audit': 'Audit',
+                    'gathering': 'Gathering',
+                    'operations': 'Operations'
+                };
+
+                // Store team percentages in localStorage for cross-page sync
+                const teamPercentages = {};
+
+                // Get all carousel stat cards
+                const carouselCards = document.querySelectorAll('.stat-card-carousel[data-team]');
+                
+                // Get team breakdown container (from tl-scoring.html)
+                const teamBreakdown = document.querySelector('.team-breakdown');
+                
+                carouselCards.forEach(card => {
+                    const teamData = card.getAttribute('data-team');
+                    const statValueElement = card.querySelector('.stat-value-carousel');
+                    
+                    if (statValueElement && teamData) {
+                        const percentageText = statValueElement.textContent.trim();
+                        const percentage = parseFloat(percentageText.replace('%', ''));
+                        const teamName = teamNameMap[teamData];
+                        
+                        if (teamName && !isNaN(percentage)) {
+                            // Store in localStorage
+                            teamPercentages[teamName] = percentage;
+                            
+                            // Update team breakdown if it exists on this page
+                            if (teamBreakdown) {
+                                const teamItems = teamBreakdown.querySelectorAll('.team-item');
+                                teamItems.forEach(item => {
+                                    const teamLabel = item.querySelector('.team-label');
+                                    if (teamLabel && teamLabel.textContent.trim() === teamName) {
+                                        const teamBarFill = item.querySelector('.team-bar-fill');
+                                        if (teamBarFill) {
+                                            teamBarFill.style.width = `${percentage}%`;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Save to localStorage for cross-page sync
+                if (Object.keys(teamPercentages).length > 0) {
+                    try {
+                        localStorage.setItem('teamCarouselPercentages', JSON.stringify(teamPercentages));
+                    } catch (e) {
+                        console.warn('Could not save to localStorage:', e);
+                    }
+                }
+            }
+
             // Function to update progress bars based on stat values
             function updateProgressBars() {
                 const statCards = document.querySelectorAll('.stat-card');
@@ -9274,12 +9340,34 @@
             function initializeCarousel() {
                 updateProgressBars();
                 updateCarousel();
+                syncTeamBreakdownBars(); // Sync team breakdown bars with carousel values
             }
 
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initializeCarousel);
             } else {
                 initializeCarousel();
+            }
+            
+            // Make syncTeamBreakdownBars available globally for other scripts
+            window.syncTeamBreakdownBars = syncTeamBreakdownBars;
+            
+            // Dispatch custom event when carousel is initialized so other pages can sync
+            window.dispatchEvent(new CustomEvent('carouselValuesUpdated'));
+            
+            // Also listen for any updates to carousel values and trigger sync
+            const carouselObserver = new MutationObserver(() => {
+                syncTeamBreakdownBars();
+                window.dispatchEvent(new CustomEvent('carouselValuesUpdated'));
+            });
+            
+            const statsCarousel = document.getElementById('statsCarousel');
+            if (statsCarousel) {
+                carouselObserver.observe(statsCarousel, {
+                    childList: true,
+                    subtree: true,
+                    characterData: true
+                });
             }
 
             window.addEventListener('resize', () => {

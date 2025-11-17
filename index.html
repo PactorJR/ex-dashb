@@ -6,6 +6,7 @@
     <title>Executive Dashboard</title>
     <link rel="stylesheet" href="css/index-style.css">
     <script src="script/index-script.js" defer></script>
+    <script src="script/cms.js" defer></script>
 </head>
 <body>
     
@@ -25,9 +26,9 @@
                 </div>
                 <ul class="nav-menu">
                     <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="lag-lead-summ.html">Summary Dashboard</a></li>
-                    <li><a href="tl-scoring.html">Team Leader Scoring</a></li>
-                    <li><a href="emp-scoring.html">Employee Score</a></li>
+                    <li><a href="lag-lead-summ.html">Critical Lag & Lead</a></li>
+                    <li><a href="tl-scoring.html">TL Scoreboard</a></li>
+                    <li><a href="emp-scoring.html">Team Scoreboard</a></li>
                 </ul>
                 <div class="mobile-menu-toggle">
                     <span></span>
@@ -42,22 +43,134 @@
         <!-- Hero Section -->
         <section class="hero dashboard-section" id="home">
             <div class="hero-image">
-                <img src="files/images/bg-pallete2.png" alt="background">
+                <img src="files/images/bg-pallete2.png" alt="background" data-cms-selector=".hero-image img" data-cms-type="image">
             </div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
                 <!-- Logo above content -->
                 <div class="hero-logo">
-                    <img src="files/images/lotus-dev.png" alt="LOTUS Development">
+                    <img src="files/images/lotus-dev.png" alt="LOTUS Development" data-cms-selector=".hero-logo img" data-cms-type="image">
                 </div>
                 
                 <!-- Replace text with image -->
                 <div class="hero-title-image">
-                    <img src="files/images/we-provide-image.png" alt="We provide Business Opportunities for all">
+                    <img src="files/images/we-provide-image.png" alt="We provide Business Opportunities for all" data-cms-selector=".hero-title-image img" data-cms-type="image">
                 </div>
                 
                 <div class="hero-underline"></div>
-                <p>From Community Malls to Shopping Plazas, Wet & Dry Markets, and Bazaar & Pop-Ups - discover your perfect business space with Lotus Development.</p>
+                <p data-cms-selector=".hero-content p" data-cms-type="text">From Community Malls to Shopping Plazas, Wet & Dry Markets, and Bazaar & Pop-Ups - discover your perfect business space with Lotus Development.</p>
+            </div>
+        </section>
+
+        
+        <!-- NEW: Company Status Snapshot Section -->
+        <section class="hero-new dashboard-section" id="company-snapshot">
+            <div class="container">
+                <div class="hero-badge fade-in">
+                    <span>Company Vision Score</span>
+                </div>
+                <div class="hero-content-new fade-in">
+                    <h1 class="hero-title-new" data-cms-selector=".hero-title-new" data-cms-type="text">LOTUS DEVELOPMENT</h1>
+                    <p class="hero-subtitle-new" data-cms-selector=".hero-subtitle-new" data-cms-type="text">Lotus Development is a commercial real‑estate developer and operator focused on community malls, shopping strips, transport‑linked plazas, and wet & dry markets. Our purpose is to empower people so that communities are enriched by providing business opportunities for all, from large brands to first‑time entrepreneurs.</p>
+                    <div class="hero-buttons">
+                        <a href="#ten-year-plan" class="btn-primary">
+                            <span>View 10-Year Vision</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="#three-year-plan" class="btn-secondary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            <span>View 3-Year Plan</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-graphic fade-in">
+                    <div class="graphic-card">
+                        <div class="graphic-number" data-cms-selector=".graphic-card:nth-child(1) .graphic-number" data-cms-type="text">9+</div>
+                        <div class="graphic-label" data-cms-selector=".graphic-card:nth-child(1) .graphic-label" data-cms-type="text">Active Projects</div>
+                        <div class="graphic-progress" data-cms-selector=".graphic-card:nth-child(1) .graphic-progress" data-cms-type="text">→ 18-22 (3yr) → 100+ (10yr)</div>
+                    </div>
+                    <div class="graphic-card">
+                        <div class="graphic-number" data-cms-selector=".graphic-card:nth-child(2) .graphic-number" data-cms-type="text">100%</div>
+                        <div class="graphic-label" data-cms-selector=".graphic-card:nth-child(2) .graphic-label" data-cms-type="text">Beginner Friendly</div>
+                        <div class="graphic-progress" data-cms-selector=".graphic-card:nth-child(2) .graphic-progress" data-cms-type="text">→ ≥25% (3yr) → ≥30% (10yr)</div>
+                    </div>
+                    <div class="graphic-card">
+                        <div class="graphic-number" data-cms-selector=".graphic-card:nth-child(3) .graphic-number" data-cms-type="text">4</div>
+                        <div class="graphic-label" data-cms-selector=".graphic-card:nth-child(3) .graphic-label" data-cms-type="text">Marketing Pillars</div>
+                        <div class="graphic-progress" data-cms-selector=".graphic-card:nth-child(3) .graphic-progress" data-cms-type="text">Proven Strategy Active</div>
+                    </div>
+                    <div class="graphic-card">
+                        <div class="graphic-number" data-cms-selector=".graphic-card:nth-child(4) .graphic-number" data-cms-type="text">5</div>
+                        <div class="graphic-label" data-cms-selector=".graphic-card:nth-child(4) .graphic-label" data-cms-type="text">Step Process</div>
+                        <div class="graphic-progress" data-cms-selector=".graphic-card:nth-child(4) .graphic-progress" data-cms-type="text">→ LotusOS ≥85% (3yr)</div>
+                    </div>
+                </div>
+                <div class="current-achievements fade-in">
+                    <h3 class="achievements-title" data-cms-selector=".achievements-title" data-cms-type="text">Current Achievements Progressing Toward Our Plans</h3>
+                    <div class="achievements-grid">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4 data-cms-selector=".achievement-item:nth-child(1) h4" data-cms-type="text">Site Expansion</h4>
+                                <p><strong>Current:</strong> <span data-cms-selector=".achievement-item:nth-child(1) .achievement-content p:nth-of-type(1) span" data-cms-type="text">9+ active project brands/sites</span></p>
+                                <p><strong>3-Year Goal:</strong> <span data-cms-selector=".achievement-item:nth-child(1) .achievement-content p:nth-of-type(2) span" data-cms-type="text">18-22 active sites (6+ provinces)</span></p>
+                                <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(1) .achievement-content p:nth-of-type(3) span" data-cms-type="text">100+ sites operated</span></p>
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4 data-cms-selector=".achievement-item:nth-child(2) h4" data-cms-type="text">Business Beginners Focus</h4>
+                                <p><strong>Current:</strong> <span data-cms-selector=".achievement-item:nth-child(2) .achievement-content p:nth-of-type(1) span" data-cms-type="text">Beginner-friendly formats & processes</span></p>
+                                <p><strong>3-Year Goal:</strong> <span data-cms-selector=".achievement-item:nth-child(2) .achievement-content p:nth-of-type(2) span" data-cms-type="text">Beginner share ≥25%/site</span></p>
+                                <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(2) .achievement-content p:nth-of-type(3) span" data-cms-type="text">≥30% Business Beginners</span></p>
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4 data-cms-selector=".achievement-item:nth-child(3) h4" data-cms-type="text">Internal Leadership</h4>
+                                <p><strong>Current:</strong> <span data-cms-selector=".achievement-item:nth-child(3) .achievement-content p:nth-of-type(1) span" data-cms-type="text">Standardized processes across projects</span></p>
+                                <p><strong>3-Year Goal:</strong> <span data-cms-selector=".achievement-item:nth-child(3) .achievement-content p:nth-of-type(2) span" data-cms-type="text">Internal managers ≥70%</span></p>
+                                <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(3) .achievement-content p:nth-of-type(3) span" data-cms-type="text">≥70% Internal Managers</span></p>
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="2" x2="12" y2="22"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <div class="achievement-content">
+                                <h4 data-cms-selector=".achievement-item:nth-child(4) h4" data-cms-type="text">Proven Marketing Strategy</h4>
+                                <p><strong>Current:</strong> <span data-cms-selector=".achievement-item:nth-child(4) .achievement-content p:nth-of-type(1) span" data-cms-type="text">4-pillar marketing model active</span></p>
+                                <p><strong>3-Year Goal:</strong> <span data-cms-selector=".achievement-item:nth-child(4) .achievement-content p:nth-of-type(2) span" data-cms-type="text">Community NPS ≥58</span></p>
+                                <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(4) .achievement-content p:nth-of-type(3) span" data-cms-type="text">Proven across all platforms</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -65,13 +178,13 @@
         <section class="ten-year-plan dashboard-section" id="ten-year-plan">
             <div class="container">
                 <div class="section-header fade-in">
-                    <h2>Our 10-Year Vision</h2>
-                    <p>Strategic roadmap to become a leading community developer by December 31, 2035</p>
+                    <h2 data-cms-selector="#ten-year-plan .section-header h2" data-cms-type="text">Our 10-Year Vision</h2>
+                    <p data-cms-selector="#ten-year-plan .section-header p" data-cms-type="text">Strategic roadmap to become a leading community developer by December 31, 2035</p>
                 </div>
                 <div class="plan-content">
                     <div class="plan-image-wrapper slide-left">
                         <div class="plan-image">
-                            <img src="files/images/vision.png" alt="Our Vision">
+                            <img src="files/images/vision.png" alt="Our Vision" data-cms-selector=".plan-image img" data-cms-type="image">
                             <div class="experience-badge">
                                 <div class="experience-number">10</div>
                                 <div class="experience-text">YEAR<br>VISION</div>
@@ -83,8 +196,8 @@
                         </div>
                     </div>
                     <div class="plan-text slide-right">
-                        <h3>Empowering Communities Through LIVE. WORK. PLAY.</h3>
-                        <p>Our mission is to transform communities into places of Fulfillment & Joy by developing properties that Gather & Grow communities. We operate through FEC anchors (Playspacio), Social Space, Kidzspace, and the Handaan ecosystem (H.café, Bakery by Handaan), running on LotusDŌ + LeadzZen platforms.</p>
+                        <h3 data-cms-selector="#ten-year-plan .plan-text h3" data-cms-type="text">Empowering Communities Through LIVE. WORK. PLAY.</h3>
+                        <p data-cms-selector="#ten-year-plan .plan-text > p" data-cms-type="text">Our mission is to transform communities into places of Fulfillment & Joy by developing properties that Gather & Grow communities. We operate through FEC anchors (Playspacio), Social Space, Kidzspace, and the Handaan ecosystem (H.café, Bakery by Handaan), running on LotusDŌ + LeadzZen platforms.</p>
                         
                         <div class="plan-features">
                             <div class="feature-item">
@@ -127,11 +240,11 @@
                                 <line x1="9" y1="21" x2="9" y2="9"></line>
                             </svg>
                         </div>
-                        <h3 class="feature-title">100+ Sites Operated</h3>
-                        <p class="feature-description">100+ sites operated as Boutique LIVE. WORK. PLAY projects</p>
+                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(1) .feature-title" data-cms-type="text">100+ Sites Operated</h3>
+                        <p class="feature-description" data-cms-selector=".feature-block:nth-child(1) .feature-description" data-cms-type="text">100+ sites operated as Boutique LIVE. WORK. PLAY projects</p>
                         <div class="feature-tags">
-                            <span class="feature-tag">Scalable</span>
-                            <span class="feature-tag">Expansion</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(1) .feature-tag:nth-child(1)" data-cms-type="text">Scalable</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(1) .feature-tag:nth-child(2)" data-cms-type="text">Expansion</span>
                         </div>
                     </div>
 
@@ -144,11 +257,11 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Business Beginners Focus</h3>
-                        <p class="feature-description">≥30% Business Beginners with ≥70% weekly utilization</p>
+                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(2) .feature-title" data-cms-type="text">Business Beginners Focus</h3>
+                        <p class="feature-description" data-cms-selector=".feature-block:nth-child(2) .feature-description" data-cms-type="text">≥30% Business Beginners with ≥70% weekly utilization</p>
                         <div class="feature-tags">
-                            <span class="feature-tag">Inclusive</span>
-                            <span class="feature-tag">Supportive</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(2) .feature-tag:nth-child(1)" data-cms-type="text">Inclusive</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(2) .feature-tag:nth-child(2)" data-cms-type="text">Supportive</span>
                         </div>
                     </div>
 
@@ -159,11 +272,11 @@
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Internal Leadership</h3>
-                        <p class="feature-description">≥70% Internal Managers with ≥80% Founder/Architect/Creative roles</p>
+                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(3) .feature-title" data-cms-type="text">Internal Leadership</h3>
+                        <p class="feature-description" data-cms-selector=".feature-block:nth-child(3) .feature-description" data-cms-type="text">≥70% Internal Managers with ≥80% Founder/Architect/Creative roles</p>
                         <div class="feature-tags">
-                            <span class="feature-tag">Empowering</span>
-                            <span class="feature-tag">Innovative</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(3) .feature-tag:nth-child(1)" data-cms-type="text">Empowering</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(3) .feature-tag:nth-child(2)" data-cms-type="text">Innovative</span>
                         </div>
                     </div>
 
@@ -175,11 +288,11 @@
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Proven Marketing Strategy</h3>
-                        <p class="feature-description">Proven Marketing Strategy across Community, Target, and LotusDŌ platforms</p>
+                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(4) .feature-title" data-cms-type="text">Proven Marketing Strategy</h3>
+                        <p class="feature-description" data-cms-selector=".feature-block:nth-child(4) .feature-description" data-cms-type="text">Proven Marketing Strategy across Community, Target, and LotusDŌ platforms</p>
                         <div class="feature-tags">
-                            <span class="feature-tag">Strategic</span>
-                            <span class="feature-tag">Effective</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(4) .feature-tag:nth-child(1)" data-cms-type="text">Strategic</span>
+                            <span class="feature-tag" data-cms-selector=".feature-block:nth-child(4) .feature-tag:nth-child(2)" data-cms-type="text">Effective</span>
                         </div>
                     </div>
                 </div>
@@ -189,8 +302,8 @@
         <!-- Three Year Plan Section -->
         <section class="three-year-plan dashboard-section" id="three-year-plan">
             <div class="section-header fade-in">
-                <h2>Our Three Year Plan</h2>
-                <p>Strategic goals and metrics to drive our growth</p>
+                <h2 data-cms-selector="#three-year-plan .section-header h2" data-cms-type="text">Our Three Year Plan</h2>
+                <p data-cms-selector="#three-year-plan .section-header p" data-cms-type="text">Strategic goals and metrics to drive our growth</p>
             </div>
             
             <div class="plan-services-grid">
@@ -204,30 +317,30 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
-                        <span class="service-tag">SALES</span>
+                        <span class="service-tag" data-cms-selector=".service-card:nth-child(1) .service-tag" data-cms-type="text">SALES</span>
                     </div>
-                    <h3 class="service-title">Advocates</h3>
-                    <p class="service-subtitle">Loved Brand</p>
-                    <p class="service-description">Boutique LIVE–WORK–PLAY opportunity platform loved by families, top-of-mind for business beginners & local talents.</p>
+                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(1) .service-title" data-cms-type="text">Advocates</h3>
+                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(1) .service-subtitle" data-cms-type="text">Loved Brand</p>
+                    <p class="service-description" data-cms-selector=".service-card:nth-child(1) .service-description" data-cms-type="text">Boutique LIVE–WORK–PLAY opportunity platform loved by families, top-of-mind for business beginners & local talents.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lag)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
                             <ul class="metrics-list">
-                                <li>18–22 active sites (6+ provinces)</li>
-                                <li>8+ Yspace Creative Parks</li>
-                                <li>9–12 FEC sites</li>
-                                <li>12–18 Bakery kiosks</li>
-                                <li>4–6 Handaan/H Café units</li>
-                                <li>Beginner share ≥25%/site</li>
-                                <li>Community NPS ≥58</li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(1)" data-cms-type="text">18–22 active sites (6+ provinces)</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(2)" data-cms-type="text">8+ Yspace Creative Parks</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(3)" data-cms-type="text">9–12 FEC sites</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(4)" data-cms-type="text">12–18 Bakery kiosks</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(5)" data-cms-type="text">4–6 Handaan/H Café units</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(6)" data-cms-type="text">Beginner share ≥25%/site</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(7)" data-cms-type="text">Community NPS ≥58</span></li>
                             </ul>
                         </div>
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lead)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(2) .metrics-heading" data-cms-type="text">3 Year Metrics (Lead)</h4>
                             <ul class="metrics-list">
-                                <li><strong>NEW</strong> Occupancy ≥92%</li>
-                                <li><strong>NEW</strong> Business Beginners ≥25%</li>
-                                <li>NPS ≥60 / FEC ≥70 / Handaan ≥65</li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(2) .metrics-list li:nth-child(1)" data-cms-type="html"><strong>NEW</strong> Occupancy ≥92%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(2) .metrics-list li:nth-child(2)" data-cms-type="html"><strong>NEW</strong> Business Beginners ≥25%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(2) .metrics-list li:nth-child(3)" data-cms-type="text">NPS ≥60 / FEC ≥70 / Handaan ≥65</span></li>
                             </ul>
                         </div>
                     </div>
@@ -241,25 +354,25 @@
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
-                        <span class="service-tag">PROFIT</span>
+                        <span class="service-tag" data-cms-selector=".service-card:nth-child(2) .service-tag" data-cms-type="text">PROFIT</span>
                     </div>
-                    <h3 class="service-title">Innovator</h3>
-                    <p class="service-subtitle">Living Centers</p>
-                    <p class="service-description">Distinct concepts & experiences make our Living Centers the home of community life.</p>
+                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(2) .service-title" data-cms-type="text">Innovator</h3>
+                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(2) .service-subtitle" data-cms-type="text">Living Centers</p>
+                    <p class="service-description" data-cms-selector=".service-card:nth-child(2) .service-description" data-cms-type="text">Distinct concepts & experiences make our Living Centers the home of community life.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lag)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
                             <ul class="metrics-list">
-                                <li>Utilization ≥65%</li>
-                                <li>Calendars 8–12 weeks</li>
-                                <li>Foot traffic measurement</li>
+                                <li><span data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(1) .metrics-list li:nth-child(1)" data-cms-type="text">Utilization ≥65%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(1) .metrics-list li:nth-child(2)" data-cms-type="text">Calendars 8–12 weeks</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(1) .metrics-list li:nth-child(3)" data-cms-type="text">Foot traffic measurement</span></li>
                             </ul>
                         </div>
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lead)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(2) .metrics-heading" data-cms-type="text">3 Year Metrics (Lead)</h4>
                             <ul class="metrics-list">
-                                <li><strong>NEW</strong> Utilization % (Booked ÷ Available)</li>
-                                <li><strong>NEW</strong> Event pipeline (weeks)</li>
+                                <li><span data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(2) .metrics-list li:nth-child(1)" data-cms-type="html"><strong>NEW</strong> Utilization % (Booked ÷ Available)</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(2) .metrics-list li:nth-child(2)" data-cms-type="html"><strong>NEW</strong> Event pipeline (weeks)</span></li>
                             </ul>
                         </div>
                     </div>
@@ -275,24 +388,24 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
-                        <span class="service-tag">PEOPLE</span>
+                        <span class="service-tag" data-cms-selector=".service-card:nth-child(3) .service-tag" data-cms-type="text">PEOPLE</span>
                     </div>
-                    <h3 class="service-title">Sages</h3>
-                    <p class="service-subtitle">Everlasting Team</p>
-                    <p class="service-description">A culture that creates legends and changemakers, leaders who grow leaders.</p>
+                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(3) .service-title" data-cms-type="text">Sages</h3>
+                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(3) .service-subtitle" data-cms-type="text">Everlasting Team</p>
+                    <p class="service-description" data-cms-selector=".service-card:nth-child(3) .service-description" data-cms-type="text">A culture that creates legends and changemakers, leaders who grow leaders.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lag)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
                             <ul class="metrics-list">
-                                <li>eNPS strong</li>
-                                <li>Internal managers ≥70%</li>
-                                <li>L10 ≥8/10</li>
+                                <li><span data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(1) .metrics-list li:nth-child(1)" data-cms-type="text">eNPS strong</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(1) .metrics-list li:nth-child(2)" data-cms-type="text">Internal managers ≥70%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(1) .metrics-list li:nth-child(3)" data-cms-type="text">L10 ≥8/10</span></li>
                             </ul>
                         </div>
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lead)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(2) .metrics-heading" data-cms-type="text">3 Year Metrics (Lead)</h4>
                             <ul class="metrics-list">
-                                <li><strong>NEW</strong> L10 quality score (1–10)</li>
+                                <li><span data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(2) .metrics-list li:nth-child(1)" data-cms-type="html"><strong>NEW</strong> L10 quality score (1–10)</span></li>
                             </ul>
                         </div>
                     </div>
@@ -308,28 +421,28 @@
                                 <line x1="9" y1="21" x2="9" y2="9"></line>
                             </svg>
                         </div>
-                        <span class="service-tag">PROCESS</span>
+                        <span class="service-tag" data-cms-selector=".service-card:nth-child(4) .service-tag" data-cms-type="text">PROCESS</span>
                     </div>
-                    <h3 class="service-title">Essentialists</h3>
-                    <p class="service-subtitle">Empowering System</p>
-                    <p class="service-description">A process that empowers the way— organize, simplify, and set the standard.</p>
+                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(4) .service-title" data-cms-type="text">Essentialists</h3>
+                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(4) .service-subtitle" data-cms-type="text">Empowering System</p>
+                    <p class="service-description" data-cms-selector=".service-card:nth-child(4) .service-description" data-cms-type="text">A process that empowers the way— organize, simplify, and set the standard.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lag)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
                             <ul class="metrics-list">
-                                <li>LotusOS ≥85%</li>
-                                <li>OTIF ≥98%</li>
-                                <li>EBITDA +2–3 pts</li>
-                                <li>MTTR ↓</li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-list li:nth-child(1)" data-cms-type="text">LotusOS ≥85%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-list li:nth-child(2)" data-cms-type="text">OTIF ≥98%</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-list li:nth-child(3)" data-cms-type="text">EBITDA +2–3 pts</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-list li:nth-child(4)" data-cms-type="text">MTTR ↓</span></li>
                             </ul>
                         </div>
                         <div class="metrics-group">
-                            <h4 class="metrics-heading">3 Year Metrics (Lead)</h4>
+                            <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(2) .metrics-heading" data-cms-type="text">3 Year Metrics (Lead)</h4>
                             <ul class="metrics-list">
-                                <li><strong>NEW</strong> LotusOS adoption %</li>
-                                <li><strong>NEW</strong> OTIF %</li>
-                                <li><strong>NEW</strong> EBITDA margin</li>
-                                <li><strong>NEW</strong> Breakdowns + MTTR</li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(2) .metrics-list li:nth-child(1)" data-cms-type="html"><strong>NEW</strong> LotusOS adoption %</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(2) .metrics-list li:nth-child(2)" data-cms-type="html"><strong>NEW</strong> OTIF %</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(2) .metrics-list li:nth-child(3)" data-cms-type="html"><strong>NEW</strong> EBITDA margin</span></li>
+                                <li><span data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(2) .metrics-list li:nth-child(4)" data-cms-type="html"><strong>NEW</strong> Breakdowns + MTTR</span></li>
                             </ul>
                         </div>
                     </div>

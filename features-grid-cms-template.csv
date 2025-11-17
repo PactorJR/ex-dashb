@@ -1,0 +1,18 @@
+Type,Selector,Attribute,Value,Alt
+text,.feature-block:nth-child(1) .feature-title,,100+ Sites Operated,
+text,.feature-block:nth-child(1) .feature-description,,100+ sites operated as Boutique LIVE. WORK. PLAY projects,
+text,.feature-block:nth-child(1) .feature-tag:nth-child(1),,Scalable,
+text,.feature-block:nth-child(1) .feature-tag:nth-child(2),,Expansion,
+text,.feature-block:nth-child(2) .feature-title,,Business Beginners Focus,
+text,.feature-block:nth-child(2) .feature-description,,≥30% Business Beginners with ≥70% weekly utilization,
+text,.feature-block:nth-child(2) .feature-tag:nth-child(1),,Inclusive,
+text,.feature-block:nth-child(2) .feature-tag:nth-child(2),,Supportive,
+text,.feature-block:nth-child(3) .feature-title,,Internal Leadership,
+text,.feature-block:nth-child(3) .feature-description,,≥70% Internal Managers with ≥80% Founder/Architect/Creative roles,
+text,.feature-block:nth-child(3) .feature-tag:nth-child(1),,Empowering,
+text,.feature-block:nth-child(3) .feature-tag:nth-child(2),,Innovative,
+text,.feature-block:nth-child(4) .feature-title,,Proven Marketing Strategy,
+text,.feature-block:nth-child(4) .feature-description,,Proven Marketing Strategy across Community, Target, and LotusDŌ platforms,
+text,.feature-block:nth-child(4) .feature-tag:nth-child(1),,Strategic,
+text,.feature-block:nth-child(4) .feature-tag:nth-child(2),,Effective,
+
