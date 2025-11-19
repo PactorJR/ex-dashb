@@ -32,6 +32,8 @@
     </nav>
 
     <div class="container">
+        
+
         <!-- Team Leaders Section -->
         <div class="leaders-section">
             <div class="leaders-grid">
@@ -95,16 +97,31 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Scoreboard Toggle -->
+            <div class="scoreboard-toggle-wrapper">
+                <div class="scoreboard-toggle-section">
+                    <div class="scoreboard-toggle-container">
+                        <button class="scoreboard-toggle-btn active" data-target="leaders">Team Leaders</button>
+                        <button class="scoreboard-toggle-btn" data-target="members">Team Members</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Team Operations Section -->
             <div class="members-section" id="operationsSection">
                 <div class="section-header">
-                    <h2 class="section-title">Lag KPIs</h2>
-                    <button class="section-switch" id="sectionSwitch"></button>
+                    <div class="section-heading">
+                        <h2 class="section-title" id="operationsSectionTitle">Lag KPIs</h2>
+                        <p class="section-subtitle" id="operationsSectionSubtitle">Select a team leader to view KPIs</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="section-switch" id="sectionSwitch" aria-label="Toggle between Lag and Lead KPIs"></button>
+                    </div>
                 </div>
 
                 <div id="operationsContent" class="empty-state">
                     <div class="empty-state-icon">👥</div>
-                    <div class="empty-state-text">Select a team leader to view operations</div>
+                    <div class="empty-state-text">Select a team leader to view lag KPIs or their team members</div>
                 </div>
             </div>
 
@@ -146,7 +163,7 @@
                     </div>
 
                     <div class="chart-wrapper">
-                        <div class="y-axis-label">Net Profit (Millions ₱)</div>
+                        <div class="y-axis-label">KPI Value (₱ Thousands)</div>
                         <div class="chart-container monthly-profit-chart">
                             <canvas id="teamPerformanceChart"></canvas>
                         </div>
@@ -154,77 +171,6 @@
 
                     <div class="chart-insight" id="teamPerformanceInsight">
                         Loading insight…
-                    </div>
-                </div>
-
-                <div class="report-card">
-                    <div class="team-breakdown">
-                        <div class="team-item">
-                            <div class="team-label">Technical</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 10%; background: #ff94ad;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Accounting</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 20%; background: #C9A66C;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">LRAD</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 30%; background: #FFDB48; animation-delay: 0.2s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Quality</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 80%; background: #3D85C6; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">DC</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 23%; background: #aff598; animation-delay: 0.6s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">IT</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 45%; background: #5c5c5c; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Opportunity</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 37%; background: #aba1c0; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Marcom</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 47%; background: #EDED00; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Audit</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 54%; background: #CC4125; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Gathering</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 27%; background: #7960c4; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
-                        <div class="team-item">
-                            <div class="team-label">Operations</div>
-                            <div class="team-bar">
-                                <div class="team-bar-fill" style="width: 77%; background: #8B9B5B; animation-delay: 0.4s;"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

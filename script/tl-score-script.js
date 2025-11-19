@@ -330,147 +330,6 @@ const performanceData = {
                 return isPercentage ? `${formatted}%` : formatted;
             }
         }
-
-        function formatMillionsLabel(value) {
-            const numeric = Number(value);
-            if (Number.isNaN(numeric)) {
-                return '';
-            }
-            return `₱${numeric.toLocaleString('en-PH', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            })}M`;
-        }
-
-        function resolveDataLabelColor(color, index) {
-            if (Array.isArray(color)) {
-                return color[index] || color[0] || '#525552';
-            }
-            if (typeof color === 'string' && color.trim() !== '') {
-                return color;
-            }
-            return '#525552';
-        }
-
-        function createBarDataLabelsPlugin(pluginId) {
-            return {
-                id: pluginId,
-                afterDatasetsDraw(chart) {
-                    const ctx = chart.ctx;
-                    ctx.save();
-                    ctx.font = '11px sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-
-                    const labelLineHeight = 14;
-                    const minVerticalSpacing = 4;
-                    const labelOffset = 5;
-                    const maxLabelDistance = 25;
-
-                    const allLabels = [];
-
-                    chart.data.datasets.forEach((dataset, datasetIndex) => {
-                        const meta = chart.getDatasetMeta(datasetIndex);
-                        if (!meta || meta.type !== 'bar') {
-                            return;
-                        }
-                        meta.data.forEach((bar, index) => {
-                            const data = dataset.data[index];
-                            if (data !== null && data !== undefined && typeof bar.height === 'number' && bar.height > 0) {
-                                const customFormatter = dataset.dataLabelFormatter;
-                                const value = typeof customFormatter === 'function'
-                                    ? customFormatter(data, index, dataset)
-                                    : formatMillionsLabel(data);
-                                if (!value) {
-                                    return;
-                                }
-                                allLabels.push({
-                                    value,
-                                    barY: bar.y,
-                                    barHeight: bar.height,
-                                    barX: bar.x,
-                                    barTop: bar.y,
-                                    categoryIndex: index,
-                                    datasetIndex: datasetIndex,
-                                    labelColor: resolveDataLabelColor(dataset.dataLabelColor || dataset.backgroundColor, index)
-                                });
-                            }
-                        });
-                    });
-
-                    allLabels.sort((a, b) => {
-                        if (a.categoryIndex !== b.categoryIndex) {
-                            return a.categoryIndex - b.categoryIndex;
-                        }
-                        return a.barY - b.barY;
-                    });
-
-                    const labelPositions = [];
-
-                    allLabels.forEach((label) => {
-                        let labelY = label.barTop - labelOffset;
-                        const textWidth = ctx.measureText(label.value).width;
-                        let requiredY = labelY;
-
-                        for (let i = 0; i < labelPositions.length; i++) {
-                            const prev = labelPositions[i];
-                            const sameCategory = label.categoryIndex === prev.categoryIndex;
-
-                            const labelLeft = label.barX - textWidth / 2;
-                            const labelRight = label.barX + textWidth / 2;
-                            const prevLeft = prev.x - prev.textWidth / 2;
-                            const prevRight = prev.x + prev.textWidth / 2;
-                            const horizontalOverlap = !(labelRight < prevLeft || labelLeft > prevRight);
-
-                            let collision = false;
-
-                            if (sameCategory) {
-                                const verticalDistInitial = Math.abs(labelY - prev.y);
-                                if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
-                                    collision = true;
-                                }
-                            } else if (horizontalOverlap) {
-                                const verticalDistInitial = Math.abs(labelY - prev.y);
-                                if (verticalDistInitial < (labelLineHeight + minVerticalSpacing)) {
-                                    collision = true;
-                                }
-                            }
-
-                            if (collision) {
-                                const neededY = prev.y - (labelLineHeight + minVerticalSpacing);
-                                if (neededY < requiredY) {
-                                    requiredY = neededY;
-                                }
-                            }
-                        }
-
-                        labelY = requiredY;
-
-                        const minY = label.barTop - labelOffset - maxLabelDistance;
-                        if (labelY < minY) {
-                            labelY = minY;
-                        }
-
-                        labelPositions.push({
-                            x: label.barX,
-                            y: labelY,
-                            value: label.value,
-                            categoryIndex: label.categoryIndex,
-                            textWidth: textWidth,
-                            labelColor: label.labelColor
-                        });
-                    });
-
-                    labelPositions.forEach((pos) => {
-                        ctx.fillStyle = pos.labelColor;
-                        ctx.fillText(pos.value, pos.x, pos.y);
-                    });
-
-                    ctx.restore();
-                }
-            };
-        }
-
         const teamOperationsData = {
             'sarah-mitchell': [
                 { role: 'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense', owner: 'II. Technical Team Leader', kra: '-' },
@@ -519,9 +378,162 @@ const performanceData = {
             ]
         };
 
+        const teamMembersData = {
+            'Technical Team': [
+                {
+                    name: 'Alex Thompson',
+                    role: 'Senior Developer',
+                    kpi: 'Code Quality',
+                    targetValue: 95,
+                    targetLabel: '95%',
+                    actualValue: 92,
+                    actualLabel: '92%'
+                },
+                {
+                    name: 'Isabelle Cruz',
+                    role: 'Automation Lead',
+                    kpi: 'Deployment Stability',
+                    targetValue: 99.5,
+                    targetLabel: '99.5%',
+                    actualValue: 99.1,
+                    actualLabel: '99.1%'
+                }
+            ],
+            'Accounting Team': [
+                {
+                    name: 'Ethan Morales',
+                    role: 'Financial Analyst',
+                    kpi: 'Budget Variance',
+                    targetValue: 3.0,
+                    targetLabel: '≤ 3%',
+                    actualValue: 2.4,
+                    actualLabel: '2.4%'
+                },
+                {
+                    name: 'Grace Velasco',
+                    role: 'Collections Lead',
+                    kpi: 'Receivables Turnover',
+                    targetValue: 45,
+                    targetLabel: '45 days',
+                    actualValue: 38,
+                    actualLabel: '38 days'
+                }
+            ],
+            'LRAD Team': [
+                {
+                    name: 'Rachel Kim',
+                    role: 'Researcher',
+                    kpi: 'Research Output',
+                    targetValue: 10,
+                    targetLabel: '10 studies',
+                    actualValue: 12,
+                    actualLabel: '12 studies'
+                },
+                {
+                    name: 'Liam Ocampo',
+                    role: 'Data Strategist',
+                    kpi: 'Insights Published',
+                    targetValue: 8,
+                    targetLabel: '8 briefs',
+                    actualValue: 9,
+                    actualLabel: '9 briefs'
+                }
+            ],
+            'Quality Team': [
+                {
+                    name: 'James Cooper',
+                    role: 'QA Lead',
+                    kpi: 'Defect Rate',
+                    targetValue: 2,
+                    targetLabel: '< 2%',
+                    actualValue: 1.5,
+                    actualLabel: '1.5%'
+                }
+            ],
+            'DC Team': [
+                {
+                    name: 'Maria Santos',
+                    role: 'Infrastructure Manager',
+                    kpi: 'Uptime',
+                    targetValue: 99.9,
+                    targetLabel: '99.9%',
+                    actualValue: 99.95,
+                    actualLabel: '99.95%'
+                }
+            ],
+            'IT Team': [
+                {
+                    name: 'Christopher Brown',
+                    role: 'System Admin',
+                    kpi: 'Response Time',
+                    targetValue: 2,
+                    targetLabel: '≤ 2s',
+                    actualValue: 1.8,
+                    actualLabel: '1.8s'
+                }
+            ],
+            'Opportunity Team': [
+                {
+                    name: 'Nina Patel',
+                    role: 'Business Developer',
+                    kpi: 'New Leads',
+                    targetValue: 50,
+                    targetLabel: '50 leads',
+                    actualValue: 58,
+                    actualLabel: '58 leads'
+                }
+            ],
+            'Marcom Team': [
+                {
+                    name: 'Daniel Foster',
+                    role: 'Marketing Specialist',
+                    kpi: 'Campaign Reach',
+                    targetValue: 10000,
+                    targetLabel: '10K',
+                    actualValue: 12500,
+                    actualLabel: '12.5K'
+                }
+            ],
+            'Audit Team': [
+                {
+                    name: 'Sophie Zhang',
+                    role: 'Auditor',
+                    kpi: 'Compliance',
+                    targetValue: 100,
+                    targetLabel: '100%',
+                    actualValue: 100,
+                    actualLabel: '100%'
+                }
+            ],
+            'Gathering Team': [
+                {
+                    name: 'Tyler Davis',
+                    role: 'Data Analyst',
+                    kpi: 'Data Accuracy',
+                    targetValue: 98,
+                    targetLabel: '98%',
+                    actualValue: 99,
+                    actualLabel: '99%'
+                }
+            ],
+            'Operations Team': [
+                {
+                    name: 'Olivia Nguyen',
+                    role: 'Ops Manager',
+                    kpi: 'Efficiency',
+                    targetValue: 90,
+                    targetLabel: '90%',
+                    actualValue: 93,
+                    actualLabel: '93%'
+                }
+            ]
+        };
+
         const leadKpiData = {
             'sarah-mitchell': [
-                { role: '# of Breakdowns : Engineering Department', owner: 'III. Engineering Integrator - Actual', kra: '-' }
+                { role: '# of Breakdowns : Engineering Department', owner: 'III. Engineering Integrator - Actual', kra: '-' },
+                { role: '% Predictive Maintenance Compliance', owner: 'III. Engineering Integrator - Actual', kra: '-' },
+                { role: '% Emergency Response Within SLA', owner: 'III. Engineering Integrator - Actual', kra: '-' }
             ],
             'james-peterson': [
                 { role: '% On time & Accurate - LMDB', owner: 'IX. Lotuszen Master Database Custodian', kra: '-' },
@@ -593,21 +605,156 @@ const performanceData = {
         };
 
         // Technical expenses data by period (year-month) - Lag KPIs
-        const technicalExpensesData = {
-            'sarah-mitchell': {
+        const DEFAULT_PERIOD_KEY = '2025-11';
+        const chartMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function randomIntInRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function randomFloatInRange(min, max, decimals = 1) {
+            const factor = 10 ** decimals;
+            return Math.round((Math.random() * (max - min) + min) * factor) / factor;
+        }
+
+        function generateTechnicalLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
                 'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': {
-                    '2025-11': {
-                        target: 125000,
-                        actual: 118500
+                    [periodKey]: {
+                        target: randomIntInRange(120000, 135000),
+                        actual: randomIntInRange(112000, 132000)
                     }
                 },
                 'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense': {
-                    '2025-11': {
-                        target: 87500,
-                        actual: 91200
+                    [periodKey]: {
+                        target: randomIntInRange(85000, 90000),
+                        actual: randomIntInRange(82000, 95000)
                     }
                 }
-            },
+            };
+        }
+
+        function generateTechnicalLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '# of Breakdowns : Engineering Department': {
+                    [periodKey]: {
+                        target: randomIntInRange(4, 6),
+                        actual: randomIntInRange(2, 5)
+                    }
+                },
+                '% Predictive Maintenance Compliance': {
+                    [periodKey]: {
+                        target: randomFloatInRange(94, 97, 1),
+                        actual: randomFloatInRange(92, 99, 1)
+                    }
+                },
+                '% Emergency Response Within SLA': {
+                    [periodKey]: {
+                        target: randomFloatInRange(90, 94, 1),
+                        actual: randomFloatInRange(88, 97, 1)
+                    }
+                }
+            };
+        }
+
+        function generateMonthlySeries({
+            targetRange = [0, 0],
+            actualRange = [0, 0],
+            decimals = 0,
+            valueType = 'thousands'
+        } = {}) {
+            const labels = [...chartMonths];
+            const useFloat = decimals > 0;
+            const generateValue = (min, max) => {
+                return useFloat
+                    ? randomFloatInRange(min, max, decimals)
+                    : randomIntInRange(min, max);
+            };
+
+            const target = labels.map(() => generateValue(targetRange[0], targetRange[1]));
+            const actual = labels.map(() => generateValue(actualRange[0], actualRange[1]));
+
+            const totalTarget = Number(target.reduce((sum, value) => sum + value, 0).toFixed(decimals));
+            const totalActual = Number(actual.reduce((sum, value) => sum + value, 0).toFixed(decimals));
+
+            return {
+                labels,
+                target,
+                actual,
+                totalTarget,
+                totalActual,
+                valueType
+            };
+        }
+
+        const technicalMonthlySeries = {
+            'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': generateMonthlySeries({
+                targetRange: [120000, 135000],
+                actualRange: [112000, 132000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense': generateMonthlySeries({
+                targetRange: [85000, 95000],
+                actualRange: [82000, 93000],
+                valueType: 'thousands'
+            }),
+            '# of Breakdowns : Engineering Department': generateMonthlySeries({
+                targetRange: [4, 6],
+                actualRange: [2, 5],
+                valueType: 'count'
+            }),
+            '% Predictive Maintenance Compliance': generateMonthlySeries({
+                targetRange: [94, 97],
+                actualRange: [92, 99],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Emergency Response Within SLA': generateMonthlySeries({
+                targetRange: [90, 95],
+                actualRange: [88, 97],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        function formatAggregateValue(value, valueType = 'thousands') {
+            if (value === null || value === undefined || Number.isNaN(Number(value))) {
+                return '-';
+            }
+            if (valueType === 'percentage') {
+                const numeric = Number(value);
+                const fixed = numeric.toFixed(1);
+                return `${fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed}%`;
+            }
+            if (valueType === 'count') {
+                return Number(value).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            }
+            return formatPesoIfNeeded(value, true);
+        }
+
+        function getAggregateDisplayData(kpiName, targetNumeric, actualNumeric, isPercentageKpi = false) {
+            const monthlySeries = technicalMonthlySeries[kpiName];
+            let aggregateTarget = targetNumeric;
+            let aggregateActual = actualNumeric;
+            let valueType = isPercentageKpi ? 'percentage' : 'thousands';
+
+            if (monthlySeries) {
+                aggregateTarget = monthlySeries.totalTarget;
+                aggregateActual = monthlySeries.totalActual;
+                valueType = monthlySeries.valueType;
+            }
+
+            return {
+                aggregateTarget: typeof aggregateTarget === 'number' ? aggregateTarget : null,
+                aggregateActual: typeof aggregateActual === 'number' ? aggregateActual : null,
+                valueType,
+                targetLabel: formatAggregateValue(aggregateTarget, valueType),
+                actualLabel: formatAggregateValue(aggregateActual, valueType)
+            };
+        }
+
+        const technicalExpensesData = {
+            'sarah-mitchell': generateTechnicalLagKpiData(),
             'marcus-chen': {
                 'FS Target : Total Operating Expense': {
                     '2025-11': {
@@ -769,15 +916,51 @@ const performanceData = {
         };
 
         // Lead KPI data by period (year-month)
-        const leadKpiExpensesData = {
-            'sarah-mitchell': {
-                '# of Breakdowns : Engineering Department': {
-                    '2025-11': {
-                        target: 5,
-                        actual: 3
-                    }
+        function generateLeadTotals(leaderId) {
+            const leadKpis = leadKpiData[leaderId] || [];
+            let totalTarget = 0;
+            let totalActual = 0;
+            let hasNumericValues = false;
+            let formatType = null;
+            let mixedFormats = false;
+
+            leadKpis.forEach(kpi => {
+                const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+                const periodData = leadKpiExpensesData[leaderId]?.[kpi.role]?.[periodKey];
+                const targetNumeric = periodData ? parseNumericValue(periodData.target) : null;
+                const actualNumeric = periodData ? parseNumericValue(periodData.actual) : null;
+                const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
+                const aggregateData = getAggregateDisplayData(kpi.role, targetNumeric, actualNumeric, isPercentageKpi);
+
+                if (typeof aggregateData.aggregateTarget === 'number') {
+                    totalTarget += aggregateData.aggregateTarget;
+                    hasNumericValues = true;
                 }
-            },
+                if (typeof aggregateData.aggregateActual === 'number') {
+                    totalActual += aggregateData.aggregateActual;
+                    hasNumericValues = true;
+                }
+
+                if (!formatType) {
+                    formatType = aggregateData.valueType;
+                } else if (formatType !== aggregateData.valueType) {
+                    mixedFormats = true;
+                }
+            });
+
+            if (!hasNumericValues) {
+                return { target: null, actual: null, formatType: null };
+            }
+
+            return {
+                target: totalTarget,
+                actual: totalActual,
+                formatType: mixedFormats ? 'mixed' : formatType
+            };
+        }
+
+        const leadKpiExpensesData = {
+            'sarah-mitchell': generateTechnicalLeadKpiData(),
             'james-peterson': {
                 '% On time & Accurate - LMDB': {
                     '2025-11': {
@@ -1300,69 +1483,95 @@ const performanceData = {
 
         // State management
         let currentView = 'operations';
+        let currentOperationsView = 'lag';
         let selectedLeader = null;
         let selectedLeaderData = null;
         let selectedYear = 2025;
         let selectedMonth = 10; // November (0-11, 10 = November)
 
-        // Hide report cards initially on page load
+        // Ensure report cards are visible on load
         function initializeReports() {
             const reportCards = document.querySelectorAll('.report-card');
-            reportCards.forEach((card, index) => {
-                if (index === 0 || index === 2) {
-                    card.style.display = 'none';
-                }
-                if (index === 1) {
-                    card.style.display = 'block';
-                }
+            reportCards.forEach(card => {
+                card.style.display = 'block';
             });
         }
 
-        // Show report cards and hide legend when in operations view with selected leader
+        // Show report cards (kept for compatibility with existing flow)
         function showReportCards() {
             const reportCards = document.querySelectorAll('.report-card');
-            reportCards.forEach((card, index) => {
-                if (index === 0) {
-                    card.style.display = 'block';
-                    // Set initial instruction message if no data is shown yet
-                    const chartSvg = card.querySelector('svg.line-chart');
-                    const reportTitle = card.querySelector('.report-title');
-                    if (chartSvg && reportTitle && !chartSvg.querySelector('g')) {
-                        chartSvg.innerHTML = '';
-                        reportTitle.innerHTML = `
-                            Team Performance Report
-                            <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                                Click an Operation KPI to show the graph
-                            </div>
-                        `;
-                    }
-                } else {
-                    card.style.display = 'none';
+            reportCards.forEach(card => {
+                card.style.display = 'block';
+                const chartSvg = card.querySelector('svg.line-chart');
+                const reportTitle = card.querySelector('.report-title');
+                if (chartSvg && reportTitle && !chartSvg.querySelector('g')) {
+                    chartSvg.innerHTML = '';
+                    reportTitle.innerHTML = `
+                        Team Performance Report
+                        <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
+                            Click an Operation KPI to show the graph
+                        </div>
+                    `;
                 }
             });
         }
 
-        // Show only legend and hide other report cards
+        // Maintain legend state without hiding the card
         function showLegendOnly() {
             const reportCards = document.querySelectorAll('.report-card');
-            reportCards.forEach((card, index) => {
-                if (index === 0) {
-                    card.style.display = 'block';
-                    // Set initial instruction message
-                    const chartSvg = card.querySelector('svg.line-chart');
-                    const reportTitle = card.querySelector('.report-title');
-                    if (chartSvg && reportTitle) {
-                        chartSvg.innerHTML = '';
-                        reportTitle.innerHTML = `
-                            Team Performance Report
-                            <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                                Click an Operation KPI to show the graph
-                            </div>
-                        `;
-                    }
-                } else {
-                    card.style.display = 'none';
+            reportCards.forEach(card => {
+                card.style.display = 'block';
+                const chartSvg = card.querySelector('svg.line-chart');
+                const reportTitle = card.querySelector('.report-title');
+                if (chartSvg && reportTitle) {
+                    chartSvg.innerHTML = '';
+                    reportTitle.innerHTML = `
+                        Team Performance Report
+                        <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
+                            Click an Operation KPI to show the graph
+                        </div>
+                    `;
                 }
+            });
+        }
+
+        let scoreboardToggleButtons = [];
+
+        function initScoreboardToggle() {
+            scoreboardToggleButtons = Array.from(document.querySelectorAll('.scoreboard-toggle-btn'));
+            if (!scoreboardToggleButtons.length) {
+                return;
+            }
+
+            scoreboardToggleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (button.disabled) {
+                        return;
+                    }
+
+                    const target = button.dataset.target === 'members' ? 'members' : 'lag';
+                    if (currentOperationsView === target) {
+                        return;
+                    }
+
+                    currentOperationsView = target;
+                    refreshOperationsContent();
+                    updateScoreboardToggleState();
+                });
+            });
+
+            updateScoreboardToggleState();
+        }
+
+        function updateScoreboardToggleState() {
+            if (!scoreboardToggleButtons.length) {
+                return;
+            }
+
+            scoreboardToggleButtons.forEach(button => {
+                const target = button.dataset.target === 'members' ? 'members' : 'lag';
+                const isActive = currentOperationsView === target;
+                button.classList.toggle('active', isActive);
             });
         }
 
@@ -1381,6 +1590,8 @@ const performanceData = {
         const sectionSwitch2 = document.getElementById('sectionSwitch2');
         const operationsSection = document.getElementById('operationsSection');
         const profileSection = document.getElementById('profileSection');
+        const operationsSectionTitle = document.getElementById('operationsSectionTitle');
+        const operationsSectionSubtitle = document.getElementById('operationsSectionSubtitle');
 
         function toggleSections() {
             currentView = currentView === 'operations' ? 'profile' : 'operations';
@@ -1412,6 +1623,7 @@ const performanceData = {
                 } else {
                     showLegendOnly();
                 }
+                refreshOperationsContent();
             } else {
                 operationsSection.classList.add('hidden');
                 profileSection.classList.remove('hidden');
@@ -1495,7 +1707,7 @@ const performanceData = {
                     }
                 }
                 
-                updateOperationsSection(selectedLeader, selectedLeaderData.title);
+                refreshOperationsContent();
                 updateLeadKpiSection(selectedLeader, selectedLeaderData.title);
             });
 
@@ -1523,8 +1735,6 @@ const performanceData = {
             `;
             return;
         }
-        
-        const currentMonthName = monthNames[selectedMonth];
         
         let html = `
             <div class="search-box">
@@ -1617,6 +1827,134 @@ const performanceData = {
         attachMemberRowClickHandlers();
     }
 
+
+        function generateInitials(name = '') {
+            return name
+                .split(' ')
+                .filter(part => part.trim() !== '')
+                .slice(0, 2)
+                .map(part => part.charAt(0).toUpperCase())
+                .join('') || 'TM';
+        }
+
+        function updateTeamMembersSection(leaderId, teamName) {
+            const operationsContent = document.getElementById('operationsContent');
+            if (!operationsContent) {
+                return;
+            }
+            const members = teamMembersData[teamName] || [];
+
+            if (members.length === 0) {
+                operationsContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-text">No team members data available for ${teamName}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search team members...">
+                </div>
+                <div class="table-header">
+                    <div>Employee Name</div>
+                    <div>Team</div>
+                    <div>Role KPI Owner</div>
+                    <div>KPI</div>
+                    <div>Target</div>
+                    <div>Actual</div>
+                </div>
+                <div id="membersList">
+            `;
+
+            members.forEach(member => {
+                const initials = generateInitials(member.name);
+                const targetValue = typeof member.targetValue === 'number' ? member.targetValue : '';
+                const actualValue = typeof member.actualValue === 'number' ? member.actualValue : '';
+                const targetLabel = member.targetLabel ?? (targetValue !== '' ? targetValue : '-');
+                const actualLabel = member.actualLabel ?? (actualValue !== '' ? actualValue : '-');
+
+                html += `
+                    <div class="member-row member-view-row"
+                         data-name="${member.name.toLowerCase()}"
+                         data-team="${teamName.toLowerCase()}"
+                         data-operation="${member.kpi}"
+                         data-target="${targetValue}"
+                         data-actual="${actualValue}"
+                         style="cursor: pointer;">
+                        <div class="member-info">
+                            <div class="member-avatar">${initials}</div>
+                            <div class="member-name">${member.name}</div>
+                        </div>
+                        <div>${teamName}</div>
+                        <div>${member.role}</div>
+                        <div>${member.kpi}</div>
+                        <div>${targetLabel}</div>
+                        <div>${actualLabel}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            operationsContent.innerHTML = html;
+
+            attachSearchFunctionality();
+            attachMemberRowClickHandlers();
+        }
+
+        function refreshOperationsContent() {
+            const operationsContent = document.getElementById('operationsContent');
+            if (!operationsContent) {
+                return;
+            }
+
+            const isMembersView = currentOperationsView === 'members';
+
+            if (!selectedLeader || !selectedLeaderData) {
+                operationsSection?.classList.toggle('members-view-active', isMembersView);
+                if (operationsSectionTitle) {
+                    operationsSectionTitle.textContent = isMembersView ? 'Team Members' : 'Lag KPIs';
+                }
+                if (operationsSectionSubtitle) {
+                    operationsSectionSubtitle.textContent = isMembersView
+                        ? 'Select a team leader to view their team members'
+                        : 'Select a team leader to view KPIs';
+                }
+                operationsContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-text">${isMembersView
+                            ? 'Select a team leader to view their team members'
+                            : 'Select a team leader to view lag KPIs or their team members'}</div>
+                    </div>
+                `;
+                updateScoreboardToggleState();
+                return;
+            }
+
+            operationsSection?.classList.toggle('members-view-active', isMembersView);
+
+            if (operationsSectionTitle) {
+                operationsSectionTitle.textContent = isMembersView ? 'Team Members' : 'Lag KPIs';
+            }
+
+            if (operationsSectionSubtitle) {
+                operationsSectionSubtitle.textContent = isMembersView
+                    ? `People reporting under ${selectedLeaderData.name}`
+                    : `${selectedLeaderData.title} lag KPIs`;
+            }
+
+            if (isMembersView) {
+                updateTeamMembersSection(selectedLeader, selectedLeaderData.title);
+            } else {
+                updateOperationsSection(selectedLeader, selectedLeaderData.title);
+            }
+
+            updateScoreboardToggleState();
+        }
+
         function updateLeadKpiSection(leaderId, teamName) {
             const profileContent = document.getElementById('profileContent');
             const leadKpis = leadKpiData[leaderId] || [];
@@ -1631,8 +1969,6 @@ const performanceData = {
                 return;
             }
         
-        const currentMonthName = monthNames[selectedMonth];
-            
             let html = `
                 <div class="search-box">
                     <input type="text" id="searchInputLead" placeholder="Search operations...">
@@ -1641,10 +1977,12 @@ const performanceData = {
                     <div>Operation KPI</div>
                     <div>KPI Owner</div>
                     <div class="header-group">
-                        <div class="header-main">TARGET</div>
+                        <div class="header-main">TOTAL TARGET</div>
+                        <div class="header-value" id="leadTotalsTarget">—</div>
                     </div>
                     <div class="header-group">
-                        <div class="header-main">ACTUAL</div>
+                        <div class="header-main">TOTAL ACTUAL</div>
+                        <div class="header-value" id="leadTotalsActual">—</div>
                     </div>
                 </div>
                 <div id="leadKpiList">
@@ -1655,11 +1993,12 @@ const performanceData = {
             const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
             const periodData = leadKpiExpensesData[leaderId]?.[kpi.role]?.[periodKey];
             
-            const targetNumeric = periodData ? periodData.target : null;
-            const actualNumeric = periodData ? periodData.actual : null;
+            const targetNumeric = periodData ? parseNumericValue(periodData.target) : null;
+            const actualNumeric = periodData ? parseNumericValue(periodData.actual) : null;
             const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
-            const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
-            const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
+            const aggregateData = getAggregateDisplayData(kpi.role, targetNumeric, actualNumeric, isPercentageKpi);
+            const targetValue = aggregateData.targetLabel;
+            const actualValue = aggregateData.actualLabel;
             
                 html += `
                 <div class="member-row" 
@@ -1675,10 +2014,10 @@ const performanceData = {
                         </div>
                         <div>${kpi.owner}</div>
                         <div class="target-group">
-                        <div>${targetValue}</div>
+                            <div class="aggregate-value">${targetValue}</div>
                         </div>
                         <div class="actual-group">
-                        <div>${actualValue}</div>
+                            <div class="aggregate-value">${actualValue}</div>
                         </div>
                     </div>
                 `;
@@ -1686,106 +2025,75 @@ const performanceData = {
             
             html += '</div>';
             profileContent.innerHTML = html;
+
+            const leadTotals = generateLeadTotals(leaderId);
+        if (leadTotals) {
+                const totalTargetEl = document.getElementById('leadTotalsTarget');
+                const totalActualEl = document.getElementById('leadTotalsActual');
+                const formatType = leadTotals.formatType && leadTotals.formatType !== 'mixed'
+                    ? leadTotals.formatType
+                    : null;
+                if (totalTargetEl) {
+                    totalTargetEl.textContent = formatType && leadTotals.target !== null
+                        ? formatAggregateValue(leadTotals.target, formatType)
+                        : '—';
+                }
+                if (totalActualEl) {
+                    totalActualEl.textContent = formatType && leadTotals.actual !== null
+                        ? formatAggregateValue(leadTotals.actual, formatType)
+                        : '—';
+                }
+            }
         
         attachSearchFunctionalityLead();
         attachMemberRowClickHandlersLead();
     }
 
-        const teamPerformanceMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
         const performanceReportCopy = {
-            defaultTitle: 'Monthly Profit Performance (2024)',
-            defaultSubtitle: "Tracking Year 2024 actuals against the 2025 run-rate and this year's stretch target."
+            defaultTitle: 'Technical KPI Target vs Actual',
+            defaultSubtitle: 'Click a Technical KPI to see its current actual vs target snapshot.'
         };
 
         const defaultTeamPerformanceSeries = {
             title: performanceReportCopy.defaultTitle,
             subtitle: performanceReportCopy.defaultSubtitle,
-            labels: teamPerformanceMonths,
-            // Values expressed in pesos
-            year2025: [9.2e6, 9.6e6, 9.4e6, 8.5e6, 9.0e6, 9.4e6, 9.7e6, 9.4e6, 10.8e6, 9.5e6, 9.8e6, 9.4e6],
-            year2024: [11.8e6, 9.3e6, 10.6e6, 8.6e6, 8.7e6, 10.7e6, 11.7e6, 8.7e6, 12.2e6, 10.5e6, 9.6e6, 8.7e6],
-            target: [8.8e6, 9.2e6, 8.6e6, 7.1e6, 8.1e6, 8.8e6, 10.8e6, 10.2e6, 10.5e6, 11.2e6, 9.7e6, 9.2e6],
-            narrative: 'Base financial view for the enterprise.'
-        };
-
-        const technicalTeamSeries = {
-            'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': {
-                title: 'Technical Labor Expense Trend',
-                subtitle: 'Monthly labor maintenance spend vs 2024 baseline.',
-                labels: teamPerformanceMonths,
-                // Values expressed in pesos (approximate thousands)
-                year2025: [135000, 132000, 130000, 127000, 125000, 123000, 121000, 120000, 119500, 119000, 118500, 118000],
-                year2024: [148000, 145000, 143000, 141000, 139000, 138000, 137000, 136000, 135000, 134000, 133000, 132000],
-                target: Array(12).fill(125000),
-                narrative: 'Labor expense has trended about 8% below last year and remains slightly under target for most months.'
-            },
-            'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense': {
-                title: 'Technical Materials Expense Trend',
-                subtitle: 'Materials procurement vs 2024 baseline.',
-                labels: teamPerformanceMonths,
-                year2025: [98000, 95000, 93000, 91000, 89000, 88000, 87000, 86000, 86500, 87000, 91200, 89500],
-                year2024: [110000, 108000, 106000, 105000, 103000, 102000, 101000, 100000, 99000, 98500, 98000, 97500],
-                target: Array(12).fill(87500),
-                narrative: 'Materials outlay dipped below target mid-year but has been inching upward since September.'
-            }
+            labels: [...chartMonths],
+            target: new Array(chartMonths.length).fill(0),
+            actual: new Array(chartMonths.length).fill(0),
+            narrative: 'Select a Technical KPI to load data.',
+            valueType: 'thousands'
         };
 
         const teamPerformanceChartData = {
-            labels: defaultTeamPerformanceSeries.labels,
+            labels: [...defaultTeamPerformanceSeries.labels],
             datasets: [
                 {
-                    label: 'Year 2025',
+                    label: 'Target',
                     type: 'bar',
                     order: 1,
-                    data: [...defaultTeamPerformanceSeries.year2025],
-                    backgroundColor: '#8faf3c',
-                    borderColor: '#8faf3c',
-                    hoverBackgroundColor: '#97bb3f',
-                    borderWidth: 0,
-                    borderRadius: 10,
-                    dataLabelColor: '#6f862e',
-                    dataLabelFormatter: (value) => formatMillionsLabel(value)
-                },
-                {
-                    label: 'Year 2024',
-                    type: 'bar',
-                    order: 2,
-                    data: [...defaultTeamPerformanceSeries.year2024],
+                    data: [...defaultTeamPerformanceSeries.target],
                     backgroundColor: '#f2c53d',
                     borderColor: '#f2c53d',
                     hoverBackgroundColor: '#f5cf5d',
                     borderWidth: 0,
-                    borderRadius: 10,
-                    dataLabelColor: '#cfa02a',
-                    dataLabelFormatter: (value) => formatMillionsLabel(value)
+                    borderRadius: 10
                 },
                 {
-                    label: 'Current Year Target',
-                    type: 'line',
-                    order: 3,
-                    data: [...defaultTeamPerformanceSeries.target],
-                    borderColor: '#3f4a2e',
-                    backgroundColor: '#3f4a2e',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#3f4a2e',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
-                    dataLabelColor: '#3f4a2e',
-                    dataLabelOffset: 14,
-                    dataLabelFormatter: (value) => formatMillionsLabel(value)
+                    label: 'Actual',
+                    type: 'bar',
+                    order: 2,
+                    data: [...defaultTeamPerformanceSeries.actual],
+                    backgroundColor: '#8faf3c',
+                    borderColor: '#8faf3c',
+                    hoverBackgroundColor: '#97bb3f',
+                    borderWidth: 0,
+                    borderRadius: 10
                 }
             ]
         };
 
-        const teamPerformanceBarLabelsPlugin = createBarDataLabelsPlugin('teamPerformanceBarLabels');
-
         let activeTeamPerformanceSeries = defaultTeamPerformanceSeries;
-        let currentYAxisUnit = 'millions'; // 'millions' | 'thousands' | 'pesos'
+        let currentValueFormat = 'thousands'; // 'thousands' | 'percentage' | 'count'
 
         function computeDatasetMaxValue() {
             const values = [];
@@ -1804,6 +2112,20 @@ const performanceData = {
             return Math.max(...values);
         }
 
+        function updateYAxisLabel() {
+            const labelElement = document.querySelector('.performance-report-card .y-axis-label');
+            if (!labelElement) {
+                return;
+            }
+            if (currentValueFormat === 'percentage') {
+                labelElement.textContent = 'KPI Value (%)';
+            } else if (currentValueFormat === 'count') {
+                labelElement.textContent = 'KPI Value (Units)';
+            } else {
+                labelElement.textContent = 'KPI Value (₱ Thousands)';
+            }
+        }
+
         function updatePerformanceCardCopy(series = defaultTeamPerformanceSeries) {
             const titleEl = document.querySelector('.performance-report-card .report-title');
             const subtitleEl = document.querySelector('.performance-report-card .report-card-subtitle');
@@ -1817,28 +2139,37 @@ const performanceData = {
 
         function applyTeamPerformanceSeries(series = defaultTeamPerformanceSeries) {
             activeTeamPerformanceSeries = series || defaultTeamPerformanceSeries;
-            const labels = activeTeamPerformanceSeries.labels || teamPerformanceMonths;
+            const labels = (activeTeamPerformanceSeries.labels && activeTeamPerformanceSeries.labels.length)
+                ? [...activeTeamPerformanceSeries.labels]
+                : [...defaultTeamPerformanceSeries.labels];
+
+            const targetData = (activeTeamPerformanceSeries.target && activeTeamPerformanceSeries.target.length)
+                ? [...activeTeamPerformanceSeries.target]
+                : new Array(labels.length).fill(0);
+            const actualData = (activeTeamPerformanceSeries.actual && activeTeamPerformanceSeries.actual.length)
+                ? [...activeTeamPerformanceSeries.actual]
+                : new Array(labels.length).fill(0);
+
             teamPerformanceChartData.labels = labels;
 
-            const [dataset2025, dataset2024, datasetTarget] = teamPerformanceChartData.datasets;
-            dataset2025.data = [...(activeTeamPerformanceSeries.year2025 || [])];
-            dataset2024.data = [...(activeTeamPerformanceSeries.year2024 || [])];
-            datasetTarget.data = [...(activeTeamPerformanceSeries.target || [])];
+            const [targetDataset, actualDataset] = teamPerformanceChartData.datasets;
+            targetDataset.data = targetData;
+            actualDataset.data = actualData;
+
+            if (series?.valueType === 'percentage') {
+                currentValueFormat = 'percentage';
+            } else if (series?.valueType === 'count') {
+                currentValueFormat = 'count';
+            } else {
+                currentValueFormat = 'thousands';
+            }
+            updateYAxisLabel();
 
             if (teamPerformanceChart) {
                 const yScale = teamPerformanceChart.options?.scales?.y;
                 if (yScale) {
                     const maxValue = computeDatasetMaxValue();
-                    // Decide unit based on magnitude of the data
-                    if (maxValue >= 1_000_000) {
-                        currentYAxisUnit = 'millions';
-                    } else if (maxValue >= 1_000) {
-                        currentYAxisUnit = 'thousands';
-                    } else {
-                        currentYAxisUnit = 'pesos';
-                    }
-
-                    const paddedMax = maxValue > 0 ? maxValue * 1.15 : 1;
+                    const paddedMax = maxValue > 0 ? maxValue * 1.25 : 1;
                     yScale.suggestedMax = paddedMax;
                     yScale.beginAtZero = true;
                 }
@@ -1846,10 +2177,24 @@ const performanceData = {
             }
         }
 
+        function clearTeamPerformanceChart() {
+            teamPerformanceChartData.labels = [...defaultTeamPerformanceSeries.labels];
+            const [targetDataset, actualDataset] = teamPerformanceChartData.datasets;
+            targetDataset.data = [...defaultTeamPerformanceSeries.target];
+            actualDataset.data = [...defaultTeamPerformanceSeries.actual];
+            currentValueFormat = 'thousands';
+            updateYAxisLabel();
+            if (teamPerformanceChart) {
+                teamPerformanceChart.update();
+            }
+        }
+
         function resetTeamPerformanceVisuals(insightContext) {
-            applyTeamPerformanceSeries(defaultTeamPerformanceSeries);
-            updatePerformanceCardCopy(defaultTeamPerformanceSeries);
-            updateTeamPerformanceInsight(insightContext);
+            clearTeamPerformanceChart();
+            updatePerformanceCardCopy();
+            updateTeamPerformanceInsight(insightContext || {
+                infoMessage: 'Select a Technical KPI to view its target vs actual comparison.'
+            });
         }
 
         function average(values) {
@@ -1871,39 +2216,63 @@ const performanceData = {
                 return;
             }
 
-            const year2025Data = teamPerformanceChartData.datasets[0]?.data || [];
-            const year2024Data = teamPerformanceChartData.datasets[1]?.data || [];
-
-            const avg2025 = average(year2025Data);
-            const avg2024 = average(year2024Data);
-            const avgDiff = (avg2025 !== null && avg2024 !== null) ? avg2025 - avg2024 : null;
-
-            const peak2024Value = year2024Data.length ? Math.max(...year2024Data) : null;
-            const peak2024MonthIndex = peak2024Value !== null ? year2024Data.indexOf(peak2024Value) : -1;
-            const peak2024Month = peak2024MonthIndex >= 0 ? teamPerformanceMonths[peak2024MonthIndex] : null;
-
             const sentences = [];
+            const operationName = context.operationName;
+            const leaderName = context.leaderName;
+            const isPercentage = context.isPercentage ?? (operationName ? /%|percent/i.test(operationName.toLowerCase()) : false);
+            const valueFormat = context.valueFormat || (isPercentage ? 'percentage' : 'thousands');
 
-            if (context.operationName) {
-                const leaderText = context.leaderName ? ` • ${context.leaderName}` : '';
-                sentences.push(`<strong>${context.operationName}</strong>${leaderText}`);
+            const targetValue = (context.targetValue ?? null) !== null
+                ? context.targetValue
+                : teamPerformanceChartData.datasets[0]?.data?.[0];
+            const actualValue = (context.actualValue ?? null) !== null
+                ? context.actualValue
+                : teamPerformanceChartData.datasets[1]?.data?.[0];
+
+            const formatValue = (value) => {
+                if (value === null || value === undefined) {
+                    return 'N/A';
+                }
+                if (valueFormat === 'percentage') {
+                    const numeric = Number(value);
+                    if (Number.isNaN(numeric)) {
+                        return 'N/A';
+                    }
+                    const fixed = numeric.toFixed(1);
+                    return `${fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed}%`;
+                }
+                if (valueFormat === 'count') {
+                    const numeric = Number(value);
+                    if (Number.isNaN(numeric)) {
+                        return 'N/A';
+                    }
+                    return numeric.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                }
+                return formatPesoIfNeeded(value, true);
+            };
+
+            if (operationName) {
+                const leaderText = leaderName ? ` - ${leaderName}` : '';
+                sentences.push(`<strong>${operationName}</strong>${leaderText}`);
             }
 
-            if (avg2025 !== null && avg2024 !== null && avgDiff !== null) {
-                const direction = avgDiff >= 0 ? 'ahead' : 'behind';
-                sentences.push(`Year 2025 is ${direction} of 2024 by ${formatMillionsLabel(Math.abs(avgDiff))} on average (${formatMillionsLabel(avg2025)} vs ${formatMillionsLabel(avg2024)}).`);
-            }
-
-            if (peak2024Value !== null && peak2024Month) {
-                sentences.push(`${peak2024Month} 2024 remained the peak month at ${formatMillionsLabel(peak2024Value)}.`);
-            }
-
-            const hasActual = context.actualValue !== null && context.actualValue !== undefined;
-            const hasTarget = context.targetValue !== null && context.targetValue !== undefined;
-            if (hasActual && hasTarget) {
-                const actualLabel = formatPesoIfNeeded(context.actualValue, true);
-                const targetLabel = formatPesoIfNeeded(context.targetValue, true);
-                sentences.push(`Current period actual is ${actualLabel} vs target ${targetLabel}.`);
+            if (actualValue !== null && actualValue !== undefined && targetValue !== null && targetValue !== undefined) {
+                const variance = actualValue - targetValue;
+                const varianceMagnitude = Math.abs(variance);
+                let varianceLabel;
+                if (valueFormat === 'percentage') {
+                    const fixed = varianceMagnitude.toFixed(1);
+                    varianceLabel = `${variance >= 0 ? '+' : '-'}${fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed}%`;
+                } else if (valueFormat === 'count') {
+                    varianceLabel = `${variance >= 0 ? '+' : '-'}${varianceMagnitude.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+                } else {
+                    varianceLabel = `${variance >= 0 ? '+' : '-'}${formatPesoIfNeeded(varianceMagnitude, true)}`;
+                }
+                sentences.push(`Actual is ${formatValue(actualValue)} vs target ${formatValue(targetValue)} (${varianceLabel}).`);
+            } else if (actualValue !== null && actualValue !== undefined) {
+                sentences.push(`Actual value: ${formatValue(actualValue)}.`);
+            } else if (targetValue !== null && targetValue !== undefined) {
+                sentences.push(`Target value: ${formatValue(targetValue)}.`);
             }
 
             if (context.additionalNarrative) {
@@ -1911,50 +2280,11 @@ const performanceData = {
             }
 
             if (!sentences.length) {
-                sentences.push('Select a KPI to view its target vs actual details.');
+                sentences.push('Select a Technical KPI to view its target vs actual details.');
             }
 
             insightElement.innerHTML = sentences.join(' ');
         }
-
-        const teamPerformanceLineLabelsPlugin = {
-            id: 'teamPerformanceLineLabels',
-            afterDatasetsDraw(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                ctx.font = '11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta || meta.hidden || meta.type !== 'line') {
-                        return;
-                    }
-
-                    meta.data.forEach((point, index) => {
-                        const data = dataset.data[index];
-                        if (data === null || data === undefined) {
-                            return;
-                        }
-
-                        const customFormatter = dataset.dataLabelFormatter;
-                        const label = typeof customFormatter === 'function'
-                            ? customFormatter(data, index, dataset)
-                            : formatMillionsLabel(data);
-                        if (!label) {
-                            return;
-                        }
-
-                        const offset = dataset.dataLabelOffset || 12;
-                        ctx.fillStyle = resolveDataLabelColor(dataset.dataLabelColor || dataset.borderColor, index);
-                        ctx.fillText(label, point.x, point.y - offset);
-                    });
-                });
-
-                ctx.restore();
-            }
-        };
 
         let teamPerformanceChart = null;
 
@@ -2026,6 +2356,22 @@ const performanceData = {
                             callbacks: {
                                 label: function(context) {
                                     const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                    if (currentValueFormat === 'percentage') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        const fixed = numeric.toFixed(1);
+                                        const formatted = fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
+                                        return `${context.dataset.label}: ${formatted}%`;
+                                    }
+                                    if (currentValueFormat === 'count') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        return `${context.dataset.label}: ${numeric.toLocaleString('en-US')}`;
+                                    }
                                     return `${context.dataset.label}: ${formatPesoIfNeeded(value, true)}`;
                                 }
                             }
@@ -2050,15 +2396,14 @@ const performanceData = {
                                 padding: 10,
                                 callback: function(value) {
                                     const numeric = Number(value) || 0;
-                                    if (currentYAxisUnit === 'millions') {
-                                        const millions = numeric / 1_000_000;
-                                        return `₱${millions.toFixed(1)}M`;
+                                    if (currentValueFormat === 'percentage') {
+                                        return `${numeric.toLocaleString('en-US', { maximumFractionDigits: 0 })}%`;
                                     }
-                                    if (currentYAxisUnit === 'thousands') {
-                                        const thousands = numeric / 1_000;
-                                        return `₱${thousands.toLocaleString('en-US', { maximumFractionDigits: 0 })}K`;
+                                    if (currentValueFormat === 'count') {
+                                        return numeric.toLocaleString('en-US', { maximumFractionDigits: 0 });
                                     }
-                                    return `₱${numeric.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+                                    const thousands = numeric / 1_000;
+                                    return `₱${thousands.toLocaleString('en-US', { maximumFractionDigits: 1 })}K`;
                                 }
                             },
                             grid: {
@@ -2071,7 +2416,7 @@ const performanceData = {
                         }
                     }
                 },
-                plugins: [teamPerformanceBarLabelsPlugin, teamPerformanceLineLabelsPlugin]
+                plugins: []
             });
 
             applyTeamPerformanceSeries(activeTeamPerformanceSeries);
@@ -2081,43 +2426,75 @@ const performanceData = {
         function updateTeamPerformanceBarChart(operationName, target, actual) {
             const leaderId = selectedLeader;
             const leaderName = selectedLeaderData?.name || '';
+            const leaderTitle = selectedLeaderData?.title || 'Technical Team';
+
+            if (leaderId !== 'sarah-mitchell') {
+                resetTeamPerformanceVisuals({
+                    infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Select a Technical KPI to view its target vs actual snapshot.'
+                });
+                return;
+            }
 
             if (!operationName) {
                 resetTeamPerformanceVisuals();
                 return;
             }
 
-            if (leaderId === 'sarah-mitchell') {
-                const series = technicalTeamSeries[operationName];
-                if (series) {
-                    applyTeamPerformanceSeries(series);
-                    updatePerformanceCardCopy({
-                        title: series.title || operationName,
-                        subtitle: series.subtitle || performanceReportCopy.defaultSubtitle
-                    });
-                    updateTeamPerformanceInsight({
-                        operationName,
-                        leaderName,
-                        targetValue: target,
-                        actualValue: actual,
-                        additionalNarrative: series.narrative
-                    });
-                    return;
-                }
+            const monthlySeries = technicalMonthlySeries[operationName];
 
-                applyTeamPerformanceSeries(defaultTeamPerformanceSeries);
+            if (monthlySeries) {
+                applyTeamPerformanceSeries({
+                    labels: monthlySeries.labels,
+                    target: monthlySeries.target,
+                    actual: monthlySeries.actual,
+                    valueType: monthlySeries.valueType
+                });
+
                 updatePerformanceCardCopy({
                     title: operationName,
-                    subtitle: 'No monthly series has been configured for this KPI yet.'
+                    subtitle: leaderName ? `${leaderName} • ${leaderTitle}` : leaderTitle
                 });
+
+                const isPercentageSeries = monthlySeries.valueType === 'percentage';
                 updateTeamPerformanceInsight({
-                    infoMessage: 'No monthly breakdown available yet for this Technical KPI.'
+                    operationName,
+                    leaderName,
+                    targetValue: target ?? monthlySeries.totalTarget,
+                    actualValue: actual ?? monthlySeries.totalActual,
+                    isPercentage: isPercentageSeries || /%|percent/i.test(operationName.toLowerCase()),
+                    valueFormat: monthlySeries.valueType
                 });
                 return;
             }
 
-            resetTeamPerformanceVisuals({
-                infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Select a Technical KPI to view monthly data.'
+            if (target === null || target === undefined || actual === null || actual === undefined) {
+                resetTeamPerformanceVisuals({
+                    infoMessage: 'No actual vs target values are available for this Technical KPI.'
+                });
+                return;
+            }
+
+            const isPercentage = /%|percent/i.test(operationName.toLowerCase());
+
+            const series = {
+                labels: ['KPI Value'],
+                target: [target],
+                actual: [actual],
+                valueType: isPercentage ? 'percentage' : 'thousands'
+            };
+
+            applyTeamPerformanceSeries(series);
+            updatePerformanceCardCopy({
+                title: operationName,
+                subtitle: leaderName ? `${leaderName} • ${leaderTitle}` : leaderTitle
+            });
+
+            updateTeamPerformanceInsight({
+                operationName,
+                leaderName,
+                targetValue: target,
+                actualValue: actual,
+                isPercentage
             });
         }
 
@@ -2176,7 +2553,7 @@ const performanceData = {
                     if (isLead) {
                         updateLeadKpiSection(selectedLeader, selectedLeaderData.title);
                     } else {
-                        updateOperationsSection(selectedLeader, selectedLeaderData.title);
+                        refreshOperationsContent();
                     }
                 }
             };
@@ -2552,135 +2929,13 @@ const performanceData = {
             setTimeout(highlightCard, 400);
         }
 
-        // Function to sync team breakdown bars with carousel values from lag-lead-summ.html
-        function syncTeamBreakdownFromCarousel() {
-            // Team name mapping from carousel data-team to team-label text
-            const teamNameMap = {
-                'tech': 'Technical',
-                'accounting': 'Accounting',
-                'lrad': 'LRAD',
-                'quality': 'Quality',
-                'dc': 'DC',
-                'it': 'IT',
-                'opportunity': 'Opportunity',
-                'marcom': 'Marcom',
-                'audit': 'Audit',
-                'gathering': 'Gathering',
-                'operations': 'Operations'
-            };
-
-            // Get team breakdown container (from tl-scoring.html)
-            const teamBreakdown = document.querySelector('.team-breakdown');
-            if (!teamBreakdown) return;
-
-            // First, try to get values from carousel if it exists on this page
-            const carouselCards = document.querySelectorAll('.stat-card-carousel[data-team]');
-            let teamPercentages = {};
-            
-            if (carouselCards.length > 0) {
-                // Carousel exists on this page, read directly
-                carouselCards.forEach(card => {
-                    const teamData = card.getAttribute('data-team');
-                    const statValueElement = card.querySelector('.stat-value-carousel');
-                    
-                    if (statValueElement && teamData) {
-                        const percentageText = statValueElement.textContent.trim();
-                        const percentage = parseFloat(percentageText.replace('%', ''));
-                        const teamName = teamNameMap[teamData];
-                        
-                        if (teamName && !isNaN(percentage)) {
-                            teamPercentages[teamName] = percentage;
-                        }
-                    }
-                });
-            } else {
-                // Carousel doesn't exist, try using the global sync function
-                if (window.syncTeamBreakdownBars) {
-                    window.syncTeamBreakdownBars();
-                    return;
-                }
-                
-                // Fallback: read from localStorage (set by lag-lead-script.js)
-                try {
-                    const stored = localStorage.getItem('teamCarouselPercentages');
-                    if (stored) {
-                        teamPercentages = JSON.parse(stored);
-                    }
-                } catch (e) {
-                    console.warn('Could not read from localStorage:', e);
-                }
-            }
-            
-            // Update team breakdown bars with the percentages
-            Object.keys(teamPercentages).forEach(teamName => {
-                const percentage = teamPercentages[teamName];
-                const teamItems = teamBreakdown.querySelectorAll('.team-item');
-                teamItems.forEach(item => {
-                    const teamLabel = item.querySelector('.team-label');
-                    if (teamLabel && teamLabel.textContent.trim() === teamName) {
-                        const teamBarFill = item.querySelector('.team-bar-fill');
-                        if (teamBarFill) {
-                            teamBarFill.style.width = `${percentage}%`;
-                        }
-                    }
-                });
-            });
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
             initializeReports();
             initTeamPerformanceChart();
             resetTeamPerformanceVisuals({
                 infoMessage: 'Select a KPI to view its target vs actual details.'
             });
+            refreshOperationsContent();
+            initScoreboardToggle();
             applyIncomingLeaderHighlight();
-            syncTeamBreakdownFromCarousel(); // Sync team breakdown bars with carousel values
-            
-            // Also sync when window loads (in case carousel loads after DOMContentLoaded)
-            window.addEventListener('load', () => {
-                setTimeout(syncTeamBreakdownFromCarousel, 100);
-            });
         });
-
-        // Listen for custom event from lag-lead-script.js when carousel values are updated
-        window.addEventListener('carouselValuesUpdated', () => {
-            syncTeamBreakdownFromCarousel();
-        });
-
-        // Listen for localStorage changes (when carousel values are updated on another page/tab)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'teamCarouselPercentages') {
-                syncTeamBreakdownFromCarousel();
-            }
-        });
-
-        // Also use mutation observer as a fallback to sync when carousel values change
-        if (typeof MutationObserver !== 'undefined') {
-            const observer = new MutationObserver((mutations) => {
-                let shouldSync = false;
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                        const target = mutation.target;
-                        if (target.classList && (
-                            target.classList.contains('stat-value-carousel') ||
-                            target.closest('.stat-card-carousel')
-                        )) {
-                            shouldSync = true;
-                        }
-                    }
-                });
-                if (shouldSync) {
-                    setTimeout(syncTeamBreakdownFromCarousel, 50);
-                }
-            });
-
-            // Observe changes to carousel stat values
-            const carousel = document.getElementById('statsCarousel');
-            if (carousel) {
-                observer.observe(carousel, {
-                    childList: true,
-                    subtree: true,
-                    characterData: true
-                });
-            }
-        }
