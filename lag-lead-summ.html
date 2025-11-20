@@ -21,7 +21,6 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="lag-lead-summ.html" class="active">Critical Lag & Lead</a></li>
                     <li><a href="tl-scoring.html">TL Scoreboard</a></li>
-                    <li><a href="emp-scoring.html">Team Scoreboard</a></li>
                 </ul>
                 <div class="mobile-menu-toggle">
                     <span></span>
@@ -184,15 +183,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">881.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-unit-target">881.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">970.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-unit-actual">970.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+10.1%</div>
+                        <div class="stat-value" data-metric="occupancy-rate-unit-variance" style="color: #81f31d;">+10.1%</div>
                     </div>
                 </div>
             </div>
@@ -215,15 +214,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">0.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-area-target">0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">0.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-area-actual">0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">0%</div>
+                        <div class="stat-value" data-metric="occupancy-rate-area-variance">0%</div>
                     </div>
                 </div>
             </div>
@@ -246,15 +245,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">0.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-pvalue-target">0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">0.00</div>
+                        <div class="stat-value" data-metric="occupancy-rate-pvalue-actual">0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">0%</div>
+                        <div class="stat-value" data-metric="occupancy-rate-pvalue-variance">0%</div>
                     </div>
                 </div>
             </div>
@@ -277,15 +276,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">₱15.0M</div>
+                        <div class="stat-value" data-metric="closed-inquiries-target">₱15.0M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">₱13.1M</div>
+                        <div class="stat-value" data-metric="closed-inquiries-actual">₱13.1M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">-13%</div>
+                        <div class="stat-value" data-metric="closed-inquiries-variance">-13%</div>
                     </div>
                 </div>
             </div>
@@ -308,15 +307,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">₱7.0M</div>
+                        <div class="stat-value" data-metric="pullout-aversion-target">₱7.0M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">₱5.8M</div>
+                        <div class="stat-value" data-metric="pullout-aversion-actual">₱5.8M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">-17%</div>
+                        <div class="stat-value" data-metric="pullout-aversion-variance">-17%</div>
                     </div>
                 </div>
             </div>
@@ -347,16 +346,16 @@
                 <h3>Lotus Mall Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-15.5%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="lotus-foot-traffic-target">13,783</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">13,783</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="lotus-foot-traffic-actual">11,647</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">11,647</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="lotus-foot-traffic-variance" style="color: #ff3146;">-15.5%</div>
                     </div>
                 </div>
             </div>
@@ -378,16 +377,16 @@
                 <h3>Portal Mall Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+85.9%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="portal-foot-traffic-target">4,937</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">4,937</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="portal-foot-traffic-actual">9,177</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">9,177</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="portal-foot-traffic-variance" style="color: #81f31d;">+85.9%</div>
                     </div>
                 </div>
             </div>
@@ -409,16 +408,16 @@
                 <h3>Stadium Shopping Strip Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-20.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="stadium-foot-traffic-target">7,052</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">7,052</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="stadium-foot-traffic-actual">5,639</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">5,639</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="stadium-foot-traffic-variance" style="color: #ff3146;">-20.0%</div>
                     </div>
                 </div>
             </div>
@@ -440,16 +439,16 @@
                 <h3>ySpacio Creative Park Carbag Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="yspacio-foot-traffic-target">571</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">571</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="yspacio-foot-traffic-actual">0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">0.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="yspacio-foot-traffic-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -471,16 +470,16 @@
                 <h3>ySpacio Creative Park Alapan Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-36.9%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="yspacio-alapan-foot-traffic-target">4,428</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">4,428</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="yspacio-alapan-foot-traffic-actual">2,796</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">2,796</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="yspacio-alapan-foot-traffic-variance" style="color: #ff3146;">-36.9%</div>
                     </div>
                 </div>
             </div>
@@ -502,16 +501,16 @@
                 <h3>Lumina Foot Traffic</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+29.3%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="lumina-foot-traffic-target">11,319</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">11,319</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="lumina-foot-traffic-actual">14,640</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">14,640</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="lumina-foot-traffic-variance" style="color: #81f31d;">+29.3%</div>
                     </div>
                 </div>
             </div>
@@ -538,16 +537,16 @@
                 <h3>Lotus Mall - Pax per Event</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="lotus-pax-target">500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">500.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="lotus-pax-actual">1,000.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">1,000.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="lotus-pax-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -569,16 +568,16 @@
                 <h3>Portal Mall - Pax per Event</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="portal-pax-target">500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">500.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="portal-pax-actual">1,000.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">1,000.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="portal-pax-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -600,16 +599,16 @@
                 <h3>Stadium Shopping Strip - Pax per Event</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="stadium-pax-target">500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">500.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="stadium-pax-actual">1,000.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">1,000.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="stadium-pax-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -631,16 +630,16 @@
                 <h3>Closed Inquiry - Offline Inquiries</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+100%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="offline-inquiries-target">60%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">60%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="offline-inquiries-actual">50%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">50%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="offline-inquiries-variance" style="color: #81f31d;">+100%</div>
                     </div>
                 </div>
             </div>
@@ -667,16 +666,16 @@
                 <h3>FB Page Followers</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-30%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="fb-followers-target">60%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">60%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="fb-followers-actual">40%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">40%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="fb-followers-variance" style="color: #ff3146;">-30%</div>
                     </div>
                 </div>
             </div>
@@ -703,16 +702,16 @@
                 <h3>I.C.A.R.E. (All Teams)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+30%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="icare-target">10%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">10%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="icare-actual">40%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">40%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="icare-variance" style="color: #81f31d;">+30%</div>
                     </div>
                 </div>
             </div>
@@ -739,16 +738,16 @@
                 <h3>Site Quality Monitoring</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+50%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="site-quality-target">20%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">20%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="site-quality-actual">30%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">30%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="site-quality-variance" style="color: #81f31d;">+50%</div>
                     </div>
                 </div>
             </div>
@@ -770,16 +769,16 @@
                 <h3>Insurance Claim Monitoring</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+70%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="insurance-claim-target">30%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">30%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="insurance-claim-actual">50%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">50%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="insurance-claim-variance" style="color: #81f31d;">+70%</div>
                     </div>
                 </div>
             </div>
@@ -806,16 +805,16 @@
                 <h3>Regular Events Plan</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-20%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="regular-events-target">40%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">40%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="regular-events-actual">60%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">60%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="regular-events-variance" style="color: #ff3146;">-20%</div>
                     </div>
                 </div>
             </div>
@@ -837,16 +836,16 @@
                 <h3>Culture Dev't Activities Plan</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+20%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="culture-dev-target">10%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">10%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="culture-dev-actual">20%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">20%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="culture-dev-variance" style="color: #81f31d;">+20%</div>
                     </div>
                 </div>
             </div>
@@ -873,16 +872,16 @@
                 <h3>SMD Projects</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-40%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="smd-projects-target">70%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">70%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="smd-projects-actual">50%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">50%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="smd-projects-variance" style="color: #ff3146;">-40%</div>
                     </div>
                 </div>
             </div>
@@ -909,16 +908,16 @@
                 <h3>Budget: Projects (E&D)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-40%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="budget-projects-target">50%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">50%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="budget-projects-actual">20%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">20%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="budget-projects-variance" style="color: #ff3146;">-40%</div>
                     </div>
                 </div>
             </div>
@@ -940,16 +939,16 @@
                 <h3>Team/Section's Targets</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-10%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="team-targets-target">30%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">30%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="team-targets-actual">20%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">20%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="team-targets-variance" style="color: #ff3146;">-10%</div>
                     </div>
                 </div>
             </div>
@@ -976,16 +975,16 @@
                 <h3>Number of Breakdowns</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">+45%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="breakdowns-target">23%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">23%</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="breakdowns-actual">75%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Actual</div>
-                        <div class="stat-value">75%</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="breakdowns-variance" style="color: #ff3146;">+45%</div>
                     </div>
                 </div>
             </div>
@@ -1016,20 +1015,20 @@
 
             <!-- Row 1: Net Profit -->
             <!-- Net Profit Summary Card -->
-            <div class="card slide-in-left" style="animation-delay: 0.3s">
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <h3>Net Profit Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">₱9,760,000</div>
+                        <div class="stat-value" data-metric="net-profit-target">₱9,760,000</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">₱9,720,000</div>
+                        <div class="stat-value" data-metric="net-profit-actual">₱9,720,000</div>
                     </div>
                     <div class="highlight-variance stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">-0.4%</div>
+                        <div class="stat-value" data-metric="net-profit-variance">-0.4%</div>
                     </div>
                 </div>
             </div>
@@ -1120,15 +1119,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">₱19.55M</div>
+                        <div class="stat-value" data-metric="rental-income-target">₱19.55M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">₱19.41M</div>
+                        <div class="stat-value" data-metric="rental-income-actual">₱19.41M</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value">-0.7%</div>
+                        <div class="stat-value" data-metric="rental-income-variance">-0.7%</div>
                     </div>
                 </div>
             </div>
@@ -1157,15 +1156,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value">₱81.6K</div>
+                        <div class="stat-value" data-metric="venue-target">₱81.6K</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value">₱0.00</div>
+                        <div class="stat-value" data-metric="venue-actual">₱0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-value" data-metric="venue-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -1188,16 +1187,16 @@
                 <h3>STUDIO (P-VALUE)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-99.1%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="studio-target">₱500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱58,560.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="studio-actual">₱58,560.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱500.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="studio-variance" style="color: #ff3146;">-99.1%</div>
                     </div>
                 </div>
             </div>
@@ -1220,16 +1219,16 @@
                 <h3>SPORTS ARENA (P-VALUE)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-97.2%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="sports-arena-target">₱11,450.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱401,760.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="sports-arena-actual">₱401,760.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱11,450.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="sports-arena-variance" style="color: #ff3146;">-97.2%</div>
                     </div>
                 </div>
             </div>
@@ -1257,16 +1256,16 @@
                 <h3>PARKING INCOME</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-14.4%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="parking-income-target">₱1,175,548.57</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱1,374,053.26</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="parking-income-actual">₱1,374,053.26</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱1,175,548.57</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="parking-income-variance" style="color: #ff3146;">-14.4%</div>
                     </div>
                 </div>
             </div>
@@ -1298,16 +1297,16 @@
                 <h3>TOTAL OPERATING EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+4.1%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="total-operating-expense-target">₱22,900,266.12</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱21,996,437.04</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="total-operating-expense-actual">₱21,996,437.04</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱22,900,266.12</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="total-operating-expense-variance" style="color: #81f31d;">+4.1%</div>
                     </div>
                 </div>
             </div>
@@ -1335,16 +1334,16 @@
                 <h3>ELECTRICITY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+1.6%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="electricity-expense-previous">₱8,289,142.67</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱8,417,857.53</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="electricity-expense-actual">₱8,417,857.53</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱8,289,142.67</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="electricity-expense-variance" style="color: #81f31d;">+1.6%</div>
                     </div>
                 </div>
             </div>
@@ -1367,16 +1366,16 @@
                 <h3>WATER EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+18.4%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="water-expense-previous">₱260,600.34</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱220,091.14</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="water-expense-actual">₱220,091.14</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱260,600.34</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="water-expense-variance" style="color: #81f31d;">+18.4%</div>
                     </div>
                 </div>
             </div>
@@ -1399,16 +1398,16 @@
                 <h3>SECURITY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+6.7%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="security-expense-previous">₱3,356,811.39</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱3,581,881.95</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="security-expense-actual">₱3,581,881.95</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱3,356,811.39</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="security-expense-variance" style="color: #81f31d;">+6.7%</div>
                     </div>
                 </div>
             </div>
@@ -1431,16 +1430,16 @@
                 <h3>AGENCY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-0.1%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="agency-expense-previous">₱3,153,100.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱3,155,128.69</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="agency-expense-actual">₱3,155,128.69</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱3,153,100.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="agency-expense-variance" style="color: #ff3146;">-0.1%</div>
                     </div>
                 </div>
             </div>
@@ -1468,16 +1467,16 @@
                 <h3>SALARY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-12.7%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="salary-expense-previous">₱3,528,055.65</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱3,079,566.71</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="salary-expense-actual">₱3,079,566.71</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱3,528,055.65</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="salary-expense-variance" style="color: #ff3146;">-12.7%</div>
                     </div>
                 </div>
             </div>
@@ -1505,16 +1504,16 @@
                 <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+185.5%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="marketing-expense-previous">₱73,500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱209,855.85</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="marketing-expense-actual">₱209,855.85</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱73,500.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="marketing-expense-variance" style="color: #81f31d;">+185.5%</div>
                     </div>
                 </div>
             </div>
@@ -1542,16 +1541,16 @@
                 <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+280.1%</div>
+                        <div class="stat-label">Previous</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-previous">₱155,800.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱592,252.25</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-actual">₱592,252.25</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Previous</div>
-                        <div class="stat-value">₱155,800.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-variance" style="color: #81f31d;">+280.1%</div>
                     </div>
                 </div>
             </div>
@@ -1579,16 +1578,16 @@
                 <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-target">₱93,900.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱0.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-actual">₱0.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱93,900.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-variance" style="color: #ff3146;">-100.0%</div>
                     </div>
                 </div>
             </div>
@@ -1611,16 +1610,16 @@
                 <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-71.3%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-target">₱32,079.81</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱111,750.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-actual">₱111,750.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱32,079.81</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-variance" style="color: #ff3146;">-71.3%</div>
                     </div>
                 </div>
             </div>
@@ -1648,16 +1647,16 @@
                 <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #81f31d;">+7.1%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-target">₱167,539.28</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱156,500.00</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-actual">₱156,500.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱167,539.28</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-variance" style="color: #81f31d;">+7.1%</div>
                     </div>
                 </div>
             </div>
@@ -1680,16 +1679,16 @@
                 <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
-                        <div class="stat-label">Variance</div>
-                        <div class="stat-value" style="color: #ff3146;">-32.6%</div>
+                        <div class="stat-label">Target</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-target">₱187,750.00</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
-                        <div class="stat-label">Current</div>
-                        <div class="stat-value">₱126,539.50</div>
+                        <div class="stat-label">Actual</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-actual">₱126,539.50</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
-                        <div class="stat-label">Target</div>
-                        <div class="stat-value">₱187,750.00</div>
+                        <div class="stat-label">Variance</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-variance" style="color: #ff3146;">-32.6%</div>
                     </div>
                 </div>
             </div>

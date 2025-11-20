@@ -657,6 +657,524 @@ const performanceData = {
             };
         }
 
+        function generateAccountingLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'FS Target : Total Operating Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(22000000, 24000000),
+                        actual: randomIntInRange(21000000, 23500000)
+                    }
+                },
+                'FS Target : Total Gross Revenue': {
+                    [periodKey]: {
+                        target: randomIntInRange(36000000, 38000000),
+                        actual: randomIntInRange(37000000, 39500000)
+                    }
+                },
+                'FS Target : Net Profit': {
+                    [periodKey]: {
+                        target: randomIntInRange(10000000, 11000000),
+                        actual: randomIntInRange(10500000, 12000000)
+                    }
+                },
+                '% Collection : All Sites': {
+                    [periodKey]: {
+                        target: randomFloatInRange(85, 90, 1),
+                        actual: randomFloatInRange(88, 95, 1)
+                    }
+                }
+            };
+        }
+
+        function generateLradLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'FS Target : Salary Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(1800000, 1900000),
+                        actual: randomIntInRange(1700000, 1850000)
+                    }
+                }
+            };
+        }
+
+        function generateDcLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'FS Target : Repairs & Maintenance (Labor) (DCD) Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(140000, 150000),
+                        actual: randomIntInRange(135000, 145000)
+                    }
+                },
+                'FS Target : Repairs & Maintenance (Materials) (DCD) Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(95000, 100000),
+                        actual: randomIntInRange(90000, 105000)
+                    }
+                }
+            };
+        }
+
+        function generateOpportunityLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Occupancy: Commercial (Units)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(85, 90, 1),
+                        actual: randomFloatInRange(87, 92, 1)
+                    }
+                },
+                '% Occupancy: Commercial (Area)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(83, 88, 1),
+                        actual: randomFloatInRange(85, 90, 1)
+                    }
+                },
+                '% Occupancy: Commercial (PValue)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(80, 85, 1),
+                        actual: randomFloatInRange(82, 87, 1)
+                    }
+                },
+                'FS Target : Rental Income': {
+                    [periodKey]: {
+                        target: randomIntInRange(12000000, 13000000),
+                        actual: randomIntInRange(12500000, 13500000)
+                    }
+                }
+            };
+        }
+
+        function generateMarcomLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)': {
+                    [periodKey]: {
+                        target: randomIntInRange(800000, 900000),
+                        actual: randomIntInRange(750000, 850000)
+                    }
+                }
+            };
+        }
+
+        function generateGatheringLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Occupancy: Venue (Hours)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(73, 78, 1),
+                        actual: randomFloatInRange(75, 80, 1)
+                    }
+                },
+                '% Occupancy: Venue (PValue)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(70, 75, 1),
+                        actual: randomFloatInRange(72, 78, 1)
+                    }
+                },
+                '% Occupancy: Studio (Hours)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(66, 71, 1),
+                        actual: randomFloatInRange(68, 73, 1)
+                    }
+                },
+                '% Occupancy: Studio (PValue)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(63, 68, 1),
+                        actual: randomFloatInRange(65, 70, 1)
+                    }
+                },
+                '% Occupancy: Sports Arena (Hours)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(78, 83, 1),
+                        actual: randomFloatInRange(80, 85, 1)
+                    }
+                },
+                '% Occupancy: Sports Arena (PValue)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(75, 80, 1),
+                        actual: randomFloatInRange(77, 82, 1)
+                    }
+                },
+                'FS Target : Marketing Expense (+Gifts & Decor) (GATHERING)': {
+                    [periodKey]: {
+                        target: randomIntInRange(600000, 700000),
+                        actual: randomIntInRange(580000, 680000)
+                    }
+                }
+            };
+        }
+
+        function generateOperationsLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'FS Target : Electricity Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(1200000, 1300000),
+                        actual: randomIntInRange(1150000, 1250000)
+                    }
+                },
+                'FS Target : Water Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(430000, 470000),
+                        actual: randomIntInRange(410000, 450000)
+                    }
+                },
+                'FS Target : Security Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(820000, 880000),
+                        actual: randomIntInRange(800000, 860000)
+                    }
+                },
+                'FS Target : Agency Expense': {
+                    [periodKey]: {
+                        target: randomIntInRange(300000, 340000),
+                        actual: randomIntInRange(280000, 320000)
+                    }
+                },
+                'FS Target : Parking Income': {
+                    [periodKey]: {
+                        target: randomIntInRange(2700000, 2900000),
+                        actual: randomIntInRange(2800000, 3000000)
+                }
+            }
+        };
+        }
+
+        function generateLradLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% On time & Accurate - LMDB': {
+                    [periodKey]: {
+                        target: randomFloatInRange(93, 97, 1),
+                        actual: randomFloatInRange(95, 99, 1)
+                    }
+                },
+                '% On time & Accurate - Recorded: Scores (KPI)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(90, 94, 1),
+                        actual: randomFloatInRange(92, 96, 1)
+                    }
+                },
+                '% On time & Accurate - Recorded: Stories': {
+                    [periodKey]: {
+                        target: randomFloatInRange(86, 90, 1),
+                        actual: randomFloatInRange(88, 93, 1)
+                    }
+                },
+                '% Planned vs Actual - Regular Events Plan: Lotuszen': {
+                    [periodKey]: {
+                        target: randomFloatInRange(83, 87, 1),
+                        actual: randomFloatInRange(85, 89, 1)
+                    }
+                },
+                '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen': {
+                    [periodKey]: {
+                        target: randomFloatInRange(88, 92, 1),
+                        actual: randomFloatInRange(90, 94, 1)
+                    }
+                },
+                '% Complete & Updated : LMDB': {
+                    [periodKey]: {
+                        target: randomFloatInRange(91, 95, 1),
+                        actual: randomFloatInRange(93, 97, 1)
+                    }
+                }
+            };
+        }
+
+        function generateQualityLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                'Score/Evaluation/NPS : SMD Projects': {
+                    [periodKey]: {
+                        target: randomFloatInRange(85, 89, 1),
+                        actual: randomFloatInRange(87, 93, 1)
+                    }
+                },
+                'Score/Evaluation/NPS : SID Projects': {
+                    [periodKey]: {
+                        target: randomFloatInRange(82, 86, 1),
+                        actual: randomFloatInRange(84, 90, 1)
+                    }
+                },
+                '% Planned vs Actual : SMD Projects': {
+                    [periodKey]: {
+                        target: randomFloatInRange(90, 94, 1),
+                        actual: randomFloatInRange(92, 97, 1)
+                    }
+                },
+                '% Planned vs Actual : SID Projects': {
+                    [periodKey]: {
+                        target: randomFloatInRange(87, 91, 1),
+                        actual: randomFloatInRange(89, 94, 1)
+                    }
+                }
+            };
+        }
+
+        function generateDcLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Within Budget : Projects (E&D)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(92, 96, 1),
+                        actual: randomFloatInRange(94, 98, 1)
+                    }
+                },
+                '% Within Budget : Projects (IP)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(89, 93, 1),
+                        actual: randomFloatInRange(91, 95, 1)
+                    }
+                },
+                '% Within Budget : Projects (PMR)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(86, 90, 1),
+                        actual: randomFloatInRange(88, 92, 1)
+                    }
+                },
+                '% Within Budget : Projects (Construction)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(90, 94, 1),
+                        actual: randomFloatInRange(92, 96, 1)
+                    }
+                },
+                '% Within Budget : Projects (Landscape)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(87, 91, 1),
+                        actual: randomFloatInRange(89, 93, 1)
+                    }
+                },
+                '% Planned vs Actual : Projects (E&D)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(85, 89, 1),
+                        actual: randomFloatInRange(87, 91, 1)
+                    }
+                },
+                '% Planned vs Actual : Projects (IP)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(83, 87, 1),
+                        actual: randomFloatInRange(85, 89, 1)
+                    }
+                },
+                '% Planned vs Actual : Projects (PMR)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(81, 85, 1),
+                        actual: randomFloatInRange(83, 87, 1)
+                    }
+                },
+                '% Planned vs Actual : Projects (Construction)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(84, 88, 1),
+                        actual: randomFloatInRange(86, 90, 1)
+                    }
+                },
+                '% Planned vs Actual : Projects (Landscape)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(82, 86, 1),
+                        actual: randomFloatInRange(84, 88, 1)
+                    }
+                },
+                '% Planned vs Actual : JO (MST)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(88, 92, 1),
+                        actual: randomFloatInRange(90, 94, 1)
+                    }
+                },
+                '% Planned vs Actual : JO (E&D Fab)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(86, 90, 1),
+                        actual: randomFloatInRange(88, 92, 1)
+                    }
+                }
+            };
+        }
+
+        function generateItLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '# of Breakdowns : IT': {
+                    [periodKey]: {
+                        target: randomIntInRange(6, 10),
+                        actual: randomIntInRange(3, 8)
+                    }
+                }
+            };
+        }
+
+        function generateOpportunityLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Planned vs Actual - Tenant Mix Plan': {
+                    [periodKey]: {
+                        target: randomFloatInRange(88, 92, 1),
+                        actual: randomFloatInRange(90, 94, 1)
+                    }
+                },
+                '# of Closed Inquiry/Offline Inquiries Received: Commercial': {
+                    [periodKey]: {
+                        target: randomIntInRange(40, 50),
+                        actual: randomIntInRange(45, 55)
+                    }
+                },
+                '# of Closed Prospects/Target Prospects: (Commercial) Anchor': {
+                    [periodKey]: {
+                        target: randomIntInRange(6, 10),
+                        actual: randomIntInRange(8, 12)
+                    }
+                },
+                '# of Closed Prospects/Priority Vacant Spaces: Anchor': {
+                    [periodKey]: {
+                        target: randomIntInRange(4, 7),
+                        actual: randomIntInRange(5, 8)
+                    }
+                },
+                '# of Closed Prospects/Target Prospects: (Commercial) Regular': {
+                    [periodKey]: {
+                        target: randomIntInRange(12, 18),
+                        actual: randomIntInRange(15, 20)
+                    }
+                },
+                '# of Closed Prospects/Priority Vacant Spaces: Regular': {
+                    [periodKey]: {
+                        target: randomIntInRange(10, 15),
+                        actual: randomIntInRange(12, 17)
+                    }
+                },
+                '% Complete & Updated: Tenant Requirements': {
+                    [periodKey]: {
+                        target: randomFloatInRange(93, 97, 1),
+                        actual: randomFloatInRange(95, 99, 1)
+                    }
+                },
+                '% Pull Out - Aversion': {
+                    [periodKey]: {
+                        target: randomFloatInRange(86, 90, 1),
+                        actual: randomFloatInRange(88, 92, 1)
+                    }
+                }
+            };
+        }
+
+        function generateMarcomLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Increase : Facebook Page Reach (per Month per Page)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(10, 15, 1),
+                        actual: randomFloatInRange(12, 18, 1)
+                    }
+                },
+                '% Increase : Facebook Page Followers (per Month per Page)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(6, 10, 1),
+                        actual: randomFloatInRange(8, 12, 1)
+                    }
+                },
+                '# of Inquiries : Offline for (Commercial Spaces)': {
+                    [periodKey]: {
+                        target: randomIntInRange(20, 30),
+                        actual: randomIntInRange(25, 35)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (Event Venues)': {
+                    [periodKey]: {
+                        target: randomIntInRange(15, 22),
+                        actual: randomIntInRange(18, 25)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (Sports Arena)': {
+                    [periodKey]: {
+                        target: randomIntInRange(10, 15),
+                        actual: randomIntInRange(12, 18)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (Handaan)': {
+                    [periodKey]: {
+                        target: randomIntInRange(18, 25),
+                        actual: randomIntInRange(20, 28)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (SS)': {
+                    [periodKey]: {
+                        target: randomIntInRange(12, 18),
+                        actual: randomIntInRange(15, 21)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (KS)': {
+                    [periodKey]: {
+                        target: randomIntInRange(8, 12),
+                        actual: randomIntInRange(10, 15)
+                    }
+                },
+                '# of Inquiries : Offline for Gatherings (Studio)': {
+                    [periodKey]: {
+                        target: randomIntInRange(6, 10),
+                        actual: randomIntInRange(8, 13)
+                    }
+                }
+            };
+        }
+
+        function generateAuditLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Addressed : I.C.A.R.E (All Teams)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(93, 97, 1),
+                        actual: randomFloatInRange(95, 99, 1)
+                    }
+                },
+                '% On time & Accurate : PropMan Module': {
+                    [periodKey]: {
+                        target: randomFloatInRange(90, 94, 1),
+                        actual: randomFloatInRange(92, 96, 1)
+                    }
+                }
+            };
+        }
+
+        function generateGatheringLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '# of Average Daily Foot Traffic': {
+                    [periodKey]: {
+                        target: randomIntInRange(400, 500),
+                        actual: randomIntInRange(450, 550)
+                    }
+                },
+                '# of 500 pax or more Event/month (All Sites)': {
+                    [periodKey]: {
+                        target: randomIntInRange(6, 10),
+                        actual: randomIntInRange(8, 12)
+                    }
+                },
+                '# of Closed Inquiry/Offline Inquiries Received: Gathering': {
+                    [periodKey]: {
+                        target: randomIntInRange(30, 40),
+                        actual: randomIntInRange(35, 45)
+                    }
+                }
+            };
+        }
+
+        function generateOperationsLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
+            return {
+                '% Addressed : Team/Section\'s I.C.A.R.E': {
+                    [periodKey]: {
+                        target: randomFloatInRange(94, 98, 1),
+                        actual: randomFloatInRange(96, 99, 1)
+                    }
+                },
+                '% Score : Site Quality (by Auditor)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(88, 92, 1),
+                        actual: randomFloatInRange(90, 94, 1)
+                    }
+                },
+                '% Insurance Claimed vs Reported': {
+                    [periodKey]: {
+                        target: randomFloatInRange(83, 87, 1),
+                        actual: randomFloatInRange(85, 90, 1)
+                    }
+                },
+                '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': {
+                    [periodKey]: {
+                        target: randomFloatInRange(86, 90, 1),
+                        actual: randomFloatInRange(88, 93, 1)
+                    }
+                }
+            };
+        }
+
         function generateMonthlySeries({
             targetRange = [0, 0],
             actualRange = [0, 0],
@@ -717,6 +1235,463 @@ const performanceData = {
             })
         };
 
+        const accountingMonthlySeries = {
+            'FS Target : Total Operating Expense': generateMonthlySeries({
+                targetRange: [22000000, 24000000],
+                actualRange: [21000000, 23500000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Total Gross Revenue': generateMonthlySeries({
+                targetRange: [36000000, 38000000],
+                actualRange: [37000000, 39500000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Net Profit': generateMonthlySeries({
+                targetRange: [10000000, 11000000],
+                actualRange: [10500000, 12000000],
+                valueType: 'thousands'
+            }),
+            '% Collection : All Sites': generateMonthlySeries({
+                targetRange: [85, 90],
+                actualRange: [88, 95],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const lradMonthlySeries = {
+            'FS Target : Salary Expense': generateMonthlySeries({
+                targetRange: [1800000, 1900000],
+                actualRange: [1700000, 1850000],
+                valueType: 'thousands'
+            })
+        };
+
+        const dcMonthlySeries = {
+            'FS Target : Repairs & Maintenance (Labor) (DCD) Expense': generateMonthlySeries({
+                targetRange: [140000, 150000],
+                actualRange: [135000, 145000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Repairs & Maintenance (Materials) (DCD) Expense': generateMonthlySeries({
+                targetRange: [95000, 100000],
+                actualRange: [90000, 105000],
+                valueType: 'thousands'
+            })
+        };
+
+        const opportunityMonthlySeries = {
+            '% Occupancy: Commercial (Units)': generateMonthlySeries({
+                targetRange: [85, 90],
+                actualRange: [87, 92],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Commercial (Area)': generateMonthlySeries({
+                targetRange: [83, 88],
+                actualRange: [85, 90],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Commercial (PValue)': generateMonthlySeries({
+                targetRange: [80, 85],
+                actualRange: [82, 87],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            'FS Target : Rental Income': generateMonthlySeries({
+                targetRange: [12000000, 13000000],
+                actualRange: [12500000, 13500000],
+                valueType: 'thousands'
+            })
+        };
+
+        const marcomMonthlySeries = {
+            'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)': generateMonthlySeries({
+                targetRange: [800000, 900000],
+                actualRange: [750000, 850000],
+                valueType: 'thousands'
+            })
+        };
+
+        const gatheringMonthlySeries = {
+            '% Occupancy: Venue (Hours)': generateMonthlySeries({
+                targetRange: [73, 78],
+                actualRange: [75, 80],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Venue (PValue)': generateMonthlySeries({
+                targetRange: [70, 75],
+                actualRange: [72, 78],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Studio (Hours)': generateMonthlySeries({
+                targetRange: [66, 71],
+                actualRange: [68, 73],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Studio (PValue)': generateMonthlySeries({
+                targetRange: [63, 68],
+                actualRange: [65, 70],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Sports Arena (Hours)': generateMonthlySeries({
+                targetRange: [78, 83],
+                actualRange: [80, 85],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Occupancy: Sports Arena (PValue)': generateMonthlySeries({
+                targetRange: [75, 80],
+                actualRange: [77, 82],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            'FS Target : Marketing Expense (+Gifts & Decor) (GATHERING)': generateMonthlySeries({
+                targetRange: [600000, 700000],
+                actualRange: [580000, 680000],
+                valueType: 'thousands'
+            })
+        };
+
+        const operationsMonthlySeries = {
+            'FS Target : Electricity Expense': generateMonthlySeries({
+                targetRange: [1200000, 1300000],
+                actualRange: [1150000, 1250000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Water Expense': generateMonthlySeries({
+                targetRange: [430000, 470000],
+                actualRange: [410000, 450000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Security Expense': generateMonthlySeries({
+                targetRange: [820000, 880000],
+                actualRange: [800000, 860000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Agency Expense': generateMonthlySeries({
+                targetRange: [300000, 340000],
+                actualRange: [280000, 320000],
+                valueType: 'thousands'
+            }),
+            'FS Target : Parking Income': generateMonthlySeries({
+                targetRange: [2700000, 2900000],
+                actualRange: [2800000, 3000000],
+                valueType: 'thousands'
+            })
+        };
+
+        // Lead KPI Monthly Series
+        const lradLeadMonthlySeries = {
+            '% On time & Accurate - LMDB': generateMonthlySeries({
+                targetRange: [93, 97],
+                actualRange: [95, 99],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% On time & Accurate - Recorded: Scores (KPI)': generateMonthlySeries({
+                targetRange: [90, 94],
+                actualRange: [92, 96],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% On time & Accurate - Recorded: Stories': generateMonthlySeries({
+                targetRange: [86, 90],
+                actualRange: [88, 93],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual - Regular Events Plan: Lotuszen': generateMonthlySeries({
+                targetRange: [83, 87],
+                actualRange: [85, 89],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen': generateMonthlySeries({
+                targetRange: [88, 92],
+                actualRange: [90, 94],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Complete & Updated : LMDB': generateMonthlySeries({
+                targetRange: [91, 95],
+                actualRange: [93, 97],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const qualityLeadMonthlySeries = {
+            'Score/Evaluation/NPS : SMD Projects': generateMonthlySeries({
+                targetRange: [85, 89],
+                actualRange: [87, 93],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            'Score/Evaluation/NPS : SID Projects': generateMonthlySeries({
+                targetRange: [82, 86],
+                actualRange: [84, 90],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : SMD Projects': generateMonthlySeries({
+                targetRange: [90, 94],
+                actualRange: [92, 97],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : SID Projects': generateMonthlySeries({
+                targetRange: [87, 91],
+                actualRange: [89, 94],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const dcLeadMonthlySeries = {
+            '% Within Budget : Projects (E&D)': generateMonthlySeries({
+                targetRange: [92, 96],
+                actualRange: [94, 98],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Within Budget : Projects (IP)': generateMonthlySeries({
+                targetRange: [89, 93],
+                actualRange: [91, 95],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Within Budget : Projects (PMR)': generateMonthlySeries({
+                targetRange: [86, 90],
+                actualRange: [88, 92],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Within Budget : Projects (Construction)': generateMonthlySeries({
+                targetRange: [90, 94],
+                actualRange: [92, 96],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Within Budget : Projects (Landscape)': generateMonthlySeries({
+                targetRange: [87, 91],
+                actualRange: [89, 93],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : Projects (E&D)': generateMonthlySeries({
+                targetRange: [85, 89],
+                actualRange: [87, 91],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : Projects (IP)': generateMonthlySeries({
+                targetRange: [83, 87],
+                actualRange: [85, 89],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : Projects (PMR)': generateMonthlySeries({
+                targetRange: [81, 85],
+                actualRange: [83, 87],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : Projects (Construction)': generateMonthlySeries({
+                targetRange: [84, 88],
+                actualRange: [86, 90],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : Projects (Landscape)': generateMonthlySeries({
+                targetRange: [82, 86],
+                actualRange: [84, 88],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : JO (MST)': generateMonthlySeries({
+                targetRange: [88, 92],
+                actualRange: [90, 94],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Planned vs Actual : JO (E&D Fab)': generateMonthlySeries({
+                targetRange: [86, 90],
+                actualRange: [88, 92],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const itLeadMonthlySeries = {
+            '# of Breakdowns : IT': generateMonthlySeries({
+                targetRange: [6, 10],
+                actualRange: [3, 8],
+                valueType: 'count'
+            })
+        };
+
+        const opportunityLeadMonthlySeries = {
+            '% Planned vs Actual - Tenant Mix Plan': generateMonthlySeries({
+                targetRange: [88, 92],
+                actualRange: [90, 94],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '# of Closed Inquiry/Offline Inquiries Received: Commercial': generateMonthlySeries({
+                targetRange: [40, 50],
+                actualRange: [45, 55],
+                valueType: 'count'
+            }),
+            '# of Closed Prospects/Target Prospects: (Commercial) Anchor': generateMonthlySeries({
+                targetRange: [6, 10],
+                actualRange: [8, 12],
+                valueType: 'count'
+            }),
+            '# of Closed Prospects/Priority Vacant Spaces: Anchor': generateMonthlySeries({
+                targetRange: [4, 7],
+                actualRange: [5, 8],
+                valueType: 'count'
+            }),
+            '# of Closed Prospects/Target Prospects: (Commercial) Regular': generateMonthlySeries({
+                targetRange: [12, 18],
+                actualRange: [15, 20],
+                valueType: 'count'
+            }),
+            '# of Closed Prospects/Priority Vacant Spaces: Regular': generateMonthlySeries({
+                targetRange: [10, 15],
+                actualRange: [12, 17],
+                valueType: 'count'
+            }),
+            '% Complete & Updated: Tenant Requirements': generateMonthlySeries({
+                targetRange: [93, 97],
+                actualRange: [95, 99],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Pull Out - Aversion': generateMonthlySeries({
+                targetRange: [86, 90],
+                actualRange: [88, 92],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const marcomLeadMonthlySeries = {
+            '% Increase : Facebook Page Reach (per Month per Page)': generateMonthlySeries({
+                targetRange: [10, 15],
+                actualRange: [12, 18],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Increase : Facebook Page Followers (per Month per Page)': generateMonthlySeries({
+                targetRange: [6, 10],
+                actualRange: [8, 12],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '# of Inquiries : Offline for (Commercial Spaces)': generateMonthlySeries({
+                targetRange: [20, 30],
+                actualRange: [25, 35],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (Event Venues)': generateMonthlySeries({
+                targetRange: [15, 22],
+                actualRange: [18, 25],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (Sports Arena)': generateMonthlySeries({
+                targetRange: [10, 15],
+                actualRange: [12, 18],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (Handaan)': generateMonthlySeries({
+                targetRange: [18, 25],
+                actualRange: [20, 28],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (SS)': generateMonthlySeries({
+                targetRange: [12, 18],
+                actualRange: [15, 21],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (KS)': generateMonthlySeries({
+                targetRange: [8, 12],
+                actualRange: [10, 15],
+                valueType: 'count'
+            }),
+            '# of Inquiries : Offline for Gatherings (Studio)': generateMonthlySeries({
+                targetRange: [6, 10],
+                actualRange: [8, 13],
+                valueType: 'count'
+            })
+        };
+
+        const auditLeadMonthlySeries = {
+            '% Addressed : I.C.A.R.E (All Teams)': generateMonthlySeries({
+                targetRange: [93, 97],
+                actualRange: [95, 99],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% On time & Accurate : PropMan Module': generateMonthlySeries({
+                targetRange: [90, 94],
+                actualRange: [92, 96],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
+        const gatheringLeadMonthlySeries = {
+            '# of Average Daily Foot Traffic': generateMonthlySeries({
+                targetRange: [400, 500],
+                actualRange: [450, 550],
+                valueType: 'count'
+            }),
+            '# of 500 pax or more Event/month (All Sites)': generateMonthlySeries({
+                targetRange: [6, 10],
+                actualRange: [8, 12],
+                valueType: 'count'
+            }),
+            '# of Closed Inquiry/Offline Inquiries Received: Gathering': generateMonthlySeries({
+                targetRange: [30, 40],
+                actualRange: [35, 45],
+                valueType: 'count'
+            })
+        };
+
+        const operationsLeadMonthlySeries = {
+            '% Addressed : Team/Section\'s I.C.A.R.E': generateMonthlySeries({
+                targetRange: [94, 98],
+                actualRange: [96, 99],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Score : Site Quality (by Auditor)': generateMonthlySeries({
+                targetRange: [88, 92],
+                actualRange: [90, 94],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Insurance Claimed vs Reported': generateMonthlySeries({
+                targetRange: [83, 87],
+                actualRange: [85, 90],
+                decimals: 1,
+                valueType: 'percentage'
+            }),
+            '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': generateMonthlySeries({
+                targetRange: [86, 90],
+                actualRange: [88, 93],
+                decimals: 1,
+                valueType: 'percentage'
+            })
+        };
+
         function formatAggregateValue(value, valueType = 'thousands') {
             if (value === null || value === undefined || Number.isNaN(Number(value))) {
                 return '-';
@@ -732,8 +1707,24 @@ const performanceData = {
             return formatPesoIfNeeded(value, true);
         }
 
-        function getAggregateDisplayData(kpiName, targetNumeric, actualNumeric, isPercentageKpi = false) {
-            const monthlySeries = technicalMonthlySeries[kpiName];
+        function getAggregateDisplayData(kpiName, targetNumeric, actualNumeric, isPercentageKpi = false, leaderId = null) {
+            const monthlySeries = technicalMonthlySeries[kpiName] 
+                || accountingMonthlySeries[kpiName]
+                || lradMonthlySeries[kpiName]
+                || dcMonthlySeries[kpiName]
+                || opportunityMonthlySeries[kpiName]
+                || marcomMonthlySeries[kpiName]
+                || gatheringMonthlySeries[kpiName]
+                || operationsMonthlySeries[kpiName]
+                || lradLeadMonthlySeries[kpiName]
+                || qualityLeadMonthlySeries[kpiName]
+                || dcLeadMonthlySeries[kpiName]
+                || itLeadMonthlySeries[kpiName]
+                || opportunityLeadMonthlySeries[kpiName]
+                || marcomLeadMonthlySeries[kpiName]
+                || auditLeadMonthlySeries[kpiName]
+                || gatheringLeadMonthlySeries[kpiName]
+                || operationsLeadMonthlySeries[kpiName];
             let aggregateTarget = targetNumeric;
             let aggregateActual = actualNumeric;
             let valueType = isPercentageKpi ? 'percentage' : 'thousands';
@@ -755,524 +1746,28 @@ const performanceData = {
 
         const technicalExpensesData = {
             'sarah-mitchell': generateTechnicalLagKpiData(),
-            'marcus-chen': {
-                'FS Target : Total Operating Expense': {
-                    '2025-11': {
-                        target: 22956972.14,
-                        actual: 21543210.50
-                    }
-                },
-                'FS Target : Total Gross Revenue': {
-                    '2025-11': {
-                        target: 37264091.75,
-                        actual: 38924567.20
-                    }
-                },
-                'FS Target : Net Profit': {
-                    '2025-11': {
-                        target: 10455576.64,
-                        actual: 11234589.30
-                    }
-                },
-                '% Collection : All Sites': {
-                    '2025-11': {
-                        target: 87.5,
-                        actual: 91.2
-                    }
-                }
-            },
-            'david-patterson': {
-                'FS Target : Repairs & Maintenance (Labor) (DCD) Expense': {
-                    '2025-11': {
-                        target: 145000,
-                        actual: 138200
-                    }
-                },
-                'FS Target : Repairs & Maintenance (Materials) (DCD) Expense': {
-                    '2025-11': {
-                        target: 98000,
-                        actual: 102500
-                    }
-                }
-            },
-            'robert-thompson': {
-                '% Occupancy: Commercial (Units)': {
-                    '2025-11': {
-                        target: 87.5,
-                        actual: 89.2
-                    }
-                },
-                '% Occupancy: Commercial (Area)': {
-                    '2025-11': {
-                        target: 85.0,
-                        actual: 86.8
-                    }
-                },
-                '% Occupancy: Commercial (PValue)': {
-                    '2025-11': {
-                        target: 82.5,
-                        actual: 84.3
-                    }
-                },
-                'FS Target : Rental Income': {
-                    '2025-11': {
-                        target: 12500000,
-                        actual: 12850000
-                    }
-                }
-            },
-            'amanda-white': {
-                'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)': {
-                    '2025-11': {
-                        target: 850000,
-                        actual: 782000
-                    }
-                }
-            },
-            'lisa-anderson': {
-                '% Occupancy: Venue (Hours)': {
-                    '2025-11': {
-                        target: 75.0,
-                        actual: 78.5
-                    }
-                },
-                '% Occupancy: Venue (PValue)': {
-                    '2025-11': {
-                        target: 72.5,
-                        actual: 75.8
-                    }
-                },
-                '% Occupancy: Studio (Hours)': {
-                    '2025-11': {
-                        target: 68.0,
-                        actual: 71.2
-                    }
-                },
-                '% Occupancy: Studio (PValue)': {
-                    '2025-11': {
-                        target: 65.5,
-                        actual: 68.7
-                    }
-                },
-                '% Occupancy: Sports Arena (Hours)': {
-                    '2025-11': {
-                        target: 80.0,
-                        actual: 83.2
-                    }
-                },
-                '% Occupancy: Sports Arena (PValue)': {
-                    '2025-11': {
-                        target: 77.5,
-                        actual: 80.3
-                    }
-                },
-                'FS Target : Marketing Expense (+Gifts & Decor) (GATHERING)': {
-                    '2025-11': {
-                        target: 650000,
-                        actual: 612000
-                    }
-                }
-            },
-            'kevin-martinez': {
-                'FS Target : Electricity Expense': {
-                    '2025-11': {
-                        target: 1250000,
-                        actual: 1185000
-                    }
-                },
-                'FS Target : Water Expense': {
-                    '2025-11': {
-                        target: 450000,
-                        actual: 432000
-                    }
-                },
-                'FS Target : Security Expense': {
-                    '2025-11': {
-                        target: 850000,
-                        actual: 825000
-                    }
-                },
-                'FS Target : Agency Expense': {
-                    '2025-11': {
-                        target: 320000,
-                        actual: 298000
-                    }
-                },
-                'FS Target : Parking Income': {
-                    '2025-11': {
-                        target: 2800000,
-                        actual: 2950000
-                    }
-                }
-            },
-            'james-peterson': {
-                'FS Target : Salary Expense': {
-                    '2025-11': {
-                        target: 1850000,
-                        actual: 1725000
-                    }
-                }
-            }
+            'marcus-chen': generateAccountingLagKpiData(),
+            'james-peterson': generateLradLagKpiData(),
+            'david-patterson': generateDcLagKpiData(),
+            'robert-thompson': generateOpportunityLagKpiData(),
+            'amanda-white': generateMarcomLagKpiData(),
+            'lisa-anderson': generateGatheringLagKpiData(),
+            'kevin-martinez': generateOperationsLagKpiData()
         };
 
         // Lead KPI data by period (year-month)
-        function generateLeadTotals(leaderId) {
-            const leadKpis = leadKpiData[leaderId] || [];
-            let totalTarget = 0;
-            let totalActual = 0;
-            let hasNumericValues = false;
-            let formatType = null;
-            let mixedFormats = false;
-
-            leadKpis.forEach(kpi => {
-                const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
-                const periodData = leadKpiExpensesData[leaderId]?.[kpi.role]?.[periodKey];
-                const targetNumeric = periodData ? parseNumericValue(periodData.target) : null;
-                const actualNumeric = periodData ? parseNumericValue(periodData.actual) : null;
-                const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
-                const aggregateData = getAggregateDisplayData(kpi.role, targetNumeric, actualNumeric, isPercentageKpi);
-
-                if (typeof aggregateData.aggregateTarget === 'number') {
-                    totalTarget += aggregateData.aggregateTarget;
-                    hasNumericValues = true;
-                }
-                if (typeof aggregateData.aggregateActual === 'number') {
-                    totalActual += aggregateData.aggregateActual;
-                    hasNumericValues = true;
-                }
-
-                if (!formatType) {
-                    formatType = aggregateData.valueType;
-                } else if (formatType !== aggregateData.valueType) {
-                    mixedFormats = true;
-                }
-            });
-
-            if (!hasNumericValues) {
-                return { target: null, actual: null, formatType: null };
-            }
-
-            return {
-                target: totalTarget,
-                actual: totalActual,
-                formatType: mixedFormats ? 'mixed' : formatType
-            };
-        }
 
         const leadKpiExpensesData = {
             'sarah-mitchell': generateTechnicalLeadKpiData(),
-            'james-peterson': {
-                '% On time & Accurate - LMDB': {
-                    '2025-11': {
-                        target: 95.0,
-                        actual: 97.5
-                    }
-                },
-                '% On time & Accurate - Recorded: Scores (KPI)': {
-                    '2025-11': {
-                        target: 92.0,
-                        actual: 94.8
-                    }
-                },
-                '% On time & Accurate - Recorded: Stories': {
-                    '2025-11': {
-                        target: 88.5,
-                        actual: 91.2
-                    }
-                },
-                '% Planned vs Actual - Regular Events Plan: Lotuszen': {
-                    '2025-11': {
-                        target: 85.0,
-                        actual: 87.3
-                    }
-                },
-                '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen': {
-                    '2025-11': {
-                        target: 90.0,
-                        actual: 92.6
-                    }
-                },
-                '% Complete & Updated : LMDB': {
-                    '2025-11': {
-                        target: 93.5,
-                        actual: 96.1
-                    }
-                }
-            },
-            'emily-rodriguez': {
-                'Score/Evaluation/NPS : SMD Projects': {
-                    '2025-11': {
-                        target: 87.0,
-                        actual: 91.5
-                    }
-                },
-                'Score/Evaluation/NPS : SID Projects': {
-                    '2025-11': {
-                        target: 84.0,
-                        actual: 88.2
-                    }
-                },
-                '% Planned vs Actual : SMD Projects': {
-                    '2025-11': {
-                        target: 92.5,
-                        actual: 95.3
-                    }
-                },
-                '% Planned vs Actual : SID Projects': {
-                    '2025-11': {
-                        target: 89.0,
-                        actual: 91.7
-                    }
-                }
-            },
-            'david-patterson': {
-                '% Within Budget : Projects (E&D)': {
-                    '2025-11': {
-                        target: 94.5,
-                        actual: 96.8
-                    }
-                },
-                '% Within Budget : Projects (IP)': {
-                    '2025-11': {
-                        target: 91.0,
-                        actual: 93.2
-                    }
-                },
-                '% Within Budget : Projects (PMR)': {
-                    '2025-11': {
-                        target: 88.5,
-                        actual: 90.7
-                    }
-                },
-                '% Within Budget : Projects (Construction)': {
-                    '2025-11': {
-                        target: 92.0,
-                        actual: 94.5
-                    }
-                },
-                '% Within Budget : Projects (Landscape)': {
-                    '2025-11': {
-                        target: 89.5,
-                        actual: 91.8
-                    }
-                },
-                '% Planned vs Actual : Projects (E&D)': {
-                    '2025-11': {
-                        target: 87.0,
-                        actual: 89.3
-                    }
-                },
-                '% Planned vs Actual : Projects (IP)': {
-                    '2025-11': {
-                        target: 85.5,
-                        actual: 87.8
-                    }
-                },
-                '% Planned vs Actual : Projects (PMR)': {
-                    '2025-11': {
-                        target: 83.0,
-                        actual: 85.2
-                    }
-                },
-                '% Planned vs Actual : Projects (Construction)': {
-                    '2025-11': {
-                        target: 86.5,
-                        actual: 88.9
-                    }
-                },
-                '% Planned vs Actual : Projects (Landscape)': {
-                    '2025-11': {
-                        target: 84.0,
-                        actual: 86.3
-                    }
-                },
-                '% Planned vs Actual : JO (MST)': {
-                    '2025-11': {
-                        target: 90.0,
-                        actual: 92.4
-                    }
-                },
-                '% Planned vs Actual : JO (E&D Fab)': {
-                    '2025-11': {
-                        target: 88.5,
-                        actual: 90.7
-                    }
-                }
-            },
-            'jennifer-lee': {
-                '# of Breakdowns : IT': {
-                    '2025-11': {
-                        target: 8,
-                        actual: 5
-                    }
-                }
-            },
-            'robert-thompson': {
-                '% Planned vs Actual - Tenant Mix Plan': {
-                    '2025-11': {
-                        target: 90.0,
-                        actual: 92.5
-                    }
-                },
-                '# of Closed Inquiry/Offline Inquiries Received: Commercial': {
-                    '2025-11': {
-                        target: 45,
-                        actual: 52
-                    }
-                },
-                '# of Closed Prospects/Target Prospects: (Commercial) Anchor': {
-                    '2025-11': {
-                        target: 8,
-                        actual: 10
-                    }
-                },
-                '# of Closed Prospects/Priority Vacant Spaces: Anchor': {
-                    '2025-11': {
-                        target: 5,
-                        actual: 6
-                    }
-                },
-                '# of Closed Prospects/Target Prospects: (Commercial) Regular': {
-                    '2025-11': {
-                        target: 15,
-                        actual: 18
-                    }
-                },
-                '# of Closed Prospects/Priority Vacant Spaces: Regular': {
-                    '2025-11': {
-                        target: 12,
-                        actual: 14
-                    }
-                },
-                '% Complete & Updated: Tenant Requirements': {
-                    '2025-11': {
-                        target: 95.0,
-                        actual: 97.2
-                    }
-                },
-                '% Pull Out - Aversion': {
-                    '2025-11': {
-                        target: 88.0,
-                        actual: 90.5
-                    }
-                }
-            },
-            'amanda-white': {
-                '% Increase : Facebook Page Reach (per Month per Page)': {
-                    '2025-11': {
-                        target: 12.5,
-                        actual: 15.8
-                    }
-                },
-                '% Increase : Facebook Page Followers (per Month per Page)': {
-                    '2025-11': {
-                        target: 8.0,
-                        actual: 10.2
-                    }
-                },
-                '# of Inquiries : Offline for (Commercial Spaces)': {
-                    '2025-11': {
-                        target: 25,
-                        actual: 32
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (Event Venues)': {
-                    '2025-11': {
-                        target: 18,
-                        actual: 22
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (Sports Arena)': {
-                    '2025-11': {
-                        target: 12,
-                        actual: 15
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (Handaan)': {
-                    '2025-11': {
-                        target: 20,
-                        actual: 24
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (SS)': {
-                    '2025-11': {
-                        target: 15,
-                        actual: 18
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (KS)': {
-                    '2025-11': {
-                        target: 10,
-                        actual: 13
-                    }
-                },
-                '# of Inquiries : Offline for Gatherings (Studio)': {
-                    '2025-11': {
-                        target: 8,
-                        actual: 11
-                    }
-                }
-            },
-            'michael-johnson': {
-                '% Addressed : I.C.A.R.E (All Teams)': {
-                    '2025-11': {
-                        target: 95.0,
-                        actual: 97.5
-                    }
-                },
-                '% On time & Accurate : PropMan Module': {
-                    '2025-11': {
-                        target: 92.0,
-                        actual: 94.8
-                    }
-                }
-            },
-            'lisa-anderson': {
-                '# of Average Daily Foot Traffic': {
-                    '2025-11': {
-                        target: 450,
-                        actual: 520
-                    }
-                },
-                '# of 500 pax or more Event/month (All Sites)': {
-                    '2025-11': {
-                        target: 8,
-                        actual: 10
-                    }
-                },
-                '# of Closed Inquiry/Offline Inquiries Received: Gathering': {
-                    '2025-11': {
-                        target: 35,
-                        actual: 42
-                    }
-                }
-            },
-            'kevin-martinez': {
-                '% Addressed : Team/Section\'s I.C.A.R.E': {
-                    '2025-11': {
-                        target: 96.0,
-                        actual: 98.2
-                    }
-                },
-                '% Score : Site Quality (by Auditor)': {
-                    '2025-11': {
-                        target: 90.0,
-                        actual: 92.5
-                    }
-                },
-                '% Insurance Claimed vs Reported': {
-                    '2025-11': {
-                        target: 85.0,
-                        actual: 87.8
-                    }
-                },
-                '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': {
-                    '2025-11': {
-                        target: 88.5,
-                        actual: 91.2
-                    }
-                }
-            }
+            'james-peterson': generateLradLeadKpiData(),
+            'emily-rodriguez': generateQualityLeadKpiData(),
+            'david-patterson': generateDcLeadKpiData(),
+            'jennifer-lee': generateItLeadKpiData(),
+            'robert-thompson': generateOpportunityLeadKpiData(),
+            'amanda-white': generateMarcomLeadKpiData(),
+            'michael-johnson': generateAuditLeadKpiData(),
+            'lisa-anderson': generateGatheringLeadKpiData(),
+            'kevin-martinez': generateOperationsLeadKpiData()
         };
 
         // Helpers to compute weights and render the Team Metrics Overview chart
@@ -1554,6 +2049,61 @@ const performanceData = {
                         return;
                     }
 
+                    // If switching to members view and section switch is on profile (active), switch back to operations
+                    if (target === 'members' && currentView === 'profile') {
+                        toggleSections();
+                    }
+
+                    // If switching to lag view, reset chart display to show bar chart
+                    if (target === 'lag') {
+                        const canvas = document.getElementById('teamPerformanceChart');
+                        const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+                        const reportCard = document.querySelector('.performance-report-card');
+                        const reportLegend = reportCard?.querySelector('.report-legend');
+                        const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+                        
+                        // If canvas doesn't exist (was removed by donut chart), recreate it
+                        let canvasElement = canvas;
+                        let needsReinit = false;
+                        if (!canvasElement && chartContainer) {
+                            chartContainer.innerHTML = '';
+                            canvasElement = document.createElement('canvas');
+                            canvasElement.id = 'teamPerformanceChart';
+                            chartContainer.appendChild(canvasElement);
+                            needsReinit = true;
+                        } else if (chartContainer) {
+                            // Remove any SVG from donut chart
+                            const svg = chartContainer.querySelector('svg.line-chart');
+                            if (svg) {
+                                chartContainer.innerHTML = '';
+                                if (!canvasElement) {
+                                    canvasElement = document.createElement('canvas');
+                                    canvasElement.id = 'teamPerformanceChart';
+                                    chartContainer.appendChild(canvasElement);
+                                    needsReinit = true;
+                                } else {
+                                    chartContainer.appendChild(canvasElement);
+                                }
+                            }
+                        }
+                        
+                        // Re-initialize chart if canvas was recreated
+                        if (needsReinit) {
+                            initTeamPerformanceChart();
+                        }
+                        
+                        // Show canvas and bar chart elements
+                        if (canvasElement) {
+                            canvasElement.style.display = 'block';
+                        }
+                        if (reportLegend) {
+                            reportLegend.style.display = 'flex';
+                        }
+                        if (yAxisLabel) {
+                            yAxisLabel.style.display = 'block';
+                        }
+                    }
+
                     currentOperationsView = target;
                     refreshOperationsContent();
                     updateScoreboardToggleState();
@@ -1674,13 +2224,25 @@ const performanceData = {
                     icon: this.getAttribute('data-icon')
                 };
 
-                if (selectedLeader === 'sarah-mitchell') {
+                const teamNames = {
+                    'sarah-mitchell': 'Technical',
+                    'marcus-chen': 'Accounting',
+                    'james-peterson': 'LRAD',
+                    'david-patterson': 'DC',
+                    'robert-thompson': 'Opportunity',
+                    'amanda-white': 'Marcom',
+                    'lisa-anderson': 'Gathering',
+                    'kevin-martinez': 'Operations'
+                };
+                
+                const teamName = teamNames[selectedLeader];
+                if (teamName) {
                     resetTeamPerformanceVisuals({
-                        infoMessage: 'Select a Technical KPI to view its detailed monthly breakdown.'
+                        infoMessage: `Select a ${teamName} Team KPI to view its detailed monthly breakdown.`
                     });
                 } else {
                     resetTeamPerformanceVisuals({
-                        infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Pick a Technical KPI to see its monthly data.'
+                        infoMessage: 'Select a KPI to view its detailed monthly breakdown.'
                     });
                 }
                 
@@ -1859,9 +2421,8 @@ const performanceData = {
                     <input type="text" id="searchInput" placeholder="Search team members...">
                 </div>
                 <div class="table-header">
-                    <div>Employee Name</div>
-                    <div>Team</div>
-                    <div>Role KPI Owner</div>
+                    <div>Emp Name</div>
+                    <div>Role</div>
                     <div>KPI</div>
                     <div>Target</div>
                     <div>Actual</div>
@@ -1880,6 +2441,7 @@ const performanceData = {
                     <div class="member-row member-view-row"
                          data-name="${member.name.toLowerCase()}"
                          data-team="${teamName.toLowerCase()}"
+                         data-kpi="${member.kpi}"
                          data-operation="${member.kpi}"
                          data-target="${targetValue}"
                          data-actual="${actualValue}"
@@ -1888,7 +2450,6 @@ const performanceData = {
                             <div class="member-avatar">${initials}</div>
                             <div class="member-name">${member.name}</div>
                         </div>
-                        <div>${teamName}</div>
                         <div>${member.role}</div>
                         <div>${member.kpi}</div>
                         <div>${targetLabel}</div>
@@ -1930,6 +2491,7 @@ const performanceData = {
                             : 'Select a team leader to view lag KPIs or their team members'}</div>
                     </div>
                 `;
+                
                 updateScoreboardToggleState();
                 return;
             }
@@ -1977,12 +2539,10 @@ const performanceData = {
                     <div>Operation KPI</div>
                     <div>KPI Owner</div>
                     <div class="header-group">
-                        <div class="header-main">TOTAL TARGET</div>
-                        <div class="header-value" id="leadTotalsTarget">—</div>
+                        <div class="header-main">TARGET</div>
                     </div>
                     <div class="header-group">
-                        <div class="header-main">TOTAL ACTUAL</div>
-                        <div class="header-value" id="leadTotalsActual">—</div>
+                        <div class="header-main">ACTUAL</div>
                     </div>
                 </div>
                 <div id="leadKpiList">
@@ -1993,12 +2553,11 @@ const performanceData = {
             const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
             const periodData = leadKpiExpensesData[leaderId]?.[kpi.role]?.[periodKey];
             
-            const targetNumeric = periodData ? parseNumericValue(periodData.target) : null;
-            const actualNumeric = periodData ? parseNumericValue(periodData.actual) : null;
+            const targetNumeric = periodData ? periodData.target : null;
+            const actualNumeric = periodData ? periodData.actual : null;
             const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
-            const aggregateData = getAggregateDisplayData(kpi.role, targetNumeric, actualNumeric, isPercentageKpi);
-            const targetValue = aggregateData.targetLabel;
-            const actualValue = aggregateData.actualLabel;
+            const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
+            const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
             
                 html += `
                 <div class="member-row" 
@@ -2014,10 +2573,10 @@ const performanceData = {
                         </div>
                         <div>${kpi.owner}</div>
                         <div class="target-group">
-                            <div class="aggregate-value">${targetValue}</div>
+                        <div>${targetValue}</div>
                         </div>
                         <div class="actual-group">
-                            <div class="aggregate-value">${actualValue}</div>
+                        <div>${actualValue}</div>
                         </div>
                     </div>
                 `;
@@ -2025,33 +2584,14 @@ const performanceData = {
             
             html += '</div>';
             profileContent.innerHTML = html;
-
-            const leadTotals = generateLeadTotals(leaderId);
-        if (leadTotals) {
-                const totalTargetEl = document.getElementById('leadTotalsTarget');
-                const totalActualEl = document.getElementById('leadTotalsActual');
-                const formatType = leadTotals.formatType && leadTotals.formatType !== 'mixed'
-                    ? leadTotals.formatType
-                    : null;
-                if (totalTargetEl) {
-                    totalTargetEl.textContent = formatType && leadTotals.target !== null
-                        ? formatAggregateValue(leadTotals.target, formatType)
-                        : '—';
-                }
-                if (totalActualEl) {
-                    totalActualEl.textContent = formatType && leadTotals.actual !== null
-                        ? formatAggregateValue(leadTotals.actual, formatType)
-                        : '—';
-                }
-            }
         
         attachSearchFunctionalityLead();
         attachMemberRowClickHandlersLead();
     }
 
         const performanceReportCopy = {
-            defaultTitle: 'Technical KPI Target vs Actual',
-            defaultSubtitle: 'Click a Technical KPI to see its current actual vs target snapshot.'
+            defaultTitle: '--',
+            defaultSubtitle: 'Click a team leader KPI to see its current actual vs target snapshot.'
         };
 
         const defaultTeamPerformanceSeries = {
@@ -2060,7 +2600,7 @@ const performanceData = {
             labels: [...chartMonths],
             target: new Array(chartMonths.length).fill(0),
             actual: new Array(chartMonths.length).fill(0),
-            narrative: 'Select a Technical KPI to load data.',
+            narrative: 'Select a KPI to load data.',
             valueType: 'thousands'
         };
 
@@ -2191,9 +2731,21 @@ const performanceData = {
 
         function resetTeamPerformanceVisuals(insightContext) {
             clearTeamPerformanceChart();
+            // Show canvas again and clear any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            if (canvas) {
+                canvas.style.display = 'block';
+            }
+            if (chartContainer) {
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    svg.remove();
+                }
+            }
             updatePerformanceCardCopy();
             updateTeamPerformanceInsight(insightContext || {
-                infoMessage: 'Select a Technical KPI to view its target vs actual comparison.'
+                infoMessage: 'Select a KPI to view its target vs actual comparison.'
             });
         }
 
@@ -2280,7 +2832,7 @@ const performanceData = {
             }
 
             if (!sentences.length) {
-                sentences.push('Select a Technical KPI to view its target vs actual details.');
+                sentences.push('Select a KPI to view its target vs actual details.');
             }
 
             insightElement.innerHTML = sentences.join(' ');
@@ -2424,24 +2976,84 @@ const performanceData = {
         }
 
         function updateTeamPerformanceBarChart(operationName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+
             const leaderId = selectedLeader;
             const leaderName = selectedLeaderData?.name || '';
-            const leaderTitle = selectedLeaderData?.title || 'Technical Team';
-
-            if (leaderId !== 'sarah-mitchell') {
-                resetTeamPerformanceVisuals({
-                    infoMessage: 'Detailed KPI visualization currently supports the Technical Team. Select a Technical KPI to view its target vs actual snapshot.'
-                });
-                return;
-            }
+            const leaderTitle = selectedLeaderData?.title || 'Team';
 
             if (!operationName) {
                 resetTeamPerformanceVisuals();
                 return;
             }
 
-            const monthlySeries = technicalMonthlySeries[operationName];
+            // Check if this KPI has monthly series data (both Lag and Lead KPIs)
+            const monthlySeries = technicalMonthlySeries[operationName] 
+                || accountingMonthlySeries[operationName]
+                || lradMonthlySeries[operationName]
+                || dcMonthlySeries[operationName]
+                || opportunityMonthlySeries[operationName]
+                || marcomMonthlySeries[operationName]
+                || gatheringMonthlySeries[operationName]
+                || operationsMonthlySeries[operationName]
+                || lradLeadMonthlySeries[operationName]
+                || qualityLeadMonthlySeries[operationName]
+                || dcLeadMonthlySeries[operationName]
+                || itLeadMonthlySeries[operationName]
+                || opportunityLeadMonthlySeries[operationName]
+                || marcomLeadMonthlySeries[operationName]
+                || auditLeadMonthlySeries[operationName]
+                || gatheringLeadMonthlySeries[operationName]
+                || operationsLeadMonthlySeries[operationName];
 
+            // If monthly series data exists, use it
             if (monthlySeries) {
                 applyTeamPerformanceSeries({
                     labels: monthlySeries.labels,
@@ -2467,9 +3079,11 @@ const performanceData = {
                 return;
             }
 
+            // For other team leaders or KPIs without monthly series, use single value bar chart
+
             if (target === null || target === undefined || actual === null || actual === undefined) {
                 resetTeamPerformanceVisuals({
-                    infoMessage: 'No actual vs target values are available for this Technical KPI.'
+                    infoMessage: 'No actual vs target values are available for this KPI.'
                 });
                 return;
             }
@@ -2498,6 +3112,168 @@ const performanceData = {
             });
         }
 
+        function updateMemberPerformanceChart(kpiName, target, actual) {
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportTitle = document.querySelector('.performance-report-card .report-title');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            if (!chartContainer) return;
+
+            // Hide canvas and bar chart elements (legend, y-axis) if they exist
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
+
+            // If no data, show empty state
+            if (target === null || actual === null || kpiName === null) {
+                chartContainer.innerHTML = '';
+                if (reportTitle) {
+                    reportTitle.innerHTML = `
+                        Team Performance Report
+                        <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
+                            Click a Team Member to show the graph
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            // Calculate difference
+            const difference = actual - target;
+            const diffPercent = ((difference / target) * 100).toFixed(1);
+            const isPositive = difference >= 0;
+            const isPercentageKpi = kpiName && (kpiName.includes('%') || kpiName.toLowerCase().includes('percent') || 
+                                     kpiName.toLowerCase().includes('rate') || kpiName.toLowerCase().includes('uptime') ||
+                                     kpiName.toLowerCase().includes('compliance') || kpiName.toLowerCase().includes('accuracy') ||
+                                     kpiName.toLowerCase().includes('efficiency') || kpiName.toLowerCase().includes('quality'));
+
+            // Donut chart dimensions
+            const chartWidth = 400;
+            const chartHeight = 200;
+            const centerX = chartWidth / 2;
+            const centerY = chartHeight / 2;
+            const outerRadius = 75;
+            const innerRadius = 45;
+            
+            // Calculate proportions for donut segments
+            const total = target + actual;
+            const targetPercent = (target / total) * 100;
+            const actualPercent = (actual / total) * 100;
+            
+            // Convert percentages to angles
+            const targetAngle = (targetPercent / 100) * 360;
+            const actualAngle = (actualPercent / 100) * 360;
+            
+            // Helper function to create donut segment
+            const createDonutSegment = (startAngle, endAngle) => {
+                const start = (startAngle - 90) * (Math.PI / 180);
+                const end = (endAngle - 90) * (Math.PI / 180);
+                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+                
+                const x1 = centerX + outerRadius * Math.cos(start);
+                const y1 = centerY + outerRadius * Math.sin(start);
+                const x2 = centerX + outerRadius * Math.cos(end);
+                const y2 = centerY + outerRadius * Math.sin(end);
+                const x3 = centerX + innerRadius * Math.cos(end);
+                const y3 = centerY + innerRadius * Math.sin(end);
+                const x4 = centerX + innerRadius * Math.cos(start);
+                const y4 = centerY + innerRadius * Math.sin(start);
+                
+                return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} 
+                        L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+            };
+            
+            const targetSegment = createDonutSegment(0, targetAngle);
+            const actualSegment = createDonutSegment(targetAngle, targetAngle + actualAngle);
+
+            const defs = `
+                <defs>
+                    <filter id="donutShadow">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+            `;
+
+            // Format value for display
+            const formatValue = (value) => {
+                if (isPercentageKpi) {
+                    return value.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + '%';
+                } else if (value >= 1000) {
+                    if (value >= 1000000) {
+                        return (value / 1000000).toFixed(1) + 'M';
+                    } else if (value >= 1000) {
+                        return (value / 1000).toFixed(1) + 'K';
+                    }
+                }
+                return value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            };
+
+            // Build chart
+            const diffColor = isPositive ? '#4ade80' : '#f87171';
+            const diffSymbol = isPositive ? '↑' : '↓';
+            const diffDisplay = formatValue(Math.abs(difference));
+            
+            const chartHTML = `
+                <svg class="line-chart" width="${chartWidth}" height="${chartHeight}" viewBox="0 0 ${chartWidth} ${chartHeight}">
+                    ${defs}
+                    <path id="targetSegment" d="${targetSegment}" 
+                          fill="#96a840" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${target}"
+                          data-label="Target"
+                          data-percent="${targetPercent.toFixed(1)}" />
+                    <path id="actualSegment" d="${actualSegment}" 
+                          fill="#e5bb22" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${actual}"
+                          data-label="Actual"
+                          data-percent="${actualPercent.toFixed(1)}" />
+                    <text x="${centerX}" y="${centerY - 5}" 
+                          text-anchor="middle" font-size="16" fill="${diffColor}" font-weight="700">
+                        ${diffSymbol} ${diffDisplay}
+                    </text>
+                    <text x="${centerX}" y="${centerY + 12}" 
+                          text-anchor="middle" font-size="11" fill="#6b7280" font-weight="500">
+                        ${Math.abs(diffPercent)}%
+                    </text>
+                </svg>
+            `;
+
+            chartContainer.innerHTML = chartHTML;
+
+            // Update title with KPI, Target, and Actual
+            if (reportTitle) {
+                const shortName = kpiName.length > 50 ? kpiName.substring(0, 50) + '...' : kpiName;
+                
+                reportTitle.innerHTML = `
+                    Team Performance Report - ${shortName}
+                    <div style="font-size: 12px; margin-top: 15px; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #96a840;"></span>
+                            <span style="color: #525552;">Target: ${formatValue(target)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #e5bb22;"></span>
+                            <span style="color: #525552;">Actual: ${formatValue(actual)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="color: ${diffColor}; font-weight: 600;">${diffSymbol} ${diffDisplay} (${Math.abs(diffPercent)}%)</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         function attachMemberRowClickHandlers() {
             const memberRows = document.querySelectorAll('.member-row:not(.has-dropdown)');
             
@@ -2520,11 +3296,24 @@ const performanceData = {
                     const target = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
                     const actual = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
                     
-                    if (target !== null && actual !== null) {
-                        updateTeamPerformanceBarChart(operationName, target, actual);
+                    // Check if this is a team member row (has member-view-row class)
+                    // Team members = doughnut chart, Team leader KPIs = bar chart
+                    const isTeamMember = this.classList.contains('member-view-row');
+                    
+                    if (isTeamMember) {
+                        // Use doughnut chart for team members (from teamMembersData)
+                        if (target !== null && actual !== null) {
+                            updateMemberPerformanceChart(operationName, target, actual);
+                        } else {
+                            updateMemberPerformanceChart(operationName, null, null);
+                        }
                     } else {
-                        // Show empty state
-                        updateTeamPerformanceBarChart(operationName, null, null);
+                        // Use bar chart for team leader KPIs (Lag/Lead KPIs from operations section)
+                        if (target !== null && actual !== null) {
+                            updateTeamPerformanceBarChart(operationName, target, actual);
+                        } else {
+                            updateTeamPerformanceBarChart(operationName, null, null);
+                        }
                     }
                 });
             });
@@ -2751,6 +3540,8 @@ const performanceData = {
             const leaderParam = params.get('highlightLeader');
             const operationParam = params.get('highlightOperation');
             const kpiParam = params.get('highlightKpi');
+            const autoClickKpiParam = params.get('autoClickKpi');
+            const highlightViewParam = params.get('highlightView');
 
             if (!leaderParam) {
                 return;
@@ -2759,6 +3550,11 @@ const performanceData = {
             const leaderId = leaderParam.trim().toLowerCase();
             if (!leaderId) {
                 return;
+            }
+
+            // Switch to profile section if highlightView=profile (for Lead KPIs)
+            if (highlightViewParam === 'profile' && currentView !== 'profile') {
+                toggleSections();
             }
 
             const targetCard = Array.from(leaderCards).find(card =>
@@ -2829,6 +3625,12 @@ const performanceData = {
                         }
                         if (kpiParam) {
                             url.searchParams.delete('highlightKpi');
+                        }
+                        if (autoClickKpiParam) {
+                            url.searchParams.delete('autoClickKpi');
+                        }
+                        if (highlightViewParam) {
+                            url.searchParams.delete('highlightView');
                         }
                         if (params.has('highlightSource')) {
                             url.searchParams.delete('highlightSource');
@@ -2919,6 +3721,147 @@ const performanceData = {
                 targetCard.addEventListener('animationend', animationEndHandler, { once: true });
 
                 setTimeout(maybeHighlightOperation, 300);
+
+                // Handle auto-clicking a KPI row (for both non-dropdown and dropdown rows)
+                const maybeAutoClickKpi = () => {
+                    if (!autoClickKpiParam) {
+                        return;
+                    }
+
+                    const normalizedKpi = autoClickKpiParam.trim().toLowerCase();
+                    let autoClickComplete = false;
+
+                    const locateAndClickKpi = (attempt = 0) => {
+                        if (autoClickComplete || attempt > 20) {
+                            return;
+                        }
+
+                        // Check if we're in profile view (Lead KPIs) or operations view (Lag KPIs)
+                        const isProfileView = currentView === 'profile';
+                        const contentElement = isProfileView 
+                            ? document.getElementById('profileContent')
+                            : document.getElementById('operationsContent');
+                        
+                        if (!contentElement) {
+                            setTimeout(() => locateAndClickKpi(attempt + 1), 150);
+                            return;
+                        }
+
+                        // First, try to find the KPI as a direct row (non-dropdown)
+                        // For Lead KPIs, use #leadKpiList, for Lag KPIs use #membersList or operationsContent
+                        const listContainer = isProfileView 
+                            ? document.getElementById('leadKpiList')
+                            : contentElement.querySelector('#membersList') || contentElement;
+                        
+                        if (!listContainer) {
+                            setTimeout(() => locateAndClickKpi(attempt + 1), 150);
+                            return;
+                        }
+                        
+                        let kpiRow = Array.from(listContainer.querySelectorAll('.member-row:not(.has-dropdown)')).find(row => {
+                            const operationName = row.getAttribute('data-operation');
+                            return operationName && operationName.trim().toLowerCase() === normalizedKpi;
+                        });
+
+                        if (kpiRow) {
+                            // Found as direct row
+                            autoClickComplete = true;
+                            registerHighlight(kpiRow);
+                            kpiRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                            // Click the row to trigger the graph update
+                            setTimeout(() => {
+                                kpiRow.click();
+                            }, 200);
+                            return;
+                        }
+
+                        // If not found as direct row, check if it's in a dropdown
+                        const checkDropdowns = (dropdownIndex = 0) => {
+                            if (autoClickComplete) return;
+                            
+                            const dropdownRows = Array.from(contentElement.querySelectorAll('.member-row.has-dropdown'));
+                            
+                            if (dropdownIndex >= dropdownRows.length) {
+                                // Checked all dropdowns, retry if not found
+                                if (!autoClickComplete) {
+                                    setTimeout(() => locateAndClickKpi(attempt + 1), 150);
+                                }
+                                return;
+                            }
+                            
+                            const dropdownRow = dropdownRows[dropdownIndex];
+                            const rowIndex = dropdownRow.getAttribute('data-index');
+                            const dropdown = rowIndex ? document.getElementById(`dropdown-${rowIndex}`) : null;
+                            
+                            if (!dropdown) {
+                                // Check next dropdown
+                                checkDropdowns(dropdownIndex + 1);
+                                return;
+                            }
+                            
+                            // Check if dropdown is already expanded
+                            if (dropdownRow.classList.contains('expanded') && dropdown.classList.contains('show')) {
+                                // Check for KPI in this dropdown
+                                const subOperationItems = Array.from(dropdown.querySelectorAll('.sub-operation-item'));
+                                const targetSubOperation = subOperationItems.find(item => {
+                                    const label = item.querySelector('.sub-operation-label');
+                                    const labelText = label ? label.textContent.trim().toLowerCase().replace(/→/g, '').trim() : '';
+                                    return labelText === normalizedKpi;
+                                });
+                                
+                                if (targetSubOperation) {
+                                    autoClickComplete = true;
+                                    registerHighlight(dropdownRow);
+                                    registerHighlight(targetSubOperation);
+                                    targetSubOperation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    
+                                    setTimeout(() => {
+                                        targetSubOperation.click();
+                                    }, 200);
+                                    return;
+                                }
+                            } else {
+                                // Expand dropdown and check
+                                dropdownRow.click();
+                                setTimeout(() => {
+                                    const subOperationItems = Array.from(dropdown.querySelectorAll('.sub-operation-item'));
+                                    const targetSubOperation = subOperationItems.find(item => {
+                                        const label = item.querySelector('.sub-operation-label');
+                                        const labelText = label ? label.textContent.trim().toLowerCase().replace(/→/g, '').trim() : '';
+                                        return labelText === normalizedKpi;
+                                    });
+                                    
+                                    if (targetSubOperation) {
+                                        autoClickComplete = true;
+                                        registerHighlight(dropdownRow);
+                                        registerHighlight(targetSubOperation);
+                                        targetSubOperation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        
+                                        setTimeout(() => {
+                                            targetSubOperation.click();
+                                        }, 200);
+                                        return;
+                                    }
+                                    
+                                    // Not found in this dropdown, check next
+                                    checkDropdowns(dropdownIndex + 1);
+                                }, 300);
+                                return;
+                            }
+                            
+                            // Not found in this dropdown, check next
+                            checkDropdowns(dropdownIndex + 1);
+                        };
+                        
+                        checkDropdowns();
+                    };
+
+                    // Wait a bit for the operations content to load after leader selection
+                    setTimeout(() => locateAndClickKpi(), 500);
+                };
+
+                setTimeout(maybeAutoClickKpi, 600);
 
                 const fallbackTimeoutMs = 5000;
                 fallbackTimeoutId = setTimeout(() => {

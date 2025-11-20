@@ -78,6 +78,49 @@
         }
     }
 
+    /* Per-chart loading indicator */
+    .chart-loading-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(245, 245, 240, 0.9);
+        backdrop-filter: blur(2px);
+        z-index: 10;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .chart-loading-indicator.visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+    }
+
+    .chart-loading-spinner {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid rgba(88, 103, 64, 0.2);
+        border-top-color: var(--primary-color);
+        animation: dashboard-spin 0.8s linear infinite;
+        margin-bottom: 8px;
+    }
+
+    .chart-loading-text {
+        font-size: 12px;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
     /* Loading Overlay */
     .loading-overlay {
         position: fixed;
@@ -774,9 +817,9 @@
         border: 1px solid #f0f0f0;
         min-height: 280px;
         max-height: none;
-        height: auto;
+        height: 100%;
         overflow: visible;
-        align-self: start;
+        align-self: stretch;
     }
 
     .dashboard-grid > .card:nth-child(odd) h3,
@@ -1157,6 +1200,29 @@
         border-radius: 10px;
         flex: 0 0 auto;
         min-height: 60px;
+    }
+
+    /* Clickable Stat Card Styles */
+    .stat-card.stat-card-link {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .stat-card.stat-card-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(88, 103, 64, 0.2);
+        background: #a5b84a;
+    }
+
+    .stat-card.stat-card-link:focus-visible {
+        outline: 3px solid var(--secondary-color);
+        outline-offset: 4px;
+        border-radius: 10px;
+    }
+
+    .stat-card.stat-card-link:active {
+        transform: translateY(0);
     }
 
     .stat-icon {

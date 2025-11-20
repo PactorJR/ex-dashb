@@ -72,6 +72,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             applyIncomingHighlight();
             setupVarianceCardNavigation();
+            setupYoYGrowthNavigation();
             setupTeamCarouselNavigation();
         });
 
@@ -183,52 +184,530 @@
             setTimeout(removeHighlight, fallbackTimeoutMs);
         }
 
+        // Team to leader ID mapping
+        const teamToLeaderMap = {
+            'acc': 'marcus-chen',           // Accounting Team -> Jeany Sabillo
+            'tech': 'sarah-mitchell',       // Technical Team -> Maria Baby Klyre Catibog
+            'lrad': 'james-peterson',       // LRAD Team -> Al Francis Talagon
+            'qual': 'emily-rodriguez',      // Quality Team -> Irene Floretes
+            'dc': 'david-patterson',        // DC Team -> Joseph Mattew Dela Cruz
+            'it': 'jennifer-lee',           // IT Team -> Mark Joel Limin
+            'opp': 'robert-thompson',       // Opportunity Team -> Jeany Sabillo
+            'marc': 'amanda-white',         // Marcom Team -> Abbygail Balinado
+            'aud': 'michael-johnson',       // Audit Team -> Rosiene Macuja
+            'gath': 'lisa-anderson',        // Gathering Team -> Vernon Calivara
+            'oper': 'kevin-martinez'        // Operations Team -> Dennis Romero
+        };
+
+        // Function to find the nearest team section ancestor or previous sibling
+        function findTeamSection(element, companySection = null) {
+            // If companySection is not provided, try to find it from the element
+            if (!companySection) {
+                companySection = element.closest('[data-company-type="lag"]') || 
+                                element.closest('[data-company-type="lead"]');
+            }
+            
+            // If still not found, try both sections
+            if (!companySection) {
+                companySection = document.querySelector('[data-company-type="lag"]') || 
+                                document.querySelector('[data-company-type="lead"]');
+            }
+            
+            if (!companySection) {
+                return null;
+            }
+            
+            // Find the card container that holds this stat card
+            let cardContainer = element;
+            while (cardContainer && cardContainer !== companySection && cardContainer !== document.body) {
+                if (cardContainer.classList && cardContainer.classList.contains('card')) {
+                    break;
+                }
+                cardContainer = cardContainer.parentElement;
+            }
+            
+            // If we found a card, walk backwards through siblings to find the team section
+            if (cardContainer && cardContainer.parentElement === companySection) {
+                let sibling = cardContainer.previousElementSibling;
+                while (sibling) {
+                    if (sibling.classList && sibling.classList.contains('team-section')) {
+                        // Check for valid team class (skip headers like revenue-header, expenses-header)
+                        const classList = Array.from(sibling.classList);
+                        for (const className of classList) {
+                            if (teamToLeaderMap[className]) {
+                                return className;
+                            }
+                        }
+                    }
+                    sibling = sibling.previousElementSibling;
+                }
+            }
+            
+            // Alternative: if card is nested, check parent's siblings
+            if (cardContainer) {
+                let current = cardContainer.parentElement;
+                while (current && current !== companySection && current !== document.body) {
+                    let sibling = current.previousElementSibling;
+                    while (sibling) {
+                        if (sibling.classList && sibling.classList.contains('team-section')) {
+                            const classList = Array.from(sibling.classList);
+                            for (const className of classList) {
+                                if (teamToLeaderMap[className]) {
+                                    return className;
+                                }
+                            }
+                        }
+                        sibling = sibling.previousElementSibling;
+                    }
+                    current = current.parentElement;
+                }
+            }
+            
+            // Last resort: find all team sections and determine which one is closest before this element
+            const allChildren = Array.from(companySection.children);
+            const elementIndex = allChildren.indexOf(cardContainer || element);
+            
+            if (elementIndex > 0) {
+                // Walk backwards from the element to find the most recent team section
+                for (let i = elementIndex - 1; i >= 0; i--) {
+                    const sibling = allChildren[i];
+                    if (sibling.classList && sibling.classList.contains('team-section')) {
+                        const classList = Array.from(sibling.classList);
+                        for (const className of classList) {
+                            if (teamToLeaderMap[className]) {
+                                return className;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Function to extract KPI name from card title
+        function extractKpiNameFromCard(card, isLeadSection = false) {
+            // Find the parent card element
+            let cardContainer = card;
+            while (cardContainer && cardContainer !== document.body) {
+                if (cardContainer.classList && cardContainer.classList.contains('card')) {
+                    break;
+                }
+                cardContainer = cardContainer.parentElement;
+            }
+            
+            if (!cardContainer) {
+                return null;
+            }
+            
+            // Get the card title from h3
+            const titleElement = cardContainer.querySelector('h3');
+            if (!titleElement) {
+                return null;
+            }
+            
+            const titleText = titleElement.textContent.trim();
+            
+            // Find the team section to determine context for ambiguous titles
+            const teamClass = findTeamSection(card);
+            
+            // Determine if this is a Lead section by checking parent
+            if (!isLeadSection) {
+                const leadSection = card.closest('[data-company-type="lead"]');
+                isLeadSection = leadSection !== null;
+            }
+            
+            // Map card titles to KPI names based on teamOperationsData (Lag) or leadKpiData (Lead)
+            // This mapping should match the KPI names in tl-score-script.js
+            const lagTitleToKpiMap = {
+                // Accounting Team
+                'net profit summary': 'FS Target : Net Profit',
+                'revenue summary': 'FS Target : Total Gross Revenue',
+                'collection summary': '% Collection : All Sites',
+                'total operating expense': 'FS Target : Total Operating Expense',
+                
+                // Opportunity Team
+                'rental income summary': 'FS Target : Rental Income',
+                'critical numbers summary': '% Occupancy: Commercial (Units)',
+                'occupancy rate (unit) summary': '% Occupancy: Commercial (Units)',
+                'occupancy rate (area) summary': '% Occupancy: Commercial (Area)',
+                'occupancy rate (p-value) summary': '% Occupancy: Commercial (PValue)',
+                'closed inquiries': '% Pull Out - Aversion',
+                'pullout aversion': '% Pull Out - Aversion',
+                
+                // Gathering Team
+                'venue (p-value) summary': '% Occupancy: Venue (PValue)',
+                'venue (pvalue) summary': '% Occupancy: Venue (PValue)',
+                'studio (p-value)': '% Occupancy: Studio (PValue)',
+                'studio (pvalue)': '% Occupancy: Studio (PValue)',
+                'sports arena (p-value)': '% Occupancy: Sports Arena (PValue)',
+                'sports arena (pvalue)': '% Occupancy: Sports Arena (PValue)',
+                'lotus mall foot traffic': '# of Average Daily Foot Traffic',
+                'portal mall foot traffic': '# of Average Daily Foot Traffic',
+                'stadium shopping strip foot traffic': '# of Average Daily Foot Traffic',
+                'yspacio creative park carbag foot traffic': '# of Average Daily Foot Traffic',
+                'yspacio creative park alapan foot traffic': '# of Average Daily Foot Traffic',
+                'lumina foot traffic': '# of Average Daily Foot Traffic',
+                'lotus mall - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'portal mall - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'stadium shopping strip - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'closed inquiry - offline inquiries': '# of Closed Inquiry/Offline Inquiries Received: Gathering',
+                'site quality monitoring': '% Score : Site Quality (by Auditor)',
+                'insurance claim monitoring': '% Insurance Claimed vs Reported',
+                
+                // Operations Team
+                'parking income': 'FS Target : Parking Income',
+                'electricity expense': 'FS Target : Electricity Expense',
+                'water expense': 'FS Target : Water Expense',
+                'security expense': 'FS Target : Security Expense',
+                'agency expense': 'FS Target : Agency Expense',
+                
+                // LRAD Team
+                'salary expense': 'FS Target : Salary Expense',
+                'regular events plan': '% Planned vs Actual - Regular Events Plan: Lotuszen',
+                'culture dev\'t activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                'culture dev activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                
+                // Marcom Team
+                'marketing expense (+gifts & decor)': 'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)',
+                'marketing expense (+gifts & decor) (marcom)': 'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)',
+                'fb page followers': '% Increase : Facebook Page Followers (per Month per Page)',
+                
+                // Gathering Team - Marketing Expense
+                'marketing expense (+gifts & decor) (gathering)': 'FS Target : Marketing Expense (+Gifts & Decor) (GATHERING)',
+                
+                // Quality Team
+                'smd projects': 'Score/Evaluation/NPS : SMD Projects',
+                
+                // DC Team
+                'budget: projects (e&d)': '% Within Budget : Projects (E&D)',
+                'team/section\'s targets': '% Within Budget : Projects (E&D)',
+                'repairs & maintenance (labor)': 'FS Target : Repairs & Maintenance (Labor) (DCD) Expense',
+                'repairs & maintenance (materials)': 'FS Target : Repairs & Maintenance (Materials) (DCD) Expense',
+                'dcd: repairs & maintenance (labor)': 'FS Target : Repairs & Maintenance (Labor) (DCD) Expense',
+                'dcd: repairs & maintenance (materials)': 'FS Target : Repairs & Maintenance (Materials) (DCD) Expense',
+                
+                // Technical Team
+                'number of breakdowns': '# of Breakdowns : Engineering Department',
+                'repairs & maintenance (labor) (technical)': 'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense',
+                'repairs & maintenance (materials) (technical)': 'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense',
+                'technical: repairs & maintenance (labor)': 'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense',
+                'technical: repairs & maintenance (materials)': 'FS Target : Repairs & Maintenance (Materials) (TECHNICAL) Expense',
+                
+                // Audit Team
+                'i.c.a.r.e. (all teams)': '% Addressed : I.C.A.R.E (All Teams)',
+                'icare (all teams)': '% Addressed : I.C.A.R.E (All Teams)'
+            };
+            
+            // Lead KPI mappings (from leadKpiData in tl-score-script.js)
+            const leadTitleToKpiMap = {
+                // Opportunity Team - Lead
+                'critical numbers summary': '% Planned vs Actual - Tenant Mix Plan',
+                'occupancy rate (unit)': '% Planned vs Actual - Tenant Mix Plan',
+                'occupancy rate (area)': '% Planned vs Actual - Tenant Mix Plan',
+                'occupancy rate (p-value)': '% Planned vs Actual - Tenant Mix Plan',
+                'closed inquiries': '# of Closed Inquiry/Offline Inquiries Received: Commercial',
+                'pullout aversion': '% Pull Out - Aversion',
+                
+                // Gathering Team - Lead
+                'lotus mall foot traffic': '# of Average Daily Foot Traffic',
+                'portal mall foot traffic': '# of Average Daily Foot Traffic',
+                'stadium shopping strip foot traffic': '# of Average Daily Foot Traffic',
+                'yspacio creative park carbag foot traffic': '# of Average Daily Foot Traffic',
+                'yspacio creative park alapan foot traffic': '# of Average Daily Foot Traffic',
+                'lumina foot traffic': '# of Average Daily Foot Traffic',
+                'lotus mall - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'portal mall - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'stadium shopping strip - pax per event': '# of 500 pax or more Event/month (All Sites)',
+                'closed inquiry - offline inquiries': '# of Closed Inquiry/Offline Inquiries Received: Gathering',
+                'offline inquiries': '# of Closed Inquiry/Offline Inquiries Received: Gathering',
+                
+                // Marcom Team - Lead
+                'fb page followers': '% Increase : Facebook Page Followers (per Month per Page)',
+                
+                // Audit Team - Lead
+                'i.c.a.r.e. (all teams)': '% Addressed : I.C.A.R.E (All Teams)',
+                'icare (all teams)': '% Addressed : I.C.A.R.E (All Teams)',
+                
+                // Operations Team - Lead (kevin-martinez)
+                'site quality monitoring': '% Score : Site Quality (by Auditor)',
+                'insurance claim monitoring': '% Insurance Claimed vs Reported',
+                'onboarded tenants': '% Onboarded Tenants : All Tenants/Reserved (New + Existing)',
+                'team/section\'s i.c.a.r.e': '% Addressed : Team/Section\'s I.C.A.R.E',
+                
+                // LRAD Team - Lead
+                'regular events plan': '% Planned vs Actual - Regular Events Plan: Lotuszen',
+                'culture dev\'t activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                'culture dev activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                
+                // Quality Team - Lead
+                'smd projects': 'Score/Evaluation/NPS : SMD Projects',
+                'sid projects': 'Score/Evaluation/NPS : SID Projects',
+                
+                // DC Team - Lead
+                'budget: projects (e&d)': '% Within Budget : Projects (E&D)',
+                'budget: projects (ip)': '% Within Budget : Projects (IP)',
+                'budget: projects (pmr)': '% Within Budget : Projects (PMR)',
+                'budget: projects (construction)': '% Within Budget : Projects (Construction)',
+                'budget: projects (landscape)': '% Within Budget : Projects (Landscape)',
+                
+                // Technical Team - Lead
+                'number of breakdowns': '# of Breakdowns : Engineering Department',
+                'breakdowns': '# of Breakdowns : Engineering Department',
+                
+                // IT Team - Lead
+                'breakdowns : it': '# of Breakdowns : IT',
+                'it breakdowns': '# of Breakdowns : IT'
+            };
+            
+            // Use the appropriate map based on whether it's a Lead section
+            const titleToKpiMap = isLeadSection ? leadTitleToKpiMap : lagTitleToKpiMap;
+            
+            // Normalize the title (lowercase, remove extra spaces, remove date suffixes)
+            let normalizedTitle = titleText
+                .toLowerCase()
+                .replace(/\s*-\s*november\s+\d{4}/gi, '')
+                .replace(/\s*summary/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+            
+            // Handle team-specific mappings for ambiguous titles
+            // Marketing Expense - check team context
+            if (normalizedTitle.includes('marketing expense')) {
+                if (teamClass === 'gath') {
+                    normalizedTitle = 'marketing expense (+gifts & decor) (gathering)';
+                } else if (teamClass === 'marc') {
+                    normalizedTitle = 'marketing expense (+gifts & decor)';
+                }
+            }
+            
+            // Repairs & Maintenance - check team context and chart title
+            if (normalizedTitle.includes('repairs & maintenance')) {
+                // Look for the chart card (usually next sibling) to determine if it's DCD or Technical
+                let chartCard = cardContainer.nextElementSibling;
+                if (!chartCard || !chartCard.querySelector('canvas')) {
+                    chartCard = cardContainer.previousElementSibling;
+                }
+                
+                if (chartCard) {
+                    const chartTitle = chartCard.querySelector('h3')?.textContent || '';
+                    const chartTitleLower = chartTitle.toLowerCase();
+                    
+                    // Check chart title first (most reliable)
+                    if (chartTitleLower.includes('dcd')) {
+                        if (normalizedTitle.includes('labor')) {
+                            normalizedTitle = 'dcd: repairs & maintenance (labor)';
+                        } else if (normalizedTitle.includes('materials')) {
+                            normalizedTitle = 'dcd: repairs & maintenance (materials)';
+                        }
+                    } else if (chartTitleLower.includes('technical')) {
+                        if (normalizedTitle.includes('labor')) {
+                            normalizedTitle = 'technical: repairs & maintenance (labor)';
+                        } else if (normalizedTitle.includes('materials')) {
+                            normalizedTitle = 'technical: repairs & maintenance (materials)';
+                        }
+                    } else {
+                        // Fallback to team class if chart title doesn't specify
+                        if (teamClass === 'dc') {
+                            if (normalizedTitle.includes('labor')) {
+                                normalizedTitle = 'dcd: repairs & maintenance (labor)';
+                            } else if (normalizedTitle.includes('materials')) {
+                                normalizedTitle = 'dcd: repairs & maintenance (materials)';
+                            }
+                        } else if (teamClass === 'tech') {
+                            if (normalizedTitle.includes('labor')) {
+                                normalizedTitle = 'technical: repairs & maintenance (labor)';
+                            } else if (normalizedTitle.includes('materials')) {
+                                normalizedTitle = 'technical: repairs & maintenance (materials)';
+                            }
+                        }
+                    }
+                } else {
+                    // No chart card found, use team class as fallback
+                    if (teamClass === 'dc') {
+                        if (normalizedTitle.includes('labor')) {
+                            normalizedTitle = 'dcd: repairs & maintenance (labor)';
+                        } else if (normalizedTitle.includes('materials')) {
+                            normalizedTitle = 'dcd: repairs & maintenance (materials)';
+                        }
+                    } else if (teamClass === 'tech') {
+                        if (normalizedTitle.includes('labor')) {
+                            normalizedTitle = 'technical: repairs & maintenance (labor)';
+                        } else if (normalizedTitle.includes('materials')) {
+                            normalizedTitle = 'technical: repairs & maintenance (materials)';
+                        }
+                    }
+                }
+            }
+            
+            return titleToKpiMap[normalizedTitle] || null;
+        }
+
+        // Function to make a stat card clickable and navigate to team leader
+        function makeStatCardClickable(card, leaderId, kpiName = null, isLeadKpi = false) {
+            // Skip if already made clickable
+            if (card.classList.contains('stat-card-link')) {
+                return;
+            }
+
+            card.classList.add('stat-card-link');
+            card.setAttribute('role', 'link');
+            card.setAttribute('tabindex', '0');
+            card.style.cursor = 'pointer';
+
+            const navigateToLeader = () => {
+                const params = new URLSearchParams({
+                    highlightLeader: leaderId,
+                    highlightSource: 'lag-lead-summ'
+                });
+                
+                // Add KPI name if available for auto-clicking
+                if (kpiName) {
+                    params.set('autoClickKpi', kpiName);
+                }
+                
+                // If it's a Lead KPI, switch to profile section (Lead KPIs view)
+                if (isLeadKpi) {
+                    params.set('highlightView', 'profile');
+                }
+
+                window.location.href = `tl-scoring.html?${params.toString()}`;
+            };
+
+            card.addEventListener('click', navigateToLeader);
+            card.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToLeader();
+                }
+            });
+        }
+
         function setupVarianceCardNavigation() {
+            // Process variance cards in both Company Lag and Company Lead sections
+            const lagSection = document.querySelector('[data-company-type="lag"]');
+            const leadSection = document.querySelector('[data-company-type="lead"]');
+            
+            const sections = [];
+            if (lagSection) sections.push(lagSection);
+            if (leadSection) sections.push(leadSection);
+            
+            if (sections.length === 0) {
+                return;
+            }
+
+            // Process each section
+            sections.forEach(companySection => {
+                // Find all variance stat cards within the section
+                const allStatCards = companySection.querySelectorAll('.stat-card');
+                
+                allStatCards.forEach(card => {
+                    // Skip if already made clickable
+                    if (card.classList.contains('stat-card-link')) {
+                        return;
+                    }
+
+                    const label = card.querySelector('.stat-label');
+                    const value = card.querySelector('.stat-value');
+                    
+                    if (!label || !value) return;
+
+                    const labelText = label.textContent.trim().toLowerCase();
+                    
+                    // Only process variance cards
+                    if (labelText === 'variance') {
+                        // Check if this is a Lead section
+                        const isLeadSection = companySection.getAttribute('data-company-type') === 'lead';
+                        
+                        // Use the improved findTeamSection function which checks ancestors and previous siblings
+                        let teamClass = findTeamSection(card, companySection);
+                        let leaderId = teamClass ? teamToLeaderMap[teamClass] : null;
+                        
+                        // Extract KPI name from the card context
+                        const kpiName = extractKpiNameFromCard(card, isLeadSection);
+                        
+                        // For Lead KPIs, check if KPI belongs to a different leader than the team section suggests
+                        // This handles cases like Site Quality/Insurance Claim under Gathering Team section
+                        // but belonging to Operations Team leader (kevin-martinez)
+                        if (isLeadSection && kpiName) {
+                            // Map of KPI names to their correct leader IDs for Lead KPIs
+                            // These override the team section-based leader detection
+                            const leadKpiToLeaderMap = {
+                                // Operations Team KPIs (may appear under different sections)
+                                '% Score : Site Quality (by Auditor)': 'kevin-martinez',
+                                '% Insurance Claimed vs Reported': 'kevin-martinez',
+                                '% Addressed : Team/Section\'s I.C.A.R.E': 'kevin-martinez',
+                                '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': 'kevin-martinez',
+                                
+                                // Audit Team KPIs
+                                '% Addressed : I.C.A.R.E (All Teams)': 'michael-johnson',
+                                '% On time & Accurate : PropMan Module': 'michael-johnson',
+                                
+                                // Technical Team Lead KPIs
+                                '# of Breakdowns : Engineering Department': 'sarah-mitchell',
+                                '% Predictive Maintenance Compliance': 'sarah-mitchell',
+                                '% Emergency Response Within SLA': 'sarah-mitchell',
+                                
+                                // IT Team Lead KPIs
+                                '# of Breakdowns : IT': 'jennifer-lee'
+                            };
+                            
+                            // Override leader ID if KPI has a specific leader mapping
+                            if (leadKpiToLeaderMap[kpiName]) {
+                                leaderId = leadKpiToLeaderMap[kpiName];
+                            }
+                        }
+                        
+                        if (leaderId) {
+                            makeStatCardClickable(card, leaderId, kpiName, isLeadSection);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Function to setup YoY Growth navigation (only in Revenue section)
+        function setupYoYGrowthNavigation() {
             const statCards = document.querySelectorAll('.stat-card');
-            let varianceCard = null;
 
             statCards.forEach(card => {
-                if (varianceCard) return;
-
                 const label = card.querySelector('.stat-label');
                 const value = card.querySelector('.stat-value');
 
                 if (!label || !value) return;
 
-                const isVarianceLabel = label.textContent.trim().toLowerCase() === 'variance';
-                const valueText = value.textContent.trim().replace(/\s+/g, '');
-                const numericValue = parseFloat(valueText.replace(/[^\d.-]/g, ''));
-                const matchesTargetValue = valueText.includes('-0.4') || numericValue === -0.4;
+                const labelText = label.textContent.trim().toLowerCase();
+                const isYoYGrowth = labelText === 'yoy growth';
 
-                if (isVarianceLabel && matchesTargetValue) {
-                    varianceCard = card;
-                }
-            });
+                if (isYoYGrowth) {
+                    // YoY Growth is always in the Revenue section under Accounting Team
+                    // Check if we're in the Company Lag view (revenue section)
+                    const dashboardGrid = card.closest('[data-company-type="lag"]');
+                    if (dashboardGrid) {
+                        // Check if we're in a revenue-related section by looking for revenue-header or accounting team section
+                        let current = card;
+                        let isInRevenueSection = false;
+                        while (current && current !== document.body) {
+                            if (current.classList) {
+                                if (current.classList.contains('revenue-header') || 
+                                    current.classList.contains('accounting-team-section') ||
+                                    (current.classList.contains('team-section') && current.classList.contains('acc'))) {
+                                    isInRevenueSection = true;
+                                    break;
+                                }
+                            }
+                            current = current.parentElement;
+                        }
 
-            if (!varianceCard) {
-                return;
-            }
-
-            varianceCard.classList.add('stat-card-link');
-            varianceCard.setAttribute('role', 'link');
-            varianceCard.setAttribute('tabindex', '0');
-
-            const navigateToLeader = () => {
-                const params = new URLSearchParams({
-                    highlightLeader: 'marcus-chen',
-                    highlightOperation: '2. Team Budget and Expenses Management',
-                    highlightKpi: 'FS Target : Net Profit',
-                    highlightSource: 'lag-lead-summ'
-                });
-
-                window.location.href = `tl-scoring.html?${params.toString()}`;
-            };
-
-            varianceCard.addEventListener('click', navigateToLeader);
-            varianceCard.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    navigateToLeader();
+                        // If in revenue section or can find accounting team, make it clickable
+                        if (isInRevenueSection || findTeamSection(card) === 'acc') {
+                            if (teamToLeaderMap['acc']) {
+                                // YoY Growth maps to Total Gross Revenue KPI
+                                const kpiName = 'FS Target : Total Gross Revenue';
+                                makeStatCardClickable(card, teamToLeaderMap['acc'], kpiName);
+                            }
+                        }
+                    }
                 }
             });
         }
@@ -807,42 +1286,48 @@
         let repairsMaintenanceMaterialsChart;
         let repairsMaintenanceLaborTechnicalChart;
         let repairsMaintenanceMaterialsTechnicalChart;
-        let dashboardLoadingOverlay = null;
-
-        function ensureLoadingOverlay() {
-            if (dashboardLoadingOverlay) {
-                return dashboardLoadingOverlay;
+        // Per-chart loading indicator functions
+        function showChartLoading(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const chartContainer = canvas.closest('.chart-container');
+            if (!chartContainer) return;
+            
+            // Check if loading indicator already exists
+            let loadingIndicator = chartContainer.querySelector('.chart-loading-indicator');
+            if (!loadingIndicator) {
+                loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'chart-loading-indicator';
+                loadingIndicator.innerHTML = `
+                    <div class="chart-loading-spinner"></div>
+                    <span class="chart-loading-text">Loading chart…</span>
+                `;
+                chartContainer.style.position = 'relative';
+                chartContainer.appendChild(loadingIndicator);
             }
-
-            dashboardLoadingOverlay = document.createElement('div');
-            dashboardLoadingOverlay.id = 'dashboardLoadingOverlay';
-            dashboardLoadingOverlay.innerHTML = `
-                <div class="dashboard-loading-content">
-                    <span class="dashboard-loading-spinner" aria-hidden="true"></span>
-                    <span class="dashboard-loading-text">Loading latest data…</span>
-                </div>
-            `;
-
-            document.body.appendChild(dashboardLoadingOverlay);
-            return dashboardLoadingOverlay;
+            
+            loadingIndicator.classList.add('visible');
+            canvas.style.opacity = '0.3';
         }
 
-        function showLoadingOverlay() {
-            const overlay = ensureLoadingOverlay();
-            overlay.classList.add('visible');
-            overlay.setAttribute('aria-live', 'polite');
-        }
-
-        function hideLoadingOverlay() {
-            if (!dashboardLoadingOverlay) {
-                        return;
-                    }
-            dashboardLoadingOverlay.classList.remove('visible');
+        function hideChartLoading(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const chartContainer = canvas.closest('.chart-container');
+            if (!chartContainer) return;
+            
+            const loadingIndicator = chartContainer.querySelector('.chart-loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.classList.remove('visible');
+            }
+            
+            canvas.style.opacity = '1';
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const initializationTasks = [];
-            showLoadingOverlay();
 
             try {
                 const profitBarCanvas = document.getElementById('profitBarChart');
@@ -851,157 +1336,268 @@
                 const rentalComparisonCanvas = document.getElementById('rentalComparisonChart');
 
                 if (profitBarCanvas) {
+                    showChartLoading('profitBarChart');
                     profitBarChart = new Chart(profitBarCanvas, profitBarConfig);
-                    initializationTasks.push(initNetProfitCharts());
+                    initializationTasks.push(initNetProfitCharts().then(() => {
+                        hideChartLoading('profitBarChart');
+                    }).catch(() => {
+                        hideChartLoading('profitBarChart');
+                    }));
+                    
+                    // Make the chart clickable to navigate to Net Profit KPI
+                    profitBarCanvas.style.cursor = 'pointer';
+                    profitBarCanvas.addEventListener('click', function() {
+                        const params = new URLSearchParams({
+                            highlightLeader: 'marcus-chen',
+                            highlightSource: 'lag-lead-summ',
+                            autoClickKpi: 'FS Target : Net Profit'
+                        });
+                        window.location.href = `tl-scoring.html?${params.toString()}`;
+                    });
                             } else {
                     console.warn('Canvas element with id "profitBarChart" not found');
                 }
 
                 if (revenueBarCanvas) {
+                    showChartLoading('revenueBarChart');
                     revenueBarChart = new Chart(revenueBarCanvas, revenueBarConfig);
-                    initializationTasks.push(initRevenueCharts());
+                    initializationTasks.push(initRevenueCharts().then(() => {
+                        hideChartLoading('revenueBarChart');
+                    }).catch(() => {
+                        hideChartLoading('revenueBarChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "revenueBarChart" not found');
                 }
 
                 if (monthlyCollectionCanvas) {
+                    showChartLoading('monthlyCollectionChart');
                     monthlyCollectionChart = new Chart(monthlyCollectionCanvas, monthlyCollectionConfig);
-                    initializationTasks.push(initCollectionCharts());
+                    initializationTasks.push(initCollectionCharts().then(() => {
+                        hideChartLoading('monthlyCollectionChart');
+                    }).catch(() => {
+                        hideChartLoading('monthlyCollectionChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "monthlyCollectionChart" not found');
                 }
 
                 if (rentalComparisonCanvas) {
+                    showChartLoading('rentalComparisonChart');
                     rentalComparisonChart = new Chart(rentalComparisonCanvas, rentalComparisonConfig);
-                    initializationTasks.push(initRentalIncomeCharts());
+                    initializationTasks.push(initRentalIncomeCharts().then(() => {
+                        hideChartLoading('rentalComparisonChart');
+                    }).catch(() => {
+                        hideChartLoading('rentalComparisonChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "rentalComparisonChart" not found');
                 }
 
                 const venueCanvas = document.getElementById('venueChart');
                 if (venueCanvas) {
+                    showChartLoading('venueChart');
                     venueChart = new Chart(venueCanvas, venueChartConfig);
-                    initializationTasks.push(initVenueCharts());
+                    initializationTasks.push(initVenueCharts().then(() => {
+                        hideChartLoading('venueChart');
+                    }).catch(() => {
+                        hideChartLoading('venueChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "venueChart" not found');
                 }
 
                 const studioCanvas = document.getElementById('studioChart');
                 if (studioCanvas) {
+                    showChartLoading('studioChart');
                     studioChart = new Chart(studioCanvas, studioChartConfig);
-                    initializationTasks.push(initStudioCharts());
+                    initializationTasks.push(initStudioCharts().then(() => {
+                        hideChartLoading('studioChart');
+                    }).catch(() => {
+                        hideChartLoading('studioChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "studioChart" not found');
                 }
 
                 const sportsArenaCanvas = document.getElementById('sportsArenaChart');
                 if (sportsArenaCanvas) {
+                    showChartLoading('sportsArenaChart');
                     sportsArenaChart = new Chart(sportsArenaCanvas, sportsArenaChartConfig);
-                    initializationTasks.push(initSportsArenaCharts());
+                    initializationTasks.push(initSportsArenaCharts().then(() => {
+                        hideChartLoading('sportsArenaChart');
+                    }).catch(() => {
+                        hideChartLoading('sportsArenaChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "sportsArenaChart" not found');
                 }
 
                 const parkingIncomeCanvas = document.getElementById('parkingIncomeChart');
                 if (parkingIncomeCanvas) {
+                    showChartLoading('parkingIncomeChart');
                     parkingIncomeChart = new Chart(parkingIncomeCanvas, parkingIncomeChartConfig);
-                    initializationTasks.push(initParkingIncomeCharts());
+                    initializationTasks.push(initParkingIncomeCharts().then(() => {
+                        hideChartLoading('parkingIncomeChart');
+                    }).catch(() => {
+                        hideChartLoading('parkingIncomeChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "parkingIncomeChart" not found');
                 }
 
                 const totalOperatingExpenseCanvas = document.getElementById('totalOperatingExpenseChart');
                 if (totalOperatingExpenseCanvas) {
+                    showChartLoading('totalOperatingExpenseChart');
                     totalOperatingExpenseChart = new Chart(totalOperatingExpenseCanvas, totalOperatingExpenseChartConfig);
-                    initializationTasks.push(initTotalOperatingExpenseCharts());
+                    initializationTasks.push(initTotalOperatingExpenseCharts().then(() => {
+                        hideChartLoading('totalOperatingExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('totalOperatingExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "totalOperatingExpenseChart" not found');
                 }
 
                 const electricityExpenseCanvas = document.getElementById('electricityExpenseChart');
                 if (electricityExpenseCanvas) {
+                    showChartLoading('electricityExpenseChart');
                     electricityExpenseChart = new Chart(electricityExpenseCanvas, electricityExpenseChartConfig);
-                    initializationTasks.push(initElectricityExpenseCharts());
+                    initializationTasks.push(initElectricityExpenseCharts().then(() => {
+                        hideChartLoading('electricityExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('electricityExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "electricityExpenseChart" not found');
                 }
 
                 const waterExpenseCanvas = document.getElementById('waterExpenseChart');
                 if (waterExpenseCanvas) {
+                    showChartLoading('waterExpenseChart');
                     waterExpenseChart = new Chart(waterExpenseCanvas, waterExpenseChartConfig);
-                    initializationTasks.push(initWaterExpenseCharts());
+                    initializationTasks.push(initWaterExpenseCharts().then(() => {
+                        hideChartLoading('waterExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('waterExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "waterExpenseChart" not found');
                 }
 
                 const securityExpenseCanvas = document.getElementById('securityExpenseChart');
                 if (securityExpenseCanvas) {
+                    showChartLoading('securityExpenseChart');
                     securityExpenseChart = new Chart(securityExpenseCanvas, securityExpenseChartConfig);
-                    initializationTasks.push(initSecurityExpenseCharts());
+                    initializationTasks.push(initSecurityExpenseCharts().then(() => {
+                        hideChartLoading('securityExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('securityExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "securityExpenseChart" not found');
                 }
 
                 const agencyExpenseCanvas = document.getElementById('agencyExpenseChart');
                 if (agencyExpenseCanvas) {
+                    showChartLoading('agencyExpenseChart');
                     agencyExpenseChart = new Chart(agencyExpenseCanvas, agencyExpenseChartConfig);
-                    initializationTasks.push(initAgencyExpenseCharts());
+                    initializationTasks.push(initAgencyExpenseCharts().then(() => {
+                        hideChartLoading('agencyExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('agencyExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "agencyExpenseChart" not found');
                 }
 
                 const salaryExpenseCanvas = document.getElementById('salaryExpenseChart');
                 if (salaryExpenseCanvas) {
+                    showChartLoading('salaryExpenseChart');
                     salaryExpenseChart = new Chart(salaryExpenseCanvas, salaryExpenseChartConfig);
-                    initializationTasks.push(initSalaryExpenseCharts());
+                    initializationTasks.push(initSalaryExpenseCharts().then(() => {
+                        hideChartLoading('salaryExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('salaryExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "salaryExpenseChart" not found');
                 }
 
                 const marketingExpenseCanvas = document.getElementById('marketingExpenseChart');
                 if (marketingExpenseCanvas) {
+                    showChartLoading('marketingExpenseChart');
                     marketingExpenseChart = new Chart(marketingExpenseCanvas, marketingExpenseChartConfig);
-                    initializationTasks.push(initMarketingExpenseCharts());
+                    initializationTasks.push(initMarketingExpenseCharts().then(() => {
+                        hideChartLoading('marketingExpenseChart');
+                    }).catch(() => {
+                        hideChartLoading('marketingExpenseChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "marketingExpenseChart" not found');
                 }
 
                 const marketingExpenseGatheringCanvas = document.getElementById('marketingExpenseGatheringChart');
                 if (marketingExpenseGatheringCanvas) {
+                    showChartLoading('marketingExpenseGatheringChart');
                     marketingExpenseGatheringChart = new Chart(marketingExpenseGatheringCanvas, marketingExpenseGatheringChartConfig);
-                    initializationTasks.push(initMarketingExpenseGatheringCharts());
+                    initializationTasks.push(initMarketingExpenseGatheringCharts().then(() => {
+                        hideChartLoading('marketingExpenseGatheringChart');
+                    }).catch(() => {
+                        hideChartLoading('marketingExpenseGatheringChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "marketingExpenseGatheringChart" not found');
                 }
 
                 const repairsMaintenanceLaborCanvas = document.getElementById('repairsMaintenanceLaborChart');
                 if (repairsMaintenanceLaborCanvas) {
+                    showChartLoading('repairsMaintenanceLaborChart');
                     repairsMaintenanceLaborChart = new Chart(repairsMaintenanceLaborCanvas, repairsMaintenanceLaborChartConfig);
-                    initializationTasks.push(initRepairsMaintenanceLaborCharts());
+                    initializationTasks.push(initRepairsMaintenanceLaborCharts().then(() => {
+                        hideChartLoading('repairsMaintenanceLaborChart');
+                    }).catch(() => {
+                        hideChartLoading('repairsMaintenanceLaborChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "repairsMaintenanceLaborChart" not found');
                 }
 
                 const repairsMaintenanceMaterialsCanvas = document.getElementById('repairsMaintenanceMaterialsChart');
                 if (repairsMaintenanceMaterialsCanvas) {
+                    showChartLoading('repairsMaintenanceMaterialsChart');
                     repairsMaintenanceMaterialsChart = new Chart(repairsMaintenanceMaterialsCanvas, repairsMaintenanceMaterialsChartConfig);
-                    initializationTasks.push(initRepairsMaintenanceMaterialsCharts());
+                    initializationTasks.push(initRepairsMaintenanceMaterialsCharts().then(() => {
+                        hideChartLoading('repairsMaintenanceMaterialsChart');
+                    }).catch(() => {
+                        hideChartLoading('repairsMaintenanceMaterialsChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "repairsMaintenanceMaterialsChart" not found');
                 }
 
                 const repairsMaintenanceLaborTechnicalCanvas = document.getElementById('repairsMaintenanceLaborTechnicalChart');
                 if (repairsMaintenanceLaborTechnicalCanvas) {
+                    showChartLoading('repairsMaintenanceLaborTechnicalChart');
                     repairsMaintenanceLaborTechnicalChart = new Chart(repairsMaintenanceLaborTechnicalCanvas, repairsMaintenanceLaborTechnicalChartConfig);
-                    initializationTasks.push(initRepairsMaintenanceLaborTechnicalCharts());
+                    initializationTasks.push(initRepairsMaintenanceLaborTechnicalCharts().then(() => {
+                        hideChartLoading('repairsMaintenanceLaborTechnicalChart');
+                    }).catch(() => {
+                        hideChartLoading('repairsMaintenanceLaborTechnicalChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "repairsMaintenanceLaborTechnicalChart" not found');
                 }
 
                 const repairsMaintenanceMaterialsTechnicalCanvas = document.getElementById('repairsMaintenanceMaterialsTechnicalChart');
                 if (repairsMaintenanceMaterialsTechnicalCanvas) {
+                    showChartLoading('repairsMaintenanceMaterialsTechnicalChart');
                     repairsMaintenanceMaterialsTechnicalChart = new Chart(repairsMaintenanceMaterialsTechnicalCanvas, repairsMaintenanceMaterialsTechnicalChartConfig);
-                    initializationTasks.push(initRepairsMaintenanceMaterialsTechnicalCharts());
+                    initializationTasks.push(initRepairsMaintenanceMaterialsTechnicalCharts().then(() => {
+                        hideChartLoading('repairsMaintenanceMaterialsTechnicalChart');
+                    }).catch(() => {
+                        hideChartLoading('repairsMaintenanceMaterialsTechnicalChart');
+                    }));
                 } else {
                     console.warn('Canvas element with id "repairsMaintenanceMaterialsTechnicalChart" not found');
                 }
@@ -1009,8 +1605,6 @@
                 await Promise.all(initializationTasks);
             } catch (err) {
                 console.error('Failed to initialize revenue dashboards:', err);
-            } finally {
-                hideLoadingOverlay();
             }
         });
 
@@ -1111,6 +1705,7 @@
             });
             
             profitBarChart.update();
+            updateNetProfitSummary();
         }
 
         // ============================================
@@ -1360,6 +1955,7 @@
             });
 
             rentalComparisonChart.update();
+            updateRentalIncomeSummary();
         }
 
         // ============================================
@@ -1689,6 +2285,7 @@
             });
 
             venueChart.update();
+            updateVenueSummary();
         }
 
         // ============================================
@@ -1755,6 +2352,7 @@
             });
 
             studioChart.update();
+            updateStudioSummary();
         }
 
         // ============================================
@@ -1821,6 +2419,7 @@
             });
 
             sportsArenaChart.update();
+            updateSportsArenaSummary();
         }
 
         // ============================================
@@ -1887,6 +2486,7 @@
             });
 
             parkingIncomeChart.update();
+            updateParkingIncomeSummary();
         }
 
         // ============================================
@@ -1953,6 +2553,7 @@
             });
 
             electricityExpenseChart.update();
+            updateElectricityExpenseSummary();
         }
 
         // ============================================
@@ -2021,6 +2622,7 @@
             });
 
             totalOperatingExpenseChart.update();
+            updateTotalOperatingExpenseSummary();
         }
 
 
@@ -2088,6 +2690,7 @@
             });
 
             waterExpenseChart.update();
+            updateWaterExpenseSummary();
         }
 
         // ============================================
@@ -2154,6 +2757,7 @@
             });
 
             securityExpenseChart.update();
+            updateSecurityExpenseSummary();
         }
 
         // ============================================
@@ -2220,6 +2824,7 @@
             });
 
             agencyExpenseChart.update();
+            updateAgencyExpenseSummary();
         }
 
         // ============================================
@@ -2286,6 +2891,7 @@
             });
 
             salaryExpenseChart.update();
+            updateSalaryExpenseSummary();
         }
 
         // ============================================
@@ -2357,6 +2963,7 @@
             });
 
             marketingExpenseChart.update();
+            updateMarketingExpenseSummary();
         }
 
         // ============================================
@@ -2423,6 +3030,7 @@
             });
 
             marketingExpenseGatheringChart.update();
+            updateMarketingExpenseGatheringSummary();
         }
 
         // ============================================
@@ -2489,6 +3097,7 @@
             });
 
             repairsMaintenanceLaborChart.update();
+            updateRepairsMaintenanceLaborSummary();
         }
 
         // ============================================
@@ -2555,6 +3164,7 @@
             });
 
             repairsMaintenanceMaterialsChart.update();
+            updateRepairsMaintenanceMaterialsSummary();
         }
 
         // ============================================
@@ -2621,6 +3231,7 @@
             });
 
             repairsMaintenanceLaborTechnicalChart.update();
+            updateRepairsMaintenanceLaborTechnicalSummary();
         }
 
         // ============================================
@@ -2687,6 +3298,7 @@
             });
 
             repairsMaintenanceMaterialsTechnicalChart.update();
+            updateRepairsMaintenanceMaterialsTechnicalSummary();
         }
 
         // Initialize the chart
@@ -3010,6 +3622,7 @@
             });
 
             occupancyRateLeadChart.update();
+            updateOccupancyRateUnitSummary();
         }
 
         // ============================================
@@ -3066,6 +3679,7 @@
             });
 
             occupancyRateAreaLeadChart.update();
+            updateOccupancyRateAreaSummary();
         }
 
         // ============================================
@@ -3131,6 +3745,7 @@
             });
 
             occupancyRatePValueLeadChart.update();
+            updateOccupancyRatePValueSummary();
         }
 
         // ============================================
@@ -3299,7 +3914,8 @@
             payloadKeys: { key2025: 'lotusFootTraffic2025', key2024: 'lotusFootTraffic2024', keyTarget: 'lotusFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initLotusFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateLotusFootTrafficSummary
         });
 
         // Portal Mall Foot Traffic
@@ -3465,7 +4081,8 @@
             payloadKeys: { key2025: 'portalFootTraffic2025', key2024: 'portalFootTraffic2024', keyTarget: 'portalFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initPortalFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updatePortalFootTrafficSummary
         });
 
         // Stadium Shopping Strip Foot Traffic
@@ -3631,7 +4248,8 @@
             payloadKeys: { key2025: 'stadiumFootTraffic2025', key2024: 'stadiumFootTraffic2024', keyTarget: 'stadiumFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initStadiumFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateStadiumFootTrafficSummary
         });
 
         // ySpacio Creative Park Carbag Foot Traffic
@@ -3797,7 +4415,8 @@
             payloadKeys: { key2025: 'yspacioFootTraffic2025', key2024: 'yspacioFootTraffic2024', keyTarget: 'yspacioFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initYspacioFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateYspacioFootTrafficSummary
         });
 
         // ySpacio Creative Park Alapan Foot Traffic
@@ -3963,7 +4582,8 @@
             payloadKeys: { key2025: 'yspacioAlapanFootTraffic2025', key2024: 'yspacioAlapanFootTraffic2024', keyTarget: 'yspacioAlapanFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initYspacioAlapanFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateYspacioAlapanFootTrafficSummary
         });
 
         // Lumina Foot Traffic
@@ -4129,7 +4749,8 @@
             payloadKeys: { key2025: 'luminaFootTraffic2025', key2024: 'luminaFootTraffic2024', keyTarget: 'luminaFootTrafficTarget' },
             summaryCardTitle: null,
             chartName: 'initLuminaFootTrafficCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateLuminaFootTrafficSummary
         });
 
         // ============================================
@@ -4161,7 +4782,8 @@
             payloadKeys: { key2025: 'lotusPax2025', key2024: 'lotusPax2024', keyTarget: 'lotusPaxTarget' },
             summaryCardTitle: null,
             chartName: 'initLotusPaxCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateLotusPaxSummary
         });
 
         // ============================================
@@ -4193,7 +4815,8 @@
             payloadKeys: { key2025: 'portalPax2025', key2024: 'portalPax2024', keyTarget: 'portalPaxTarget' },
             summaryCardTitle: null,
             chartName: 'initPortalPaxCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updatePortalPaxSummary
         });
 
         // ============================================
@@ -4225,7 +4848,8 @@
             payloadKeys: { key2025: 'stadiumPax2025', key2024: 'stadiumPax2024', keyTarget: 'stadiumPaxTarget' },
             summaryCardTitle: null,
             chartName: 'initStadiumPaxCharts',
-            updateSummary: false
+            updateSummary: false,
+            updateFunction: updateStadiumPaxSummary
         });
 
         // ============================================
@@ -6274,6 +6898,7 @@
             });
 
             closedInquiriesLeadChart.update();
+            updateClosedInquiriesSummary();
         }
 
         async function initOfflineInquiriesLeadCharts() {
@@ -6310,6 +6935,7 @@
             });
 
             offlineInquiriesLeadChart.update();
+            updateOfflineInquiriesSummary();
         }
 
         async function initPulloutAversionLeadCharts() {
@@ -6383,6 +7009,7 @@
             });
 
             pulloutAversionLeadChart.update();
+            updatePulloutAversionSummary();
         }
 
         // Helper function to update summary cards
@@ -6416,7 +7043,7 @@
 
         // Generic function to initialize charts with 2025/2024/Target pattern
         async function initGenericChart(config) {
-            const { chart, chartData, payloadKeys, summaryCardTitle, chartName, updateSummary = true } = config;
+            const { chart, chartData, payloadKeys, summaryCardTitle, chartName, updateSummary = true, updateFunction = null } = config;
             
             if (!chart) {
                 console.warn(`${chartName} chart is not initialized yet.`);
@@ -6459,6 +7086,11 @@
             }
 
             chart.update();
+            
+            // Call custom update function if provided
+            if (updateFunction && typeof updateFunction === 'function') {
+                updateFunction();
+            }
         }
 
         // ============================================
@@ -6469,80 +7101,100 @@
             chart: fbFollowersChart,
             chartData: fbFollowersChartData,
             payloadKeys: { key2025: 'fbFollowers2025', key2024: 'fbFollowers2024', keyTarget: 'fbFollowersTarget' },
-            summaryCardTitle: 'FB Page Followers',
-            chartName: 'initFbFollowersCharts'
+            summaryCardTitle: null,
+            chartName: 'initFbFollowersCharts',
+            updateSummary: false,
+            updateFunction: updateFbFollowersSummary
         });
 
         const initIcareCharts = () => initGenericChart({
             chart: icareChart,
             chartData: icareChartData,
             payloadKeys: { key2025: 'icare2025', key2024: 'icare2024', keyTarget: 'icareTarget' },
-            summaryCardTitle: 'I.C.A.R.E.',
-            chartName: 'initIcareCharts'
+            summaryCardTitle: null,
+            chartName: 'initIcareCharts',
+            updateSummary: false,
+            updateFunction: updateIcareSummary
         });
 
         const initSiteQualityCharts = () => initGenericChart({
             chart: siteQualityChart,
             chartData: siteQualityChartData,
             payloadKeys: { key2025: 'siteQuality2025', key2024: 'siteQuality2024', keyTarget: 'siteQualityTarget' },
-            summaryCardTitle: 'Site Quality Monitoring',
-            chartName: 'initSiteQualityCharts'
+            summaryCardTitle: null,
+            chartName: 'initSiteQualityCharts',
+            updateSummary: false,
+            updateFunction: updateSiteQualitySummary
         });
 
         const initInsuranceClaimCharts = () => initGenericChart({
             chart: insuranceClaimChart,
             chartData: insuranceClaimChartData,
             payloadKeys: { key2025: 'insuranceClaim2025', key2024: 'insuranceClaim2024', keyTarget: 'insuranceClaimTarget' },
-            summaryCardTitle: 'Insurance Claim Monitoring',
-            chartName: 'initInsuranceClaimCharts'
+            summaryCardTitle: null,
+            chartName: 'initInsuranceClaimCharts',
+            updateSummary: false,
+            updateFunction: updateInsuranceClaimSummary
         });
 
         const initRegularEventsCharts = () => initGenericChart({
             chart: regularEventsChart,
             chartData: regularEventsChartData,
             payloadKeys: { key2025: 'regularEvents2025', key2024: 'regularEvents2024', keyTarget: 'regularEventsTarget' },
-            summaryCardTitle: 'Regular Events Plan',
-            chartName: 'initRegularEventsCharts'
+            summaryCardTitle: null,
+            chartName: 'initRegularEventsCharts',
+            updateSummary: false,
+            updateFunction: updateRegularEventsSummary
         });
 
         const initCultureDevCharts = () => initGenericChart({
             chart: cultureDevChart,
             chartData: cultureDevChartData,
             payloadKeys: { key2025: 'cultureDev2025', key2024: 'cultureDev2024', keyTarget: 'cultureDevTarget' },
-            summaryCardTitle: 'Culture Dev',
-            chartName: 'initCultureDevCharts'
+            summaryCardTitle: null,
+            chartName: 'initCultureDevCharts',
+            updateSummary: false,
+            updateFunction: updateCultureDevSummary
         });
 
         const initSmdProjectsCharts = () => initGenericChart({
             chart: smdProjectsChart,
             chartData: smdProjectsChartData,
             payloadKeys: { key2025: 'smdProjects2025', key2024: 'smdProjects2024', keyTarget: 'smdProjectsTarget' },
-            summaryCardTitle: 'SMD Projects',
-            chartName: 'initSmdProjectsCharts'
+            summaryCardTitle: null,
+            chartName: 'initSmdProjectsCharts',
+            updateSummary: false,
+            updateFunction: updateSmdProjectsSummary
         });
 
         const initBudgetProjectsCharts = () => initGenericChart({
             chart: budgetProjectsChart,
             chartData: budgetProjectsChartData,
             payloadKeys: { key2025: 'budgetProjects2025', key2024: 'budgetProjects2024', keyTarget: 'budgetProjectsTarget' },
-            summaryCardTitle: 'Budget: Projects',
-            chartName: 'initBudgetProjectsCharts'
+            summaryCardTitle: null,
+            chartName: 'initBudgetProjectsCharts',
+            updateSummary: false,
+            updateFunction: updateBudgetProjectsSummary
         });
 
         const initTeamTargetsCharts = () => initGenericChart({
             chart: teamTargetsChart,
             chartData: teamTargetsChartData,
             payloadKeys: { key2025: 'teamTargets2025', key2024: 'teamTargets2024', keyTarget: 'teamTargetsTarget' },
-            summaryCardTitle: 'Team/Section',
-            chartName: 'initTeamTargetsCharts'
+            summaryCardTitle: null,
+            chartName: 'initTeamTargetsCharts',
+            updateSummary: false,
+            updateFunction: updateTeamTargetsSummary
         });
 
         const initBreakdownsCharts = () => initGenericChart({
             chart: breakdownsChart,
             chartData: breakdownsChartData,
             payloadKeys: { key2025: 'breakdowns2025', key2024: 'breakdowns2024', keyTarget: 'breakdownsTarget' },
-            summaryCardTitle: 'Number of Breakdowns',
-            chartName: 'initBreakdownsCharts'
+            summaryCardTitle: null,
+            chartName: 'initBreakdownsCharts',
+            updateSummary: false,
+            updateFunction: updateBreakdownsSummary
         });
 
         // Initialize all LEAD charts
@@ -6550,79 +7202,204 @@
             const leadInitializationTasks = [];
 
             if (occupancyRateLeadChart) {
-                leadInitializationTasks.push(initOccupancyRateLeadCharts());
+                showChartLoading('occupancyRateLeadChart');
+                leadInitializationTasks.push(initOccupancyRateLeadCharts().then(() => {
+                    hideChartLoading('occupancyRateLeadChart');
+                }).catch(() => {
+                    hideChartLoading('occupancyRateLeadChart');
+                }));
             }
             if (occupancyRateAreaLeadChart) {
-                leadInitializationTasks.push(initOccupancyRateAreaLeadCharts());
+                showChartLoading('occupancyRateAreaLeadChart');
+                leadInitializationTasks.push(initOccupancyRateAreaLeadCharts().then(() => {
+                    hideChartLoading('occupancyRateAreaLeadChart');
+                }).catch(() => {
+                    hideChartLoading('occupancyRateAreaLeadChart');
+                }));
             }
             if (occupancyRatePValueLeadChart) {
-                leadInitializationTasks.push(initOccupancyRatePValueLeadCharts());
+                showChartLoading('occupancyRatePValueLeadChart');
+                leadInitializationTasks.push(initOccupancyRatePValueLeadCharts().then(() => {
+                    hideChartLoading('occupancyRatePValueLeadChart');
+                }).catch(() => {
+                    hideChartLoading('occupancyRatePValueLeadChart');
+                }));
             }
             if (lotusFootTrafficChart) {
-                leadInitializationTasks.push(initLotusFootTrafficCharts());
+                showChartLoading('lotusFootTrafficChart');
+                leadInitializationTasks.push(initLotusFootTrafficCharts().then(() => {
+                    hideChartLoading('lotusFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('lotusFootTrafficChart');
+                }));
             }
             if (portalFootTrafficChart) {
-                leadInitializationTasks.push(initPortalFootTrafficCharts());
+                showChartLoading('portalFootTrafficChart');
+                leadInitializationTasks.push(initPortalFootTrafficCharts().then(() => {
+                    hideChartLoading('portalFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('portalFootTrafficChart');
+                }));
             }
             if (stadiumFootTrafficChart) {
-                leadInitializationTasks.push(initStadiumFootTrafficCharts());
+                showChartLoading('stadiumFootTrafficChart');
+                leadInitializationTasks.push(initStadiumFootTrafficCharts().then(() => {
+                    hideChartLoading('stadiumFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('stadiumFootTrafficChart');
+                }));
             }
             if (yspacioFootTrafficChart) {
-                leadInitializationTasks.push(initYspacioFootTrafficCharts());
+                showChartLoading('yspacioFootTrafficChart');
+                leadInitializationTasks.push(initYspacioFootTrafficCharts().then(() => {
+                    hideChartLoading('yspacioFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('yspacioFootTrafficChart');
+                }));
             }
             if (yspacioAlapanFootTrafficChart) {
-                leadInitializationTasks.push(initYspacioAlapanFootTrafficCharts());
+                showChartLoading('yspacioAlapanFootTrafficChart');
+                leadInitializationTasks.push(initYspacioAlapanFootTrafficCharts().then(() => {
+                    hideChartLoading('yspacioAlapanFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('yspacioAlapanFootTrafficChart');
+                }));
             }
             if (luminaFootTrafficChart) {
-                leadInitializationTasks.push(initLuminaFootTrafficCharts());
+                showChartLoading('luminaFootTrafficChart');
+                leadInitializationTasks.push(initLuminaFootTrafficCharts().then(() => {
+                    hideChartLoading('luminaFootTrafficChart');
+                }).catch(() => {
+                    hideChartLoading('luminaFootTrafficChart');
+                }));
             }
             if (lotusPaxChart) {
-                leadInitializationTasks.push(initLotusPaxCharts());
+                showChartLoading('lotusPaxChart');
+                leadInitializationTasks.push(initLotusPaxCharts().then(() => {
+                    hideChartLoading('lotusPaxChart');
+                }).catch(() => {
+                    hideChartLoading('lotusPaxChart');
+                }));
             }
             if (portalPaxChart) {
-                leadInitializationTasks.push(initPortalPaxCharts());
+                showChartLoading('portalPaxChart');
+                leadInitializationTasks.push(initPortalPaxCharts().then(() => {
+                    hideChartLoading('portalPaxChart');
+                }).catch(() => {
+                    hideChartLoading('portalPaxChart');
+                }));
             }
             if (stadiumPaxChart) {
-                leadInitializationTasks.push(initStadiumPaxCharts());
+                showChartLoading('stadiumPaxChart');
+                leadInitializationTasks.push(initStadiumPaxCharts().then(() => {
+                    hideChartLoading('stadiumPaxChart');
+                }).catch(() => {
+                    hideChartLoading('stadiumPaxChart');
+                }));
             }
             if (closedInquiriesLeadChart) {
-                leadInitializationTasks.push(initClosedInquiriesLeadCharts());
+                showChartLoading('closedInquiriesLeadChart');
+                leadInitializationTasks.push(initClosedInquiriesLeadCharts().then(() => {
+                    hideChartLoading('closedInquiriesLeadChart');
+                }).catch(() => {
+                    hideChartLoading('closedInquiriesLeadChart');
+                }));
             }
             if (offlineInquiriesLeadChart) {
-                leadInitializationTasks.push(initOfflineInquiriesLeadCharts());
+                showChartLoading('offlineInquiriesLeadChart');
+                leadInitializationTasks.push(initOfflineInquiriesLeadCharts().then(() => {
+                    hideChartLoading('offlineInquiriesLeadChart');
+                }).catch(() => {
+                    hideChartLoading('offlineInquiriesLeadChart');
+                }));
             }
             if (pulloutAversionLeadChart) {
-                leadInitializationTasks.push(initPulloutAversionLeadCharts());
+                showChartLoading('pulloutAversionLeadChart');
+                leadInitializationTasks.push(initPulloutAversionLeadCharts().then(() => {
+                    hideChartLoading('pulloutAversionLeadChart');
+                }).catch(() => {
+                    hideChartLoading('pulloutAversionLeadChart');
+                }));
             }
             if (fbFollowersChart) {
-                leadInitializationTasks.push(initFbFollowersCharts());
+                showChartLoading('fbFollowersChart');
+                leadInitializationTasks.push(initFbFollowersCharts().then(() => {
+                    hideChartLoading('fbFollowersChart');
+                }).catch(() => {
+                    hideChartLoading('fbFollowersChart');
+                }));
             }
             if (icareChart) {
-                leadInitializationTasks.push(initIcareCharts());
+                showChartLoading('icareChart');
+                leadInitializationTasks.push(initIcareCharts().then(() => {
+                    hideChartLoading('icareChart');
+                }).catch(() => {
+                    hideChartLoading('icareChart');
+                }));
             }
             if (siteQualityChart) {
-                leadInitializationTasks.push(initSiteQualityCharts());
+                showChartLoading('siteQualityChart');
+                leadInitializationTasks.push(initSiteQualityCharts().then(() => {
+                    hideChartLoading('siteQualityChart');
+                }).catch(() => {
+                    hideChartLoading('siteQualityChart');
+                }));
             }
             if (insuranceClaimChart) {
-                leadInitializationTasks.push(initInsuranceClaimCharts());
+                showChartLoading('insuranceClaimChart');
+                leadInitializationTasks.push(initInsuranceClaimCharts().then(() => {
+                    hideChartLoading('insuranceClaimChart');
+                }).catch(() => {
+                    hideChartLoading('insuranceClaimChart');
+                }));
             }
             if (regularEventsChart) {
-                leadInitializationTasks.push(initRegularEventsCharts());
+                showChartLoading('regularEventsChart');
+                leadInitializationTasks.push(initRegularEventsCharts().then(() => {
+                    hideChartLoading('regularEventsChart');
+                }).catch(() => {
+                    hideChartLoading('regularEventsChart');
+                }));
             }
             if (cultureDevChart) {
-                leadInitializationTasks.push(initCultureDevCharts());
+                showChartLoading('cultureDevChart');
+                leadInitializationTasks.push(initCultureDevCharts().then(() => {
+                    hideChartLoading('cultureDevChart');
+                }).catch(() => {
+                    hideChartLoading('cultureDevChart');
+                }));
             }
             if (smdProjectsChart) {
-                leadInitializationTasks.push(initSmdProjectsCharts());
+                showChartLoading('smdProjectsChart');
+                leadInitializationTasks.push(initSmdProjectsCharts().then(() => {
+                    hideChartLoading('smdProjectsChart');
+                }).catch(() => {
+                    hideChartLoading('smdProjectsChart');
+                }));
             }
             if (budgetProjectsChart) {
-                leadInitializationTasks.push(initBudgetProjectsCharts());
+                showChartLoading('budgetProjectsChart');
+                leadInitializationTasks.push(initBudgetProjectsCharts().then(() => {
+                    hideChartLoading('budgetProjectsChart');
+                }).catch(() => {
+                    hideChartLoading('budgetProjectsChart');
+                }));
             }
             if (teamTargetsChart) {
-                leadInitializationTasks.push(initTeamTargetsCharts());
+                showChartLoading('teamTargetsChart');
+                leadInitializationTasks.push(initTeamTargetsCharts().then(() => {
+                    hideChartLoading('teamTargetsChart');
+                }).catch(() => {
+                    hideChartLoading('teamTargetsChart');
+                }));
             }
             if (breakdownsChart) {
-                leadInitializationTasks.push(initBreakdownsCharts());
+                showChartLoading('breakdownsChart');
+                leadInitializationTasks.push(initBreakdownsCharts().then(() => {
+                    hideChartLoading('breakdownsChart');
+                }).catch(() => {
+                    hideChartLoading('breakdownsChart');
+                }));
             }
 
             try {
@@ -6967,6 +7744,810 @@
             varianceEl.textContent = formatPercentage(varianceRate);
 
             colorVarianceAndYoYGrowthValues();
+        }
+
+        // Helper function to format currency values for display
+        function formatCurrencyForDisplay(value) {
+            if (!Number.isFinite(value)) {
+                return '₱0.00';
+            }
+            // Value is already in actual currency (not millions), format directly
+            return `₱${value.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+        }
+
+        // Helper function to format thousands for display (for venue/studio/sports arena)
+        function formatThousandsForDisplay(value) {
+            if (!Number.isFinite(value)) {
+                return '₱0.00';
+            }
+            // Convert thousands to actual value and format
+            const actualValue = value * 1000;
+            return `₱${actualValue.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+        }
+
+        // Get current month index (0-11, November = 10)
+        function getCurrentMonthIndex() {
+            return new Date().getMonth();
+        }
+
+        // Update Net Profit Summary Card
+        function updateNetProfitSummary() {
+            const targetEl = document.querySelector('[data-metric="net-profit-target"]');
+            const actualEl = document.querySelector('[data-metric="net-profit-actual"]');
+            const varianceEl = document.querySelector('[data-metric="net-profit-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !profitBarData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = profitBarData.datasets[0]?.data || [];
+            const targetData = profitBarData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            // Variance is handled by colorVarianceAndYoYGrowthValues function
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Rental Income Summary Card
+        function updateRentalIncomeSummary() {
+            const targetEl = document.querySelector('[data-metric="rental-income-target"]');
+            const actualEl = document.querySelector('[data-metric="rental-income-actual"]');
+            const varianceEl = document.querySelector('[data-metric="rental-income-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !rentalComparisonData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = rentalComparisonData.datasets[0]?.data || [];
+            const targetData = rentalComparisonData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Venue Summary Card
+        function updateVenueSummary() {
+            const targetEl = document.querySelector('[data-metric="venue-target"]');
+            const actualEl = document.querySelector('[data-metric="venue-actual"]');
+            const varianceEl = document.querySelector('[data-metric="venue-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !venueChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = venueChartData.datasets[0]?.data || [];
+            const targetData = venueChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Studio Summary Card
+        function updateStudioSummary() {
+            const targetEl = document.querySelector('[data-metric="studio-target"]');
+            const actualEl = document.querySelector('[data-metric="studio-actual"]');
+            const varianceEl = document.querySelector('[data-metric="studio-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !studioChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = studioChartData.datasets[0]?.data || [];
+            const targetData = studioChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Sports Arena Summary Card
+        function updateSportsArenaSummary() {
+            const targetEl = document.querySelector('[data-metric="sports-arena-target"]');
+            const actualEl = document.querySelector('[data-metric="sports-arena-actual"]');
+            const varianceEl = document.querySelector('[data-metric="sports-arena-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !sportsArenaChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = sportsArenaChartData.datasets[0]?.data || [];
+            const targetData = sportsArenaChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Parking Income Summary Card
+        function updateParkingIncomeSummary() {
+            const targetEl = document.querySelector('[data-metric="parking-income-target"]');
+            const actualEl = document.querySelector('[data-metric="parking-income-actual"]');
+            const varianceEl = document.querySelector('[data-metric="parking-income-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !parkingIncomeChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = parkingIncomeChartData.datasets[0]?.data || [];
+            const targetData = parkingIncomeChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Total Operating Expense Summary Card
+        function updateTotalOperatingExpenseSummary() {
+            const targetEl = document.querySelector('[data-metric="total-operating-expense-target"]');
+            const actualEl = document.querySelector('[data-metric="total-operating-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="total-operating-expense-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !totalOperatingExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = totalOperatingExpenseChartData.datasets[0]?.data || [];
+            const targetData = totalOperatingExpenseChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Electricity Expense Summary Card
+        function updateElectricityExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="electricity-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="electricity-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="electricity-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !electricityExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = electricityExpenseChartData.datasets[0]?.data || [];
+            const previousData = electricityExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Water Expense Summary Card
+        function updateWaterExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="water-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="water-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="water-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !waterExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = waterExpenseChartData.datasets[0]?.data || [];
+            const previousData = waterExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Security Expense Summary Card
+        function updateSecurityExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="security-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="security-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="security-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !securityExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = securityExpenseChartData.datasets[0]?.data || [];
+            const previousData = securityExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Agency Expense Summary Card
+        function updateAgencyExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="agency-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="agency-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="agency-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !agencyExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = agencyExpenseChartData.datasets[0]?.data || [];
+            const previousData = agencyExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Salary Expense Summary Card
+        function updateSalaryExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="salary-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="salary-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="salary-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !salaryExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = salaryExpenseChartData.datasets[0]?.data || [];
+            const previousData = salaryExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Marketing Expense (Marcom) Summary Card
+        function updateMarketingExpenseSummary() {
+            const previousEl = document.querySelector('[data-metric="marketing-expense-previous"]');
+            const actualEl = document.querySelector('[data-metric="marketing-expense-actual"]');
+            const varianceEl = document.querySelector('[data-metric="marketing-expense-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !marketingExpenseChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = marketingExpenseChartData.datasets[0]?.data || [];
+            const previousData = marketingExpenseChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Marketing Expense (Gathering) Summary Card
+        function updateMarketingExpenseGatheringSummary() {
+            const previousEl = document.querySelector('[data-metric="marketing-expense-gathering-previous"]');
+            const actualEl = document.querySelector('[data-metric="marketing-expense-gathering-actual"]');
+            const varianceEl = document.querySelector('[data-metric="marketing-expense-gathering-variance"]');
+
+            if (!previousEl || !actualEl || !varianceEl || !marketingExpenseGatheringChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = marketingExpenseGatheringChartData.datasets[0]?.data || [];
+            const previousData = marketingExpenseGatheringChartData.datasets[1]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const previousValue = previousData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(previousValue)) {
+                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Repairs & Maintenance (Labor) Summary Card
+        function updateRepairsMaintenanceLaborSummary() {
+            const targetEl = document.querySelector('[data-metric="repairs-maintenance-labor-target"]');
+            const actualEl = document.querySelector('[data-metric="repairs-maintenance-labor-actual"]');
+            const varianceEl = document.querySelector('[data-metric="repairs-maintenance-labor-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !repairsMaintenanceLaborChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = repairsMaintenanceLaborChartData.datasets[0]?.data || [];
+            const targetData = repairsMaintenanceLaborChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Repairs & Maintenance (Materials) Summary Card
+        function updateRepairsMaintenanceMaterialsSummary() {
+            const targetEl = document.querySelector('[data-metric="repairs-maintenance-materials-target"]');
+            const actualEl = document.querySelector('[data-metric="repairs-maintenance-materials-actual"]');
+            const varianceEl = document.querySelector('[data-metric="repairs-maintenance-materials-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !repairsMaintenanceMaterialsChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = repairsMaintenanceMaterialsChartData.datasets[0]?.data || [];
+            const targetData = repairsMaintenanceMaterialsChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Repairs & Maintenance (Labor) Technical Summary Card
+        function updateRepairsMaintenanceLaborTechnicalSummary() {
+            const targetEl = document.querySelector('[data-metric="repairs-maintenance-labor-technical-target"]');
+            const actualEl = document.querySelector('[data-metric="repairs-maintenance-labor-technical-actual"]');
+            const varianceEl = document.querySelector('[data-metric="repairs-maintenance-labor-technical-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !repairsMaintenanceLaborTechnicalChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = repairsMaintenanceLaborTechnicalChartData.datasets[0]?.data || [];
+            const targetData = repairsMaintenanceLaborTechnicalChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Repairs & Maintenance (Materials) Technical Summary Card
+        function updateRepairsMaintenanceMaterialsTechnicalSummary() {
+            const targetEl = document.querySelector('[data-metric="repairs-maintenance-materials-technical-target"]');
+            const actualEl = document.querySelector('[data-metric="repairs-maintenance-materials-technical-actual"]');
+            const varianceEl = document.querySelector('[data-metric="repairs-maintenance-materials-technical-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !repairsMaintenanceMaterialsTechnicalChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = repairsMaintenanceMaterialsTechnicalChartData.datasets[0]?.data || [];
+            const targetData = repairsMaintenanceMaterialsTechnicalChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // ============================================
+        // LEAD SECTION UPDATE FUNCTIONS
+        // ============================================
+
+        // Helper function to format units for display (for foot traffic, pax, etc.)
+        function formatUnitsForDisplay(value) {
+            if (!Number.isFinite(value)) {
+                return '0';
+            }
+            return value.toLocaleString('en-PH', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Helper function to format percentage for display
+        function formatPercentageForDisplay(value) {
+            if (!Number.isFinite(value)) {
+                return '0%';
+            }
+            return `${value.toFixed(1)}%`;
+        }
+
+        // Update Occupancy Rate (Unit) Summary Card
+        function updateOccupancyRateUnitSummary() {
+            const targetEl = document.querySelector('[data-metric="occupancy-rate-unit-target"]');
+            const actualEl = document.querySelector('[data-metric="occupancy-rate-unit-actual"]');
+            const varianceEl = document.querySelector('[data-metric="occupancy-rate-unit-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !occupancyRateLeadChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = occupancyRateLeadChartData.datasets[0]?.data || [];
+            const targetData = occupancyRateLeadChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatUnitsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatUnitsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Occupancy Rate (Area) Summary Card
+        function updateOccupancyRateAreaSummary() {
+            const targetEl = document.querySelector('[data-metric="occupancy-rate-area-target"]');
+            const actualEl = document.querySelector('[data-metric="occupancy-rate-area-actual"]');
+            const varianceEl = document.querySelector('[data-metric="occupancy-rate-area-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !occupancyRateAreaLeadChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = occupancyRateAreaLeadChartData.datasets[0]?.data || [];
+            const targetData = occupancyRateAreaLeadChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatUnitsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatUnitsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Occupancy Rate (P-Value) Summary Card
+        function updateOccupancyRatePValueSummary() {
+            const targetEl = document.querySelector('[data-metric="occupancy-rate-pvalue-target"]');
+            const actualEl = document.querySelector('[data-metric="occupancy-rate-pvalue-actual"]');
+            const varianceEl = document.querySelector('[data-metric="occupancy-rate-pvalue-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !occupancyRatePValueLeadChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = occupancyRatePValueLeadChartData.datasets[0]?.data || [];
+            const targetData = occupancyRatePValueLeadChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Closed Inquiries Summary Card
+        function updateClosedInquiriesSummary() {
+            const targetEl = document.querySelector('[data-metric="closed-inquiries-target"]');
+            const actualEl = document.querySelector('[data-metric="closed-inquiries-actual"]');
+            const varianceEl = document.querySelector('[data-metric="closed-inquiries-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !closedInquiriesLeadChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = closedInquiriesLeadChartData.datasets[0]?.data || [];
+            const targetData = closedInquiriesLeadChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Pullout Aversion Summary Card
+        function updatePulloutAversionSummary() {
+            const targetEl = document.querySelector('[data-metric="pullout-aversion-target"]');
+            const actualEl = document.querySelector('[data-metric="pullout-aversion-actual"]');
+            const varianceEl = document.querySelector('[data-metric="pullout-aversion-variance"]');
+
+            if (!targetEl || !actualEl || !varianceEl || !pulloutAversionLeadChartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = pulloutAversionLeadChartData.datasets[0]?.data || [];
+            const targetData = pulloutAversionLeadChartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Generic update function for foot traffic charts
+        function updateFootTrafficSummary(metricPrefix, chartData) {
+            const targetEl = document.querySelector(`[data-metric="${metricPrefix}-target"]`);
+            const actualEl = document.querySelector(`[data-metric="${metricPrefix}-actual"]`);
+            const varianceEl = document.querySelector(`[data-metric="${metricPrefix}-variance"]`);
+
+            if (!targetEl || !actualEl || !varianceEl || !chartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = chartData.datasets[0]?.data || [];
+            const targetData = chartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatUnitsForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatUnitsForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Generic update function for percentage-based charts
+        function updatePercentageSummary(metricPrefix, chartData) {
+            const targetEl = document.querySelector(`[data-metric="${metricPrefix}-target"]`);
+            const actualEl = document.querySelector(`[data-metric="${metricPrefix}-actual"]`);
+            const varianceEl = document.querySelector(`[data-metric="${metricPrefix}-variance"]`);
+
+            if (!targetEl || !actualEl || !varianceEl || !chartData) {
+                return;
+            }
+
+            const monthIndex = getCurrentMonthIndex();
+            const currentData = chartData.datasets[0]?.data || [];
+            const targetData = chartData.datasets[2]?.data || [];
+
+            const actualValue = currentData[monthIndex];
+            const targetValue = targetData[monthIndex];
+
+            if (Number.isFinite(actualValue)) {
+                actualEl.textContent = formatPercentageForDisplay(actualValue);
+            }
+            if (Number.isFinite(targetValue)) {
+                targetEl.textContent = formatPercentageForDisplay(targetValue);
+            }
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Lotus Foot Traffic Summary Card
+        function updateLotusFootTrafficSummary() {
+            updateFootTrafficSummary('lotus-foot-traffic', lotusFootTrafficChartData);
+        }
+
+        // Update Portal Foot Traffic Summary Card
+        function updatePortalFootTrafficSummary() {
+            updateFootTrafficSummary('portal-foot-traffic', portalFootTrafficChartData);
+        }
+
+        // Update Stadium Foot Traffic Summary Card
+        function updateStadiumFootTrafficSummary() {
+            updateFootTrafficSummary('stadium-foot-traffic', stadiumFootTrafficChartData);
+        }
+
+        // Update ySpacio Foot Traffic Summary Card
+        function updateYspacioFootTrafficSummary() {
+            updateFootTrafficSummary('yspacio-foot-traffic', yspacioFootTrafficChartData);
+        }
+
+        // Update ySpacio Alapan Foot Traffic Summary Card
+        function updateYspacioAlapanFootTrafficSummary() {
+            updateFootTrafficSummary('yspacio-alapan-foot-traffic', yspacioAlapanFootTrafficChartData);
+        }
+
+        // Update Lumina Foot Traffic Summary Card
+        function updateLuminaFootTrafficSummary() {
+            updateFootTrafficSummary('lumina-foot-traffic', luminaFootTrafficChartData);
+        }
+
+        // Update Lotus Pax Summary Card
+        function updateLotusPaxSummary() {
+            updateFootTrafficSummary('lotus-pax', lotusPaxChartData);
+        }
+
+        // Update Portal Pax Summary Card
+        function updatePortalPaxSummary() {
+            updateFootTrafficSummary('portal-pax', portalPaxChartData);
+        }
+
+        // Update Stadium Pax Summary Card
+        function updateStadiumPaxSummary() {
+            updateFootTrafficSummary('stadium-pax', stadiumPaxChartData);
+        }
+
+        // Update Offline Inquiries Summary Card
+        function updateOfflineInquiriesSummary() {
+            updatePercentageSummary('offline-inquiries', offlineInquiriesLeadChartData);
+        }
+
+        // Update FB Followers Summary Card
+        function updateFbFollowersSummary() {
+            updatePercentageSummary('fb-followers', fbFollowersChartData);
+        }
+
+        // Update I.C.A.R.E Summary Card
+        function updateIcareSummary() {
+            updatePercentageSummary('icare', icareChartData);
+        }
+
+        // Update Site Quality Summary Card
+        function updateSiteQualitySummary() {
+            updatePercentageSummary('site-quality', siteQualityChartData);
+        }
+
+        // Update Insurance Claim Summary Card
+        function updateInsuranceClaimSummary() {
+            updatePercentageSummary('insurance-claim', insuranceClaimChartData);
+        }
+
+        // Update Regular Events Summary Card
+        function updateRegularEventsSummary() {
+            updatePercentageSummary('regular-events', regularEventsChartData);
+        }
+
+        // Update Culture Dev Summary Card
+        function updateCultureDevSummary() {
+            updatePercentageSummary('culture-dev', cultureDevChartData);
+        }
+
+        // Update SMD Projects Summary Card
+        function updateSmdProjectsSummary() {
+            updatePercentageSummary('smd-projects', smdProjectsChartData);
+        }
+
+        // Update Budget Projects Summary Card
+        function updateBudgetProjectsSummary() {
+            updatePercentageSummary('budget-projects', budgetProjectsChartData);
+        }
+
+        // Update Team Targets Summary Card
+        function updateTeamTargetsSummary() {
+            updatePercentageSummary('team-targets', teamTargetsChartData);
+        }
+
+        // Update Breakdowns Summary Card
+        function updateBreakdownsSummary() {
+            updatePercentageSummary('breakdowns', breakdownsChartData);
         }
 
         document.addEventListener('DOMContentLoaded', colorVarianceAndYoYGrowthValues);
