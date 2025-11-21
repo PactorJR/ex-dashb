@@ -45,50 +45,50 @@
         <!-- Top Stats Carousel -->
         <div class="stats-carousel-container">
             <div class="stats-row" id="statsCarousel">
-                <div class="stat-card-carousel tech fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="tech" data-team-type="lag">
+                <div class="stat-card-carousel fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="tech" data-team-type="lag">
                     <div class="stat-header">
                         <h3>Technical Team</h3>
-                        <span class="stat-value-carousel tech">10%</span>
+                        <span class="stat-value-carousel">10%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill tech" style="width: 10%"></div>
+                        <div class="progress-fill" style="width: 10%"></div>
                     </div>
                 </div>
 
-                <div class="stat-card-carousel acc fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="accounting" data-team-type="lag">
+                <div class="stat-card-carousel fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="accounting" data-team-type="lag">
                     <div class="stat-header">
                         <h3>Accounting Team</h3>
-                        <span class="stat-value-carousel acc">20%</span>
+                        <span class="stat-value-carousel">20%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill acc" style="width: 20%"></div>
+                        <div class="progress-fill" style="width: 20%"></div>
                     </div>
                 </div>
 
-                <div class="stat-card-carousel lrad fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="lrad" data-team-type="lag">
+                <div class="stat-card-carousel fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="lrad" data-team-type="lag">
                     <div class="stat-header">
                         <h3>LRAD Team</h3>
-                        <span class="stat-value-carousel lrad">30%</span>
+                        <span class="stat-value-carousel">30%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill lrad" style="width: 30%"></div>
+                        <div class="progress-fill" style="width: 30%"></div>
                     </div>
                 </div>
 
-                <div class="stat-card-carousel qual fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="quality" data-team-type="lead">
+                <div class="stat-card-carousel fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="quality" data-team-type="lead">
                     <div class="stat-header">
                         <h3>Quality Team</h3>
-                        <span class="stat-value-carousel qual">80%</span>
+                        <span class="stat-value-carousel">80%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill qual" style="width: 80%"></div>
+                        <div class="progress-fill" style="width: 80%"></div>
                     </div>
                 </div>
 
-                <div class="stat-card-carousel dc fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="dc" data-team-type="lag">
+                <div class="stat-card-carousel fade-in clickable-stat-card-carousel" style="transition-delay: 0.1s;" data-team="dc" data-team-type="lag">
                     <div class="stat-header">
                         <h3>DC Team</h3>
-                        <span class="stat-value-carousel dc">23%</span>
+                        <span class="stat-value-carousel">23%</span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill dc" style="width: 23%"></div>
@@ -178,8 +178,10 @@
             </div>
 
             <!-- Critical Numbers Summary Card - Company Lead -->
+            <div class="summary-card-title-outside">
+                <h3>Critical Numbers Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Critical Numbers Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -197,20 +199,17 @@
             </div>
 
             <!-- Occupancy Rate (Unit) Chart - Company Lead -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Occupancy Rate (Unit)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Occupancy Rate (Unit)">
                 <div class="chart-container">
                     <canvas id="occupancyRateLeadChart"></canvas>
                 </div>
             </div>
 
             <!-- Occupancy Rate (Area) Summary Card - Company Lead -->
+            <div class="summary-card-title-outside">
+                <h3>Occupancy Rate (Area) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Occupancy Rate (Area) Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -228,20 +227,17 @@
             </div>
 
             <!-- Occupancy Rate (Area) Chart - Company Lead -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Occupancy Rate (Area)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Occupancy Rate (Area)">
                 <div class="chart-container">
                     <canvas id="occupancyRateAreaLeadChart"></canvas>
                 </div>
             </div>
 
             <!-- Occupancy Rate (P-Value) Summary Card - Company Lead -->
+            <div class="summary-card-title-outside">
+                <h3>Occupancy Rate (P-Value) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Occupancy Rate (P-Value) Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -259,20 +255,17 @@
             </div>
 
             <!-- Occupancy Rate (P-Value) Chart - Company Lead -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Occupancy Rate (P-Value)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Occupancy Rate (P-Value)">
                 <div class="chart-container">
                     <canvas id="occupancyRatePValueLeadChart"></canvas>
                 </div>
             </div>
 
             <!-- Closed Inquiries Summary Card - Company Lead -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Closed Inquiries</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -290,20 +283,17 @@
             </div>
 
             <!-- Closed Inquiries Chart - Company Lead -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Closed Inquiries (P-Value)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Closed Inquiries (P-Value)">
                 <div class="chart-container">
                     <canvas id="closedInquiriesLeadChart"></canvas>
                 </div>
             </div>
 
             <!-- Pullout Aversion Summary Card - Company Lead -->
-            <div class="card summary-card-compact slide-in-right" style="animation-delay: 0.5s">
+            <div class="summary-card-title-outside">
                 <h3>Pullout Aversion</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-right" style="animation-delay: 0.5s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -321,12 +311,7 @@
             </div>
 
             <!-- Pullout Aversion Chart - Company Lead -->
-            <div class="card slide-in-left" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Pullout Aversion (P-Value)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-left" style="animation-delay: 0.5s" data-chart-title="Pullout Aversion (P-Value)">
                 <div class="chart-container">
                     <canvas id="pulloutAversionLeadChart"></canvas>
                 </div>
@@ -342,8 +327,10 @@
             </div>
 
             <!-- Lotus Mall Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Lotus Mall Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -361,20 +348,17 @@
             </div>
 
             <!-- Lotus Mall Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Lotus Mall Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Lotus Mall Foot Traffic">
                 <div class="chart-container">
                     <canvas id="lotusFootTrafficChart"></canvas>
                 </div>
             </div>
 
             <!-- Portal Mall Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Portal Mall Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -392,20 +376,17 @@
             </div>
 
             <!-- Portal Mall Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Portal Mall Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Portal Mall Foot Traffic">
                 <div class="chart-container">
                     <canvas id="portalFootTrafficChart"></canvas>
                 </div>
             </div>
 
             <!-- Stadium Shopping Strip Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Stadium Shopping Strip Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -423,20 +404,17 @@
             </div>
 
             <!-- Stadium Shopping Strip Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Stadium Shopping Strip Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Stadium Shopping Strip Foot Traffic">
                 <div class="chart-container">
                     <canvas id="stadiumFootTrafficChart"></canvas>
                 </div>
             </div>
 
             <!-- ySpacio Creative Park Carbag Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>ySpacio Creative Park Carbag Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -454,20 +432,17 @@
             </div>
 
             <!-- ySpacio Creative Park Carbag Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>ySpacio Creative Park Carbag Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="ySpacio Creative Park Carbag Foot Traffic">
                 <div class="chart-container">
                     <canvas id="yspacioFootTrafficChart"></canvas>
                 </div>
             </div>
 
             <!-- ySpacio Creative Park Alapan Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>ySpacio Creative Park Alapan Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -485,20 +460,17 @@
             </div>
 
             <!-- ySpacio Creative Park Alapan Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>ySpacio Creative Park Alapan Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="ySpacio Creative Park Alapan Foot Traffic">
                 <div class="chart-container">
                     <canvas id="yspacioAlapanFootTrafficChart"></canvas>
                 </div>
             </div>
 
             <!-- Lumina Foot Traffic Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Lumina Foot Traffic</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -516,12 +488,7 @@
             </div>
 
             <!-- Lumina Foot Traffic Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Lumina Foot Traffic</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Lumina Foot Traffic">
                 <div class="chart-container">
                     <canvas id="luminaFootTrafficChart"></canvas>
                 </div>
@@ -533,8 +500,10 @@
             </div>
 
             <!-- Lotus Mall Pax Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Lotus Mall - Pax per Event</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -552,20 +521,17 @@
             </div>
 
             <!-- Lotus Mall Pax Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Lotus Mall - Pax per Event</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Lotus Mall - Pax per Event">
                 <div class="chart-container">
                     <canvas id="lotusPaxChart"></canvas>
                 </div>
             </div>
 
             <!-- Portal Mall Pax Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Portal Mall - Pax per Event</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -583,20 +549,17 @@
             </div>
 
             <!-- Portal Mall Pax Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Portal Mall - Pax per Event</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Portal Mall - Pax per Event">
                 <div class="chart-container">
                     <canvas id="portalPaxChart"></canvas>
                 </div>
             </div>
 
             <!-- Stadium Shopping Strip Pax Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Stadium Shopping Strip - Pax per Event</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -614,20 +577,17 @@
             </div>
 
             <!-- Stadium Shopping Strip Pax Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Stadium Shopping Strip - Pax per Event</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Stadium Shopping Strip - Pax per Event">
                 <div class="chart-container">
                     <canvas id="stadiumPaxChart"></canvas>
                 </div>
             </div>
 
             <!-- Offline Inquiries Summary Card - Company Lead -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Closed Inquiry - Offline Inquiries</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -645,12 +605,7 @@
             </div>
 
             <!-- Offline Inquiries Chart - Company Lead -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Offline Inquiries (Conversion)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Offline Inquiries (Conversion)">
                 <div class="chart-container">
                     <canvas id="offlineInquiriesLeadChart"></canvas>
                 </div>
@@ -662,8 +617,10 @@
             </div>
 
             <!-- FB Page Followers Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>FB Page Followers</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -681,12 +638,7 @@
             </div>
 
             <!-- FB Page Followers Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>FB Page Followers</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="FB Page Followers">
                 <div class="chart-container">
                     <canvas id="fbFollowersChart"></canvas>
                 </div>
@@ -698,8 +650,10 @@
             </div>
 
             <!-- I.C.A.R.E Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>I.C.A.R.E. (All Teams)</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -717,12 +671,7 @@
             </div>
 
             <!-- I.C.A.R.E Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>I.C.A.R.E. (All Teams)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="I.C.A.R.E. (All Teams)">
                 <div class="chart-container">
                     <canvas id="icareChart"></canvas>
                 </div>
@@ -734,8 +683,10 @@
             </div>
 
             <!-- Site Quality Monitoring Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Site Quality Monitoring</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -753,20 +704,17 @@
             </div>
 
             <!-- Site Quality Monitoring Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Site Quality Monitoring</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Site Quality Monitoring">
                 <div class="chart-container">
                     <canvas id="siteQualityChart"></canvas>
                 </div>
             </div>
 
             <!-- Insurance Claim Monitoring Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Insurance Claim Monitoring</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -784,12 +732,7 @@
             </div>
 
             <!-- Insurance Claim Monitoring Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Insurance Claim Monitoring</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Insurance Claim Monitoring">
                 <div class="chart-container">
                     <canvas id="insuranceClaimChart"></canvas>
                 </div>
@@ -801,8 +744,10 @@
             </div>
 
             <!-- Regular Events Plan Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Regular Events Plan</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -820,20 +765,17 @@
             </div>
 
             <!-- Regular Events Plan Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Regular Events Plan</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Regular Events Plan">
                 <div class="chart-container">
                     <canvas id="regularEventsChart"></canvas>
                 </div>
             </div>
 
             <!-- Culture Development Activities Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Culture Dev't Activities Plan</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -851,12 +793,7 @@
             </div>
 
             <!-- Culture Development Activities Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Culture Dev't Activities Plan</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Culture Dev't Activities Plan">
                 <div class="chart-container">
                     <canvas id="cultureDevChart"></canvas>
                 </div>
@@ -868,8 +805,10 @@
             </div>
 
             <!-- SMD Projects Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>SMD Projects</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -887,12 +826,7 @@
             </div>
 
             <!-- SMD Projects Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>SMD Projects</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="SMD Projects">
                 <div class="chart-container">
                     <canvas id="smdProjectsChart"></canvas>
                 </div>
@@ -904,8 +838,10 @@
             </div>
 
             <!-- Budget: Projects (E&D) Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Budget: Projects (E&D)</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -923,20 +859,17 @@
             </div>
 
             <!-- Budget: Projects (E&D) Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Budget: Projects (E&D)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Budget: Projects (E&D)">
                 <div class="chart-container">
                     <canvas id="budgetProjectsChart"></canvas>
                 </div>
             </div>
 
             <!-- Team/Section's Targets Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Team/Section's Targets</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -954,12 +887,7 @@
             </div>
 
             <!-- Team/Section's Targets Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Team/Section's Targets</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Team/Section's Targets">
                 <div class="chart-container">
                     <canvas id="teamTargetsChart"></canvas>
                 </div>
@@ -971,8 +899,10 @@
             </div>
 
             <!-- Number of Breakdowns Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
+            <div class="summary-card-title-outside">
                 <h3>Number of Breakdowns</h3>
+            </div>
+            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -980,7 +910,7 @@
                     </div>
                     <div class="stat-card" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="breakdowns-actual">75%</div>
+                        <div class="stat-value" yata-metric="breakdowns-actual">75%</div>
                     </div>
                     <div class="stat-card" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
@@ -990,12 +920,7 @@
             </div>
 
             <!-- Number of Breakdowns Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Number of Breakdowns</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Number of Breakdowns">
                 <div class="chart-container">
                     <canvas id="breakdownsChart"></canvas>
                 </div>
@@ -1015,18 +940,22 @@
 
             <!-- Row 1: Net Profit -->
             <!-- Net Profit Summary Card -->
-            <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Net Profit Summary - November 2025</h3>
+            <div class="summary-card-title-outside">
+                <h3>Net Profit Summary</h3>
+            </div>
+            <div class="card summary-card-compact summary-card-external-title slide-in-left" style="animation-delay: 0.3s">
+                
+                
                 <div class="summary-stats summary-stats-vertical">
-                    <div class="stat-card" style="animation-delay: 0.15s">
+                    <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
                         <div class="stat-value" data-metric="net-profit-target">₱9,760,000</div>
                     </div>
-                    <div class="stat-card" style="animation-delay: 0.3s">
+                    <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
                         <div class="stat-value" data-metric="net-profit-actual">₱9,720,000</div>
                     </div>
-                    <div class="highlight-variance stat-card" style="animation-delay: 0.45s">
+                    <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
                         <div class="stat-value" data-metric="net-profit-variance">-0.4%</div>
                     </div>
@@ -1034,12 +963,7 @@
             </div>
 
             <!-- Profit Bar Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Monthly Profit Performance (2024)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Monthly Profit">
                 <div class="chart-container">
                     <canvas id="profitBarChart"></canvas>
                 </div>
@@ -1047,8 +971,10 @@
 
             <!-- Row 2: Gross Revenue -->
             <!-- Revenue Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Gross Revenue Summary</h3>
+            </div>
             <div class="card slide-in-left summary-card-compact" style="animation-delay: 0.3s">
-                <h3>Revenue Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Total Revenue</div>
@@ -1066,10 +992,7 @@
             </div>
 
             <!-- Monthly Revenue Comparison Card -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <h3>Monthly Revenue Comparison</h3>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Monthly Gross Revenue">
                 <div class="chart-container">
                     <canvas id="revenueBarChart"></canvas>
                 </div>
@@ -1077,8 +1000,10 @@
 
             <!-- Row 3: Collection Performance -->
             <!-- Collection Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Collection Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Collection Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target Rate</div>
@@ -1096,12 +1021,7 @@
             </div>
 
             <!-- Monthly Collection Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Monthly Collection</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Monthly Collection">
                 <div class="chart-container collection-chart-container">
                     <canvas id="monthlyCollectionChart"></canvas>
                 </div>
@@ -1114,8 +1034,10 @@
 
             <!-- Row 5: Rental Income -->
             <!-- Rental Income Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Rental Income Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Rental Income Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1133,12 +1055,7 @@
             </div>
 
             <!-- Rental Income Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Rental Income</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Rental Income">
                 <div class="chart-container">
                     <canvas id="rentalComparisonChart"></canvas>
                 </div>
@@ -1151,8 +1068,10 @@
 
             <!-- Row 5: Venue (P-Value) -->
             <!-- Venue Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Venue (P-Value) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>Venue (P-Value) Summary - November 2025</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1170,12 +1089,7 @@
             </div>
 
             <!-- Venue (P-Value) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>Venue (P-Value)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Venue (P-Value)">
                 <div class="chart-container">
                     <canvas id="venueChart"></canvas>
                 </div>
@@ -1183,8 +1097,10 @@
 
             <!-- Row 6: Studio (P-Value) -->
             <!-- Studio Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Studio (P-Value) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>STUDIO (P-VALUE)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1202,12 +1118,7 @@
             </div>
 
             <!-- Studio (P-Value) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>STUDIO (P-VALUE)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Studio (P-Value)">
                 <div class="chart-container">
                     <canvas id="studioChart"></canvas>
                 </div>
@@ -1215,8 +1126,10 @@
 
             <!-- Row 7: Sports Arena (P-Value) -->
             <!-- Sports Arena Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Sports Arena (P-Value) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>SPORTS ARENA (P-VALUE)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1234,12 +1147,7 @@
             </div>
 
             <!-- Sports Arena (P-Value) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>SPORTS ARENA (P-VALUE)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Sports Arena (P-Value)">
                 <div class="chart-container">
                     <canvas id="sportsArenaChart"></canvas>
                 </div>
@@ -1252,8 +1160,10 @@
 
             <!-- Row 8: Parking Income -->
             <!-- Parking Income Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Parking Income Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>PARKING INCOME</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1271,12 +1181,7 @@
             </div>
 
             <!-- Parking Income Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>PARKING INCOME</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Parking Income">
                 <div class="chart-container">
                     <canvas id="parkingIncomeChart"></canvas>
                 </div>
@@ -1293,8 +1198,10 @@
 
             <!-- Row 4: Total Operating Expense -->
             <!-- Total Operating Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Total Operating Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>TOTAL OPERATING EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1312,12 +1219,7 @@
             </div>
 
             <!-- Total Operating Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>TOTAL OPERATING EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Total Operating Expense">
                 <div class="chart-container">
                     <canvas id="totalOperatingExpenseChart"></canvas>
                 </div>
@@ -1330,8 +1232,10 @@
 
             <!-- Row 10: Electricity Expense -->
             <!-- Electricity Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Electricity Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>ELECTRICITY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1349,12 +1253,7 @@
             </div>
 
             <!-- Electricity Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>ELECTRICITY EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Electricity Expense">
                 <div class="chart-container">
                     <canvas id="electricityExpenseChart"></canvas>
                 </div>
@@ -1362,8 +1261,10 @@
 
             <!-- Row 11: Water Expense -->
             <!-- Water Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Water Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>WATER EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1381,12 +1282,7 @@
             </div>
 
             <!-- Water Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>WATER EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Water Expense">
                 <div class="chart-container">
                     <canvas id="waterExpenseChart"></canvas>
                 </div>
@@ -1394,8 +1290,10 @@
 
             <!-- Row 12: Security Expense -->
             <!-- Security Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Security Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>SECURITY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1413,12 +1311,7 @@
             </div>
 
             <!-- Security Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>SECURITY EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Security Expense">
                 <div class="chart-container">
                     <canvas id="securityExpenseChart"></canvas>
                 </div>
@@ -1426,8 +1319,10 @@
 
             <!-- Row 13: Agency Expense -->
             <!-- Agency Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Agency Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>AGENCY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1445,12 +1340,7 @@
             </div>
 
             <!-- Agency Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>AGENCY EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Agency Expense">
                 <div class="chart-container">
                     <canvas id="agencyExpenseChart"></canvas>
                 </div>
@@ -1463,8 +1353,10 @@
 
             <!-- Row 14: Salary Expense -->
             <!-- Salary Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Salary Expense Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>SALARY EXPENSE</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1482,12 +1374,7 @@
             </div>
 
             <!-- Salary Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>SALARY EXPENSE</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Salary Expense">
                 <div class="chart-container">
                     <canvas id="salaryExpenseChart"></canvas>
                 </div>
@@ -1500,8 +1387,10 @@
 
             <!-- Row 15: Marketing Expense -->
             <!-- Marketing Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Marketing Expense (+Gifts & Decor) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1519,12 +1408,7 @@
             </div>
 
             <!-- Marketing Expense Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>MARKETING EXPENSE (MARCOM)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Marketing Expense (Marcom)">
                 <div class="chart-container">
                     <canvas id="marketingExpenseChart"></canvas>
                 </div>
@@ -1537,8 +1421,10 @@
 
             <!-- Row 16: Marketing Expense (Gathering) -->
             <!-- Marketing Expense Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Marketing Expense (+Gifts & Decor) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>MARKETING EXPENSE (+Gifts & Decor)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
@@ -1556,12 +1442,7 @@
             </div>
 
             <!-- Marketing Expense (Gathering) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>MARKETING EXPENSE (GATHERING)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Marketing Expense (Gathering)">
                 <div class="chart-container">
                     <canvas id="marketingExpenseGatheringChart"></canvas>
                 </div>
@@ -1574,8 +1455,10 @@
 
             <!-- Row 17: Repairs & Maintenance (Labor) -->
             <!-- Repairs & Maintenance (Labor) Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Repairs & Maintenance (Labor) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1593,12 +1476,7 @@
             </div>
 
             <!-- Repairs & Maintenance (Labor) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>DCD: REPAIRS & MAINTENANCE (LABOR)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="DCD: Repairs & Maintenance (Labor)">
                 <div class="chart-container">
                     <canvas id="repairsMaintenanceLaborChart"></canvas>
                 </div>
@@ -1606,8 +1484,10 @@
 
             <!-- Row 18: Repairs & Maintenance (Materials) -->
             <!-- Repairs & Maintenance (Materials) Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Repairs & Maintenance (Materials) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1625,12 +1505,7 @@
             </div>
 
             <!-- Repairs & Maintenance (Materials) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>DCD: REPAIRS & MAINTENANCE (MATERIALS)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="DCD: Repairs & Maintenance (Materials)">
                 <div class="chart-container">
                     <canvas id="repairsMaintenanceMaterialsChart"></canvas>
                 </div>
@@ -1643,8 +1518,10 @@
 
             <!-- Row 19: Repairs & Maintenance (Labor) - Technical -->
             <!-- Repairs & Maintenance (Labor) Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Repairs & Maintenance (Labor) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>REPAIRS & MAINTENANCE (LABOR)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1662,12 +1539,7 @@
             </div>
 
             <!-- Repairs & Maintenance (Labor) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>TECHNICAL: REPAIRS & MAINTENANCE (LABOR)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Technical: Repairs & Maintenance (Labor)">
                 <div class="chart-container">
                     <canvas id="repairsMaintenanceLaborTechnicalChart"></canvas>
                 </div>
@@ -1675,8 +1547,10 @@
 
             <!-- Row 20: Repairs & Maintenance (Materials) - Technical -->
             <!-- Repairs & Maintenance (Materials) Summary Card -->
+            <div class="summary-card-title-outside">
+                <h3>Repairs & Maintenance (Materials) Summary</h3>
+            </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
-                <h3>REPAIRS & MAINTENANCE (MATERIALS)</h3>
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
@@ -1694,12 +1568,7 @@
             </div>
 
             <!-- Repairs & Maintenance (Materials) Comparison Chart -->
-            <div class="card slide-in-right" style="animation-delay: 0.5s">
-                <div class="card-header">
-                    <div>
-                        <h3>TECHNICAL: REPAIRS & MAINTENANCE (MATERIALS)</h3>
-                    </div>
-                </div>
+            <div class="card slide-in-right" style="animation-delay: 0.5s" data-chart-title="Technical: Repairs & Maintenance (Materials)">
                 <div class="chart-container">
                     <canvas id="repairsMaintenanceMaterialsTechnicalChart"></canvas>
                 </div>

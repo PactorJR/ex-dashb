@@ -347,17 +347,8 @@
         z-index: 1;
     }
 
-    .stat-card-carousel.tech { border-left-color: #ff94ad; }
-    .stat-card-carousel.acc { border-left-color: #C9A66C; }
-    .stat-card-carousel.lrad { border-left-color: #FFDB48; }
-    .stat-card-carousel.qual { border-left-color: #3D85C6; }
-    .stat-card-carousel.dc { border-left-color: #aff598; }
-    .stat-card-carousel.it { border-left-color: #5c5c5c; }
-    .stat-card-carousel.opp { border-left-color: #aba1c0; }
-    .stat-card-carousel.marc { border-left-color: #EDED00; }
-    .stat-card-carousel.aud { border-left-color: #CC4125; }
-    .stat-card-carousel.gath { border-left-color: #7960c4; }
-    .stat-card-carousel.oper { border-left-color: #8B9B5B; }
+    /* Removed team-specific border colors so all cards use the shared palette
+       via the default border-left color above. */
 
     .stat-card-carousel.clickable-stat-card-carousel {
         cursor: pointer;
@@ -411,17 +402,8 @@
         line-height: 1;
     }
 
-    .stat-value-carousel.tech { color: #ff94ad; }
-    .stat-value-carousel.acc { color: #C9A66C; }
-    .stat-value-carousel.lrad { color: #FFDB48; }
-    .stat-value-carousel.qual { color: #3D85C6; }
-    .stat-value-carousel.dc { color: #aff598; }
-    .stat-value-carousel.it { color: #5c5c5c; }
-    .stat-value-carousel.opp { color: #aba1c0; }
-    .stat-value-carousel.marc { color: #EDED00; }
-    .stat-value-carousel.aud { color: #CC4125; }
-    .stat-value-carousel.gath { color: #7960c4; }
-    .stat-value-carousel.oper { color: #8B9B5B; }
+    /* Removed team-specific stat value colors to keep values aligned with the
+       overall text palette. */
 
     .stat-subtitle {
         color: var(--text-color);
@@ -441,22 +423,13 @@
     .progress-fill {
         height: 100%;
         border-radius: 3px;
-        background: var(--secondary-color);
+        background: var(--light-bg);
         transition: width 1s ease-out;
         width: 0%; /* Add this for initial state - will be animated by JS */
     }
 
-    .progress-fill.tech { background: #ff94ad; }
-    .progress-fill.acc { background: #C9A66C; }
-    .progress-fill.lrad { background: #FFDB48; }
-    .progress-fill.qual { background: #3D85C6; }
-    .progress-fill.dc { background: #aff598; }
-    .progress-fill.it { background: #5c5c5c; }
-    .progress-fill.opp { background: #aba1c0; }
-    .progress-fill.marc { background: #EDED00; }
-    .progress-fill.aud { background: #CC4125; }
-    .progress-fill.gath { background: #7960c4; }
-    .progress-fill.oper { background: #8B9B5B; }
+    /* Removed team-specific progress bar colors so all use the secondary color
+       defined above. */
 
     /* Team Section Headers */
     .team-section {
@@ -489,126 +462,8 @@
         border-radius: 2px;
     }
 
-    /* Team-specific colors for section headers */
-    .team-section.acc {
-        border-bottom-color: #C9A66C;
-    }
-
-    .team-section.acc h2 {
-        color: #C9A66C;
-    }
-
-    .team-section.acc h2::before {
-        background: #C9A66C;
-    }
-
-    .team-section.opp {
-        border-bottom-color: #aba1c0;
-    }
-
-    .team-section.opp h2 {
-        color: #aba1c0;
-    }
-
-    .team-section.opp h2::before {
-        background: #aba1c0;
-    }
-
-    .team-section.gath {
-        border-bottom-color: #7960c4;
-    }
-
-    .team-section.gath h2 {
-        color: #7960c4;
-    }
-
-    .team-section.gath h2::before {
-        background: #7960c4;
-    }
-
-    .team-section.oper {
-        border-bottom-color: #8B9B5B;
-    }
-
-    .team-section.oper h2 {
-        color: #8B9B5B;
-    }
-
-    .team-section.oper h2::before {
-        background: #8B9B5B;
-    }
-
-    .team-section.lrad {
-        border-bottom-color: #FFDB48;
-    }
-
-    .team-section.lrad h2 {
-        color: #FFDB48;
-    }
-
-    .team-section.lrad h2::before {
-        background: #FFDB48;
-    }
-
-    .team-section.marc {
-        border-bottom-color: #EDED00;
-    }
-
-    .team-section.marc h2 {
-        color: #EDED00;
-    }
-
-    .team-section.marc h2::before {
-        background: #EDED00;
-    }
-
-    .team-section.aud {
-        border-bottom-color: #CC4125;
-    }
-
-    .team-section.aud h2 {
-        color: #CC4125;
-    }
-
-    .team-section.aud h2::before {
-        background: #CC4125;
-    }
-
-    .team-section.qual {
-        border-bottom-color: #3D85C6;
-    }
-
-    .team-section.qual h2 {
-        color: #3D85C6;
-    }
-
-    .team-section.qual h2::before {
-        background: #3D85C6;
-    }
-
-    .team-section.tech {
-        border-bottom-color: #ff94ad;
-    }
-
-    .team-section.tech h2 {
-        color: #ff94ad;
-    }
-
-    .team-section.tech h2::before {
-        background: #ff94ad;
-    }
-
-    .team-section.dc {
-        border-bottom-color: #8B9B5B;
-    }
-
-    .team-section.dc h2 {
-        color: #8B9B5B;
-    }
-
-    .team-section.dc h2::before {
-        background: #8B9B5B;
-    }
+    /* Removed team-specific section header colors so all team sections use the
+       base primary/secondary colors defined in .team-section above. */
 
     .team-section.team-section-highlight {
         animation: teamSectionPulse 1.4s ease-out;
@@ -678,10 +533,10 @@
     /* Dashboard Grid - 2 columns layout */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 20px;
+        grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+        gap: 24px;
         width: 100%;
-        max-width: 1600px;
+        max-width: 100%;
         margin: 0 auto;
         align-items: start;
         position: relative;
@@ -697,8 +552,8 @@
         box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         border: 1px solid #f0f0f0;
         height: 100%;
-        min-height: 450px;
-        max-height: 450px;
+        min-height: 420px;
+        max-height: none;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -812,7 +667,7 @@
     .dashboard-grid > .summary-card-compact {
         background: #ffffff;
         border-radius: 16px;
-        padding: 15px;
+        padding: 25px;
         box-shadow: 0 1px 8px rgba(0,0,0,0.03);
         border: 1px solid #f0f0f0;
         min-height: 280px;
@@ -822,10 +677,65 @@
         align-self: stretch;
     }
 
-    .dashboard-grid > .card:nth-child(odd) h3,
-    .dashboard-grid > .summary-card-compact h3 {
-        font-size: 0.85em;
-        margin-bottom: 12px;
+    .dashboard-grid > .card:nth-child(odd),
+    .dashboard-grid > .summary-card-compact {
+        position: relative;
+    }
+
+    .summary-card-compact {
+        padding-top: 80px;
+    }
+
+    .summary-card-external-title {
+        padding-top: 25px;
+    }
+
+    .summary-card-title-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        background: transparent;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .summary-card-title-bar h3 {
+        margin: 0;
+        width: 100%;
+        font-size: 19px;
+        font-weight: 700;
+        color: #586740;
+        background: transparent;
+        padding: 4px 0;
+    }
+
+    .summary-card-title-outside {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+        gap: 8px;
+        padding: 0 5px;
+        opacity: 0;
+        will-change: transform, opacity;
+    }
+
+    .summary-card-title-outside.visible {
+        animation: slideInLeft 0.6s ease-out forwards;
+        animation-delay: var(--summary-title-delay, 0.15s);
+    }
+
+    .summary-card-title-outside h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: #586740;
     }
 
     /* Chart cards (right side) - make them stand out more */
@@ -872,18 +782,22 @@
     .chart-container {
         position: relative;
         flex: 1;
-        height: 350px;
-        min-height: 350px;
-        max-height: 350px;
+        height: 380px;
+        min-height: 380px;
+        max-height: none;
         overflow: hidden;
         width: 100%;
     }
 
-    /* Standardize all chart containers to same size */
-    .dashboard-grid > .card:nth-child(even) .chart-container {
-        height: 350px;
-        min-height: 350px;
-        max-height: 350px;
+    /* Dynamic graph cards */
+    .card[data-chart-title] {
+        padding: 28px;
+        min-height: 520px;
+    }
+
+    .card[data-chart-title] .chart-container {
+        height: clamp(420px, 48vh, 560px);
+        min-height: 420px;
     }
 
     /* Summary Stats */
@@ -1200,6 +1114,25 @@
         border-radius: 10px;
         flex: 0 0 auto;
         min-height: 60px;
+    }
+
+    .stat-card.stat-card-horizontal {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .stat-card.stat-card-horizontal .stat-label {
+        margin: 0;
+        text-align: left;
+        flex: 1 1 auto;
+    }
+
+    .stat-card.stat-card-horizontal .stat-value {
+        text-align: right;
+        flex: 0 0 auto;
     }
 
     /* Clickable Stat Card Styles */

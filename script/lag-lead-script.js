@@ -70,11 +70,33 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            ensureSummaryCardTitleContainers();
             applyIncomingHighlight();
             setupVarianceCardNavigation();
             setupYoYGrowthNavigation();
             setupTeamCarouselNavigation();
         });
+
+        function ensureSummaryCardTitleContainers() {
+            const summaryCards = document.querySelectorAll('.summary-card-compact');
+
+            summaryCards.forEach(card => {
+                if (card.querySelector('.summary-card-title-bar')) {
+                    return;
+                }
+
+                const directTitle = Array.from(card.children).find(child => child.tagName && child.tagName.toLowerCase() === 'h3');
+                if (!directTitle) {
+                    return;
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'summary-card-title-bar';
+
+                card.insertBefore(wrapper, directTitle);
+                wrapper.appendChild(directTitle);
+            });
+        }
 
         function applyIncomingHighlight() {
             const params = new URLSearchParams(window.location.search);
@@ -321,23 +343,23 @@
             // This mapping should match the KPI names in tl-score-script.js
             const lagTitleToKpiMap = {
                 // Accounting Team
-                'net profit summary': 'FS Target : Net Profit',
-                'revenue summary': 'FS Target : Total Gross Revenue',
-                'collection summary': '% Collection : All Sites',
+                'net profit': 'FS Target : Net Profit',  // Normalized version (after removing "summary")
+                'revenue': 'FS Target : Total Gross Revenue',  // Normalized version
+                'collection': '% Collection : All Sites',  // Normalized version
                 'total operating expense': 'FS Target : Total Operating Expense',
                 
                 // Opportunity Team
-                'rental income summary': 'FS Target : Rental Income',
-                'critical numbers summary': '% Occupancy: Commercial (Units)',
-                'occupancy rate (unit) summary': '% Occupancy: Commercial (Units)',
-                'occupancy rate (area) summary': '% Occupancy: Commercial (Area)',
-                'occupancy rate (p-value) summary': '% Occupancy: Commercial (PValue)',
+                'rental income': 'FS Target : Rental Income',
+                'critical numbers': '% Occupancy: Commercial (Units)',
+                'occupancy rate (unit)': '% Occupancy: Commercial (Units)',
+                'occupancy rate (area)': '% Occupancy: Commercial (Area)',
+                'occupancy rate (p-value)': '% Occupancy: Commercial (PValue)',
                 'closed inquiries': '% Pull Out - Aversion',
                 'pullout aversion': '% Pull Out - Aversion',
                 
                 // Gathering Team
-                'venue (p-value) summary': '% Occupancy: Venue (PValue)',
-                'venue (pvalue) summary': '% Occupancy: Venue (PValue)',
+                'venue (p-value)': '% Occupancy: Venue (PValue)',
+                'venue (pvalue)': '% Occupancy: Venue (PValue)',
                 'studio (p-value)': '% Occupancy: Studio (PValue)',
                 'studio (pvalue)': '% Occupancy: Studio (PValue)',
                 'sports arena (p-value)': '% Occupancy: Sports Arena (PValue)',
@@ -402,7 +424,7 @@
             // Lead KPI mappings (from leadKpiData in tl-score-script.js)
             const leadTitleToKpiMap = {
                 // Opportunity Team - Lead
-                'critical numbers summary': '% Planned vs Actual - Tenant Mix Plan',
+                'critical numbers': '% Planned vs Actual - Tenant Mix Plan',
                 'occupancy rate (unit)': '% Planned vs Actual - Tenant Mix Plan',
                 'occupancy rate (area)': '% Planned vs Actual - Tenant Mix Plan',
                 'occupancy rate (p-value)': '% Planned vs Actual - Tenant Mix Plan',
@@ -658,6 +680,26 @@
                             }
                         }
                         
+                        // For Lag KPIs, check if KPI belongs to a different leader than the team section suggests
+                        // This handles cases like Net Profit Summary under Revenue section
+                        // but belonging to Accounting Team leader (marcus-chen)
+                        if (!isLeadSection && kpiName) {
+                            // Map of KPI names to their correct leader IDs for Lag KPIs
+                            // These override the team section-based leader detection
+                            const lagKpiToLeaderMap = {
+                                // Accounting Team KPIs (may appear under Revenue section)
+                                'FS Target : Net Profit': 'marcus-chen',
+                                'FS Target : Total Gross Revenue': 'marcus-chen',
+                                'FS Target : Total Operating Expense': 'marcus-chen',
+                                '% Collection : All Sites': 'marcus-chen'
+                            };
+                            
+                            // Override leader ID if KPI has a specific leader mapping
+                            if (lagKpiToLeaderMap[kpiName]) {
+                                leaderId = lagKpiToLeaderMap[kpiName];
+                            }
+                        }
+                        
                         if (leaderId) {
                             makeStatCardClickable(card, leaderId, kpiName, isLeadSection);
                         }
@@ -728,7 +770,13 @@
 
         // Observe all animated elements
         document.addEventListener('DOMContentLoaded', () => {
-            const animatedElements = document.querySelectorAll('.slide-in-up, .slide-in-left, .slide-in-right, .fade-in-scale, .stat-card');
+            document.querySelectorAll('.team-section').forEach(section => {
+                if (!section.classList.contains('slide-in-left')) {
+                    section.classList.add('slide-in-left');
+                }
+            });
+
+            const animatedElements = document.querySelectorAll('.slide-in-up, .slide-in-left, .slide-in-right, .fade-in-scale, .stat-card, .summary-card-title-outside');
             animatedElements.forEach(el => observer.observe(el));
         });
 
@@ -7700,7 +7748,9 @@
                 const numericValue = parseFloat(text.replace(/[^\d.\-]/g, ''));
                 const isNegative = startsWithMinus || (!isNaN(numericValue) && numericValue < 0);
                 if (isNegative) {
-                    el.style.color = '#ff3146';
+                    // Use a slightly lighter red so negative values remain readable
+                    // while still clearly indicating a negative outcome.
+                    el.style.color = '#ff0800';
                     return;
                 }
                 if (!isNaN(numericValue)) {

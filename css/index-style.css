@@ -354,6 +354,77 @@ body {
     margin-top: -200px;
 }
 
+/* Hero Title Text Styles - Matching Image Design */
+.hero-title-text {
+    width: 100%;
+    max-width: 800px;
+    margin-top: -180px;
+    margin-bottom: -40px;
+    margin-left: 80px;
+    text-align: center;
+    padding: 0 20px;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    position: relative;
+    z-index: 10;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+}
+
+.hero-title-prefix {
+    font-size: 24px;
+    font-weight: 500;
+    color: #525552;
+    margin: 0;
+    text-align: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.hero-title-main-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    flex-wrap: nowrap;
+    flex: 1;
+}
+
+.hero-title-text .hero-title-main,
+.hero-title-main {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    line-height: 1.1;
+    background: linear-gradient(to right, #5a8c4a 0%, #6fa85a 20%, #85c46a 40%, #a5d85a 60%, #c5e85a 80%, #ffeb3b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    flex: 0 0 auto;
+}
+
+.hero-title-suffix {
+    font-size: 28px;
+    font-weight: 400;
+    color: #525552;
+    font-style: italic;
+    font-family: 'Brush Script MT', 'Lucida Handwriting', 'Comic Sans MS', cursive;
+    text-align: center;
+    margin-left: 0;
+    line-height: 1.2;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+
 .hero-logo {
     margin-bottom: 2rem;
     animation: fadeInDown 1s ease-out;
@@ -448,14 +519,20 @@ body {
     line-height: 1.6;
     color: #666;
     max-width: 800px;
-    margin: 0 auto 2rem;
+    margin: 40px auto 2rem;
     letter-spacing: 0.3px;
+    position: relative;
+    z-index: 1;
 }
 
 /* Section Header */
 .section-header {
     text-align: center;
     margin-bottom: 60px;
+}
+
+.section-header.ten-year {
+    margin-bottom: 70px;
 }
 
 .section-header h2 {
@@ -471,7 +548,67 @@ body {
 
 /* Ten Year Plan Section */
 .ten-year-plan {
-    background: #fffff5;
+    position: relative;
+    background: linear-gradient(
+        to right,
+        #3f5530 0%,
+        #4d6b39 20%,
+        #5b7f42 40%,
+        #6c944a 60%,
+        #7ea853 80%,
+        #b39a1a 100%
+    );
+    overflow: hidden;
+    isolation: isolate;
+}
+.ten-year-plan > * {
+    position: relative;
+    z-index: 2;
+}
+.ten-year-plan::before,
+.ten-year-plan::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    transition: opacity 0.6s ease-in-out;
+    z-index: 1;
+}
+.ten-year-plan::before {
+    top: 0;
+    background: linear-gradient(
+        to bottom,
+        #fffff5 0%,
+        rgba(255, 255, 245, 0.95) 10%,
+        rgba(255, 255, 245, 0.9) 20%,
+        rgba(255, 255, 245, 0.7) 30%,
+        rgba(255, 255, 245, 0.5) 40%,
+        rgba(150, 170, 120, 0.4) 50%,
+        rgba(107, 129, 73, 0.5) 60%,
+        rgba(80, 96, 57, 0.65) 70%,
+        rgba(58, 74, 40, 0.75) 80%,
+        rgba(58, 74, 40, 0.8) 90%,
+        rgba(58, 74, 40, 0.85) 100%
+    );
+}
+.ten-year-plan::after {
+    bottom: 0;
+    background: linear-gradient(
+        to top,
+        #fffff5 0%,
+        rgba(255, 255, 245, 0.95) 10%,
+        rgba(255, 255, 245, 0.9) 20%,
+        rgba(255, 255, 245, 0.7) 30%,
+        rgba(255, 255, 245, 0.5) 40%,
+        rgba(150, 170, 120, 0.4) 50%,
+        rgba(107, 129, 73, 0.5) 60%,
+        rgba(80, 96, 57, 0.65) 70%,
+        rgba(58, 74, 40, 0.75) 80%,
+        rgba(58, 74, 40, 0.8) 90%,
+        rgba(58, 74, 40, 0.85) 100%
+    );
 }
 
 .plan-content {
@@ -594,6 +731,44 @@ body {
     align-items: center;
     justify-content: center;
     color: var(--secondary-color);
+}
+
+/* Ten Year Plan - Text & icon treatment on gradient */
+.ten-year-plan .plan-text {
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 16px;
+    padding: 22px 26px;
+    backdrop-filter: blur(6px);
+}
+
+.ten-year-plan .plan-text h3 {
+    color: #fffbe6;
+}
+
+.ten-year-plan .plan-text > p {
+    color: #fdf5c8;
+    opacity: 0.95;
+}
+
+.ten-year-plan .plan-text > p strong {
+    color: #ffe27a;
+}
+
+.ten-year-plan .plan-features .feature-content h4 {
+    color: #ffe27a;
+}
+
+.ten-year-plan .plan-features .feature-content p {
+    color: #fdf5c8;
+}
+
+.ten-year-plan .plan-features .feature-icon {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--secondary-color);
+}
+
+.ten-year-plan .plan-features .feature-icon svg {
+    stroke: var(--secondary-color);
 }
 
 .plan-features .feature-content h4 {
@@ -839,11 +1014,178 @@ body {
     border-radius: 12px;
     padding: 32px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .service-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.service-card .service-tag,
+.service-card .service-title,
+.service-card .service-subtitle,
+.service-card .service-description,
+.service-card .metrics-heading,
+.service-card .metrics-list li {
+    transition: color 0.2s ease;
+}
+
+.service-card--advocates {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+.service-card--advocates .service-title,
+.service-card--advocates .service-tag,
+.service-card--advocates .metrics-heading {
+    color: var(--white);
+}
+
+.service-card--advocates .service-tag {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.service-card--advocates .service-subtitle,
+.service-card--advocates .service-description,
+.service-card--advocates .metrics-list li {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.service-card--advocates .metrics-group {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.service-card--advocates .metrics-list li::before {
+    color: var(--white);
+}
+
+.service-card--advocates .service-icon {
+    background: var(--white);
+    color: var(--primary-color);
+}
+
+.service-card--advocates .service-icon svg {
+    stroke: var(--primary-color);
+}
+
+.service-card--innovator {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: #2d3a2d;
+}
+
+.service-card--innovator .service-title,
+.service-card--innovator .metrics-heading {
+    color: #2d3a2d;
+}
+
+.service-card--innovator .service-tag {
+    background: rgba(45, 58, 45, 0.12);
+    color: #2d3a2d;
+}
+
+.service-card--innovator .service-subtitle,
+.service-card--innovator .service-description,
+.service-card--innovator .metrics-list li {
+    color: rgba(45, 58, 45, 0.9);
+}
+
+.service-card--innovator .metrics-group {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.service-card--innovator .metrics-list li::before {
+    color: #2d3a2d;
+}
+
+.service-card--innovator .service-icon {
+    background: var(--white);
+    color: var(--secondary-color);
+}
+
+.service-card--innovator .service-icon svg {
+    stroke: var(--secondary-color);
+}
+
+.service-card--sages {
+    background: var(--light-bg);
+    border-color: var(--light-bg);
+    color: #24321f;
+}
+
+.service-card--sages .service-title,
+.service-card--sages .metrics-heading {
+    color: #24321f;
+}
+
+.service-card--sages .service-tag {
+    background: rgba(36, 50, 31, 0.12);
+    color: #24321f;
+}
+
+.service-card--sages .service-subtitle,
+.service-card--sages .service-description,
+.service-card--sages .metrics-list li {
+    color: rgba(36, 50, 31, 0.85);
+}
+
+.service-card--sages .metrics-group {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.service-card--sages .metrics-list li::before {
+    color: #24321f;
+}
+
+.service-card--sages .service-icon {
+    background: var(--white);
+    color: var(--light-bg);
+}
+
+.service-card--sages .service-icon svg {
+    stroke: var(--light-bg);
+}
+
+.service-card--essentialists {
+    background: #2d3a2d;
+    border-color: #2d3a2d;
+    color: var(--white);
+}
+
+.service-card--essentialists .service-title,
+.service-card--essentialists .service-tag,
+.service-card--essentialists .metrics-heading {
+    color: var(--white);
+}
+
+.service-card--essentialists .service-tag {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.service-card--essentialists .service-subtitle,
+.service-card--essentialists .service-description,
+.service-card--essentialists .metrics-list li {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.service-card--essentialists .metrics-group {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.service-card--essentialists .metrics-list li::before {
+    color: var(--white);
+}
+
+.service-card--essentialists .service-icon {
+    background: var(--white);
+    color: #2d3a2d;
+}
+
+.service-card--essentialists .service-icon svg {
+    stroke: #2d3a2d;
 }
 
 .service-card-header {
@@ -2482,6 +2824,27 @@ body {
     z-index: 3;
 }
 
+.hero-title-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+}
+
+.hero-title-wrapper {
+    text-align: center;
+    margin-left: 80px;
+    margin-bottom: 16px;
+}
+
+.hero-subtitle-wrapper {
+    text-align: left;
+    margin-left: 110px;
+}
+
 .hero-title-new {
     font-size: 56px;
     font-weight: 700;
@@ -2495,11 +2858,13 @@ body {
     color: var(--text-color);
     line-height: 1.8;
     margin-bottom: 40px;
+    text-align: left;
 }
 
 .hero-buttons {
     display: flex;
     gap: 20px;
+    justify-content: center;    
     flex-wrap: wrap;
 }
 

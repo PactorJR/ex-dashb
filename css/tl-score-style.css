@@ -604,6 +604,114 @@ body {
     }
 }
 
+/* KPI Dropdown Button Styles */
+.kpi-dropdown-btn {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    min-width: 28px;
+    height: 28px;
+}
+
+.kpi-dropdown-btn:hover {
+    background: #f3f4f6;
+    border-color: var(--primary-color);
+}
+
+.kpi-dropdown-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.kpi-dropdown-btn.active .dropdown-icon {
+    color: white;
+}
+
+.kpi-dropdown-btn .dropdown-icon {
+    font-size: 10px;
+    color: var(--text-color);
+    transition: transform 0.2s ease;
+}
+
+/* Correlated Members Dropdown */
+.kpi-correlated-members {
+    background: #f8f9fa;
+    margin: 5px 0 5px 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+    border: 1px solid #e5e7eb;
+}
+
+.correlated-members-header {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--primary-color), #6b7d4a);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.correlated-member-item {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    padding: 12px 20px;
+    transition: background 0.2s;
+    border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+}
+
+.correlated-member-item:last-child {
+    border-bottom: none;
+}
+
+.correlated-member-item:hover {
+    background: rgba(88, 103, 64, 0.05);
+}
+
+.correlated-member-item.active {
+    background: rgba(88, 103, 64, 0.1);
+}
+
+.correlated-member-item .member-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.correlated-member-item .member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
+}
+
+.correlated-member-item .member-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.correlated-member-item .member-role {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
 @media (max-width: 768px) {
     .sub-operation-item {
         grid-template-columns: 2fr 1fr;
@@ -615,6 +723,14 @@ body {
     
     .sub-operation-item > *:nth-child(5) {
         display: block;
+    }
+    
+    .correlated-member-item {
+        grid-template-columns: 2fr 1fr;
+    }
+    
+    .correlated-member-item > *:nth-child(n+3) {
+        display: none;
     }
 }
 

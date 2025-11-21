@@ -1,22 +1,3 @@
-        // Auto-hiding navbar functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbar = document.querySelector('.navbar');
-            
-            // Hide navbar initially
-            navbar.style.transform = 'translateY(-100%)';
-            navbar.style.transition = 'transform 0.3s ease-in-out';
-            
-            // Show navbar on hover
-            navbar.addEventListener('mouseenter', function() {
-                navbar.style.transform = 'translateY(0)';
-            });
-            
-            // Hide navbar when mouse leaves
-            navbar.addEventListener('mouseleave', function() {
-                navbar.style.transform = 'translateY(-100%)';
-            });
-        
-        });
 
         // Initialize sliders when DOM is loaded
         document.addEventListener('DOMContentLoaded', initTestimonialSliders);
@@ -88,33 +69,6 @@
             initialize();
         }
 
-        // Auto-hiding navbar functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbar = document.querySelector('.navbar');
-            
-            // Hide navbar initially
-            navbar.style.transform = 'translateY(-100%)';
-            navbar.style.transition = 'transform 0.3s ease-in-out';
-            
-            // Show navbar on hover
-            navbar.addEventListener('mouseenter', function() {
-                navbar.style.transform = 'translateY(0)';
-            });
-            
-            // Hide navbar when mouse leaves
-            navbar.addEventListener('mouseleave', function() {
-                navbar.style.transform = 'translateY(-100%)';
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                // Show navbar when mouse is within 50px of the top
-                if (e.clientY < 50) {
-                    navbar.style.transform = 'translateY(0)';
-                } else if (e.clientY > navbar.offsetHeight + 20) {
-                    navbar.style.transform = 'translateY(-100%)';
-                }
-            });
-        });
         // Scroll Animation Observer
         const observerOptions = {
             threshold: 0.1,
