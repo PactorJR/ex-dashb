@@ -434,7 +434,7 @@ body {
     max-width: 500px;
     height: auto;
     display: block;
-    margin: 0 auto;
+    margin: -300px auto;
     margin-bottom: -150px;
 }
 
@@ -549,21 +549,28 @@ body {
 /* Ten Year Plan Section */
 .ten-year-plan {
     position: relative;
-    background: linear-gradient(
-        to right,
-        #3f5530 0%,
-        #4d6b39 20%,
-        #5b7f42 40%,
-        #6c944a 60%,
-        #7ea853 80%,
-        #b39a1a 100%
-    );
+    background: linear-gradient(to right, #5a8c4a 0%, #6fa85a 20%, #85c46a 40%, #a5d85a 60%, #c5e85a 80%, #ffeb3b 100%);
     overflow: hidden;
     isolation: isolate;
+    padding: 80px 20px;
 }
 .ten-year-plan > * {
     position: relative;
     z-index: 2;
+}
+
+/* Make section header text visible in ten-year-plan - using darker color to stand out against overlay */
+.ten-year-plan .section-header {
+    position: relative;
+    z-index: 5;
+}
+
+.ten-year-plan .section-header h2 {
+    color: var(--text-color);
+}
+
+.ten-year-plan .section-header p {
+    color: var(--text-color);
 }
 .ten-year-plan::before,
 .ten-year-plan::after {
@@ -571,44 +578,65 @@ body {
     position: absolute;
     left: 0;
     width: 100%;
-    height: 50%;
     pointer-events: none;
     transition: opacity 0.6s ease-in-out;
     z-index: 1;
 }
+
 .ten-year-plan::before {
+    content: '';
+    position: absolute;
     top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
     background: linear-gradient(
         to bottom,
         #fffff5 0%,
-        rgba(255, 255, 245, 0.95) 10%,
-        rgba(255, 255, 245, 0.9) 20%,
-        rgba(255, 255, 245, 0.7) 30%,
-        rgba(255, 255, 245, 0.5) 40%,
-        rgba(150, 170, 120, 0.4) 50%,
-        rgba(107, 129, 73, 0.5) 60%,
-        rgba(80, 96, 57, 0.65) 70%,
-        rgba(58, 74, 40, 0.75) 80%,
-        rgba(58, 74, 40, 0.8) 90%,
-        rgba(58, 74, 40, 0.85) 100%
+        rgba(255, 255, 245, 0.9) 10%,
+        rgba(255, 255, 245, 0.6) 30%,
+        rgba(255, 255, 245, 0.3) 60%,
+        rgba(255, 255, 245, 0) 100%
     );
+    z-index: 4;
+    pointer-events: none;
 }
+
 .ten-year-plan::after {
+    content: '';
+    position: absolute;
     bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
     background: linear-gradient(
-        to top,
-        #fffff5 0%,
-        rgba(255, 255, 245, 0.95) 10%,
-        rgba(255, 255, 245, 0.9) 20%,
-        rgba(255, 255, 245, 0.7) 30%,
-        rgba(255, 255, 245, 0.5) 40%,
-        rgba(150, 170, 120, 0.4) 50%,
-        rgba(107, 129, 73, 0.5) 60%,
-        rgba(80, 96, 57, 0.65) 70%,
-        rgba(58, 74, 40, 0.75) 80%,
-        rgba(58, 74, 40, 0.8) 90%,
-        rgba(58, 74, 40, 0.85) 100%
+        to bottom,
+        rgba(255, 255, 245, 0) 0%,
+        rgba(255, 255, 245, 0.3) 40%,
+        rgba(255, 255, 245, 0.6) 70%,
+        rgba(255, 255, 245, 0.9) 90%,
+        #fffff5 100%
     );
+    z-index: 4;
+    pointer-events: none;
+}
+
+.ten-year-plan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        var(--overlay) 0%,
+        rgba(88, 103, 64, 0.3) 40%,
+        rgba(88, 103, 64, 0.2) 70%,
+        rgba(88, 103, 64, 0.1) 90%,
+        rgba(255, 255, 245, 0.1) 100%
+    );
+    z-index: 2;
+    transition: background 0.6s ease-in-out;
 }
 
 .plan-content {
@@ -741,13 +769,12 @@ body {
     backdrop-filter: blur(6px);
 }
 
-.ten-year-plan .plan-text h3 {
-    color: #fffbe6;
+.ten-year-plan .plan-content h3 {
+    color: var(--text-color);
 }
 
-.ten-year-plan .plan-text > p {
-    color: #fdf5c8;
-    opacity: 0.95;
+.ten-year-plan .plan-content .slide-right > p {
+    color: var(--text-color);
 }
 
 .ten-year-plan .plan-text > p strong {
@@ -755,15 +782,15 @@ body {
 }
 
 .ten-year-plan .plan-features .feature-content h4 {
-    color: #ffe27a;
+    color: var(--text-color);
 }
 
 .ten-year-plan .plan-features .feature-content p {
-    color: #fdf5c8;
+    color: var(--text-color);
 }
 
 .ten-year-plan .plan-features .feature-icon {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(229, 187, 34, 0.1);
     color: var(--secondary-color);
 }
 
@@ -2864,7 +2891,7 @@ body {
 .hero-buttons {
     display: flex;
     gap: 20px;
-    justify-content: center;    
+    margin: 0 0 0 200px;
     flex-wrap: wrap;
 }
 

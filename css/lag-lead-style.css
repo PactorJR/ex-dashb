@@ -307,129 +307,181 @@
         text-align: center;
     }
 
-    /* Stats Carousel Container */
-    .stats-carousel-container {
-        overflow-x: hidden;
-        overflow-y: visible;
-        margin: 0 auto 30px auto;
-        width: 100%;
-        max-width: 100%;
-        position: relative;
-        z-index: 100;
-        padding: 20px;
-        isolation: isolate;
+    /* Team Leader Cards - Leaders Grid Section */
+    .leaders-section {
+        margin-bottom: 40px;
+        margin-left: 40px;
+        margin-right: 40px;
+        animation: fadeInDown 0.6s ease-out;
     }
 
-    .stats-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        width: 100%;
-        transition: transform 0.5s ease;
-        position: relative;
-        z-index: 1;
+    .leaders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 12px;
+        margin-bottom: 30px;
     }
 
-    .stat-card-carousel {
+    .leader-card {
         background: white;
-        padding: 18px;
-        flex: 1 1 calc((100% / 6) - 15px);
-        min-width: 180px;
-        max-width: 220px;
-        height: 100px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(88, 103, 64, 0.12);
-        border-left: 4px solid var(--secondary-color);
-        transition: all 0.3s ease;
-        line-height: 1.4;
+        border-radius: 12px;
+        padding: 15px 10px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(88, 103, 64, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
         position: relative;
-        z-index: 1;
+        overflow: hidden;
     }
 
-    /* Removed team-specific border colors so all cards use the shared palette
-       via the default border-left color above. */
-
-    .stat-card-carousel.clickable-stat-card-carousel {
+    .leader-card.clickable-stat-card-carousel {
         cursor: pointer;
     }
 
-    .stat-card-carousel.team-card-disabled {
+    .leader-card.team-card-disabled {
         opacity: 0.5;
         cursor: pointer;
-        /* Still clickable - will auto-switch views when clicked */
     }
 
-    .stat-card-carousel.clickable-stat-card-carousel:focus-visible {
+    .leader-card.clickable-stat-card-carousel:focus-visible {
         outline: 3px solid var(--secondary-color);
         outline-offset: 4px;
     }
 
-    .stat-card-carousel:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    .highlight-target {
+        position: relative;
+        overflow: visible !important;
+        z-index: 2;
+    }
+
+    .highlight-target::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: var(--highlight-radius, 16px);
+        padding: 3px;
+        background: #fffd94;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        animation: dotBounce 1.4s ease-in-out 5;
+        pointer-events: none;
+    }
+
+    .leader-card {
+        --highlight-radius: 18px;
+    }
+
+    .leader-card.active {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 30px rgba(229, 187, 34, 0.4);
+        border: 2px solid var(--secondary-color);
+    }
+
+    .leader-card.carousel-card-highlight {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 30px rgba(150, 168, 64, 0.4);
+        border: 2px solid #96a840;
         z-index: 2000;
     }
 
-    .stat-header {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 8px;
-        text-align: center;
+    .leader-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(229, 187, 34, 0.2), transparent);
+        transition: left 0.5s;
     }
 
-    .stat-header h3 {
-        font-size: 13px;
+    .leader-card:hover::before {
+        left: 100%;
+    }
+
+    .leader-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 30px rgba(88, 103, 64, 0.2);
+    }
+
+    .leader-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 0 auto 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        position: relative;
+        animation: pulse 2s infinite;
+    }
+
+    .leader-card:nth-child(1) .leader-icon { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
+    .leader-card:nth-child(2) .leader-icon { background: linear-gradient(135deg, #4ecdc4, #44a6a0); }
+    .leader-card:nth-child(3) .leader-icon { background: linear-gradient(135deg, #95e1d3, #6ec4b8); }
+    .leader-card:nth-child(4) .leader-icon { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+    .leader-card:nth-child(5) .leader-icon { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+    .leader-card:nth-child(6) .leader-icon { background: linear-gradient(135deg, #fdcb6e, #f39c12); }
+    .leader-card:nth-child(7) .leader-icon { background: linear-gradient(135deg, #fd79a8, #e84393); }
+    .leader-card:nth-child(8) .leader-icon { background: linear-gradient(135deg, #00b894, #00cec9); }
+    .leader-card:nth-child(9) .leader-icon { background: linear-gradient(135deg, #d63031, #c0392b); }
+    .leader-card:nth-child(10) .leader-icon { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+    .leader-card:nth-child(11) .leader-icon { background: linear-gradient(135deg, #ff7675, #d63031); }
+
+    .leader-name {
         color: var(--text-color);
         font-weight: 600;
-        margin: 0;
-        line-height: 1.2;
-    }
-
-    .stat-card-carousel p {
+        margin-bottom: 3px;
         font-size: 11px;
-        color: var(--text-color);
-        font-weight: 500;
+        line-height: 1.3;
     }
 
-    .stat-value-carousel {
-        font-size: 24px;
+    .leader-title {
+        color: var(--primary-color);
+        font-size: 11px;
         font-weight: 700;
-        padding-left: 0;
-        line-height: 1;
+        opacity: 1;
+        line-height: 1.2;
+        letter-spacing: 0.3px;
     }
 
-    /* Removed team-specific stat value colors to keep values aligned with the
-       overall text palette. */
-
-    .stat-subtitle {
-        color: var(--text-color);
-        font-size: 12px;
-        margin-bottom: 15px;
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    .progress-bar {
-        height: 6px;
-        background: #f0f0f0;
-        border-radius: 3px;
-        overflow: hidden;
-        margin-top: 8px;
-        margin-bottom: 0;
+    @keyframes dotBounce {
+        0%,
+        80%,
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        40% {
+            transform: translateY(-3px);
+            opacity: 0.7;
+        }
     }
 
-    .progress-fill {
-        height: 100%;
-        border-radius: 3px;
-        background: var(--light-bg);
-        transition: width 1s ease-out;
-        width: 0%; /* Add this for initial state - will be animated by JS */
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(229, 187, 34, 0.7);
+        }
+        50% {
+            box-shadow: 0 0 0 10px rgba(229, 187, 34, 0);
+        }
     }
-
-    /* Removed team-specific progress bar colors so all use the secondary color
-       defined above. */
 
     /* Team Section Headers */
     .team-section {
@@ -464,6 +516,18 @@
 
     /* Removed team-specific section header colors so all team sections use the
        base primary/secondary colors defined in .team-section above. */
+
+    .team-section.team-section-linkable {
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .team-section.team-section-linkable:hover,
+    .team-section.team-section-linkable:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        outline: none;
+    }
 
     .team-section.team-section-highlight {
         animation: teamSectionPulse 1.4s ease-out;
@@ -835,11 +899,18 @@
     }
 
     .summary-stats-compact .stat-label {
-        font-size: clamp(0.7em, 0.8vw, 0.8em);
+        font-size: clamp(0.65rem, 0.75vw, 0.8rem);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(82, 85, 82, 0.65);
     }
 
     .summary-stats-compact .stat-value {
-        font-size: clamp(1.1em, 1.5vw, 1.5em);
+        font-size: clamp(1.35rem, 1.9vw, 2.05rem);
+        font-weight: 700;
+        color: #1c1c1c;
+        line-height: 1.15;
     }
 
     .peso-value {
@@ -1128,6 +1199,7 @@
         margin: 0;
         text-align: left;
         flex: 1 1 auto;
+        font-size: 15px;
     }
 
     .stat-card.stat-card-horizontal .stat-value {
@@ -1580,54 +1652,14 @@
             max-height: 350px;
         }
 
-        /* Carousel responsive adjustments */
-        .stat-card-carousel {
-            flex: 1 1 calc((100% / 3) - 15px);
-            min-width: 150px;
-            max-width: 200px;
+        /* Leaders grid responsive adjustments */
+        .leaders-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
         }
 
-        .stat-header h3 {
-            font-size: 12px;
-        }
-
-        .stat-value-carousel {
-            font-size: 20px;
-        }
-    }
-
-    /* Responsive carousel cards for different screen sizes */
-    @media (max-width: 1400px) {
-        .stat-card-carousel {
-            flex: 1 1 calc((100% / 5) - 15px);
-        }
-    }
-
-    @media (max-width: 1200px) {
-        .stat-card-carousel {
-            flex: 1 1 calc((100% / 4) - 15px);
-        }
-    }
-
-    @media (max-width: 900px) {
-        .stat-card-carousel {
-            flex: 1 1 calc((100% / 3) - 15px);
-            min-width: 160px;
-        }
-    }
-
-    @media (max-width: 600px) {
-        .stat-card-carousel {
-            flex: 1 1 calc((100% / 2) - 15px);
-            min-width: 140px;
-            max-width: 180px;
-        }
-
-        .stat-header h3 {
-            font-size: 11px;
-        }
-
-        .stat-value-carousel {
-            font-size: 18px;
+        .leaders-section {
+            margin-left: 20px;
+            margin-right: 20px;
         }
     }

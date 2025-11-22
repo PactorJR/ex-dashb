@@ -198,9 +198,11 @@ body {
 
 .leader-title {
     color: var(--primary-color);
-    font-size: 10px;
-    opacity: 0.8;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 1;
     line-height: 1.2;
+    letter-spacing: 0.3px;
 }
 
 /* Navigation */
@@ -532,9 +534,13 @@ body {
     transform: rotate(180deg);
 }
 
+#membersList {
+    background:transparent
+}
+
 .sub-operations {
     display: none;
-    background: #f8f9fa;
+    background: transparent;
     margin: 5px 0 5px 20px;
     border-radius: 8px;
     overflow: hidden;
@@ -551,6 +557,7 @@ body {
     grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
     padding: 12px 20px;
     transition: background 0.2s;
+    margin-left: 200px;
 }
 
 .sub-operation-item:hover {
@@ -739,11 +746,36 @@ body {
     grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
     background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
     color: white;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 12px;
     font-weight: 600;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* Technical Team 6-column layout (for Team Members view) */
+#operationsContent.technical-team-view .table-header,
+#operationsContent.technical-team-view .member-row[data-owner] {
+    grid-template-columns: 1.5fr 1.5fr 2fr 1.2fr 1.2fr 1fr;
+}
+
+/* Technical Team sub-operation items (4 columns: KPI, Target, Actual, Weight) */
+#operationsContent.technical-team-view .sub-operations .sub-operation-item {
+    grid-template-columns: 2fr 1.2fr 1.2fr 1fr;
+    text-align: left;
+}
+
+#operationsContent.technical-team-view .sub-operations .sub-operation-item > div {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+}
+
+#operationsContent.technical-team-view .sub-operations .sub-operation-item > div:nth-child(2),
+#operationsContent.technical-team-view .sub-operations .sub-operation-item > div:nth-child(3),
+#operationsContent.technical-team-view .sub-operations .sub-operation-item > div:nth-child(4) {
+    justify-content: center;
 }
 
 .header-group {
@@ -755,7 +787,9 @@ body {
 .header-main {
     grid-column: 1 / -1;
     text-align: center;
-    padding-bottom: 5px;
+    padding-bottom: 4px;
+    font-size: 11px;
+    line-height: 1.2;
 }
 
 .header-sub {
@@ -846,7 +880,7 @@ body {
 
 #operationsSection.members-view-active .table-header,
 #operationsSection.members-view-active .member-row {
-    grid-template-columns: 2.1fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
+    grid-template-columns: 1.3fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
 }
 
 #operationsSection.members-view-active .table-header > div,

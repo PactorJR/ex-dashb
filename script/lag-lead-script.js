@@ -41,7 +41,7 @@
 
         // Setup carousel card click handlers for team navigation
         function setupTeamCarouselNavigation() {
-            const carouselCards = document.querySelectorAll('.stat-card-carousel[data-team]');
+            const carouselCards = document.querySelectorAll('.leader-card[data-team]');
             
             carouselCards.forEach(card => {
                 card.addEventListener('click', function() {
@@ -206,19 +206,19 @@
             setTimeout(removeHighlight, fallbackTimeoutMs);
         }
 
-        // Team to leader ID mapping
-        const teamToLeaderMap = {
-            'acc': 'marcus-chen',           // Accounting Team -> Jeany Sabillo
-            'tech': 'sarah-mitchell',       // Technical Team -> Maria Baby Klyre Catibog
-            'lrad': 'james-peterson',       // LRAD Team -> Al Francis Talagon
-            'qual': 'emily-rodriguez',      // Quality Team -> Irene Floretes
-            'dc': 'david-patterson',        // DC Team -> Joseph Mattew Dela Cruz
-            'it': 'jennifer-lee',           // IT Team -> Mark Joel Limin
-            'opp': 'robert-thompson',       // Opportunity Team -> Jeany Sabillo
-            'marc': 'amanda-white',         // Marcom Team -> Abbygail Balinado
-            'aud': 'michael-johnson',       // Audit Team -> Rosiene Macuja
-            'gath': 'lisa-anderson',        // Gathering Team -> Vernon Calivara
-            'oper': 'kevin-martinez'        // Operations Team -> Dennis Romero
+        // Team class to team name mapping
+        const teamToTeamNameMap = {
+            'acc': 'Accounting Team',
+            'tech': 'Technical Team',
+            'lrad': 'LRAD Team',
+            'qual': 'Quality Team',
+            'dc': 'DC Team',
+            'it': 'IT Team',
+            'opp': 'Opportunity Team',
+            'marc': 'Marcom Team',
+            'aud': 'Audit Team',
+            'gath': 'Gathering Team',
+            'oper': 'Operations Team'
         };
 
         // Function to find the nearest team section ancestor or previous sibling
@@ -256,7 +256,7 @@
                         // Check for valid team class (skip headers like revenue-header, expenses-header)
                         const classList = Array.from(sibling.classList);
                         for (const className of classList) {
-                            if (teamToLeaderMap[className]) {
+                            if (teamToTeamNameMap[className]) {
                                 return className;
                             }
                         }
@@ -296,7 +296,7 @@
                     if (sibling.classList && sibling.classList.contains('team-section')) {
                         const classList = Array.from(sibling.classList);
                         for (const className of classList) {
-                            if (teamToLeaderMap[className]) {
+                            if (teamToTeamNameMap[className]) {
                                 return className;
                             }
                         }
@@ -322,13 +322,50 @@
                 return null;
             }
             
-            // Get the card title from h3
-            const titleElement = cardContainer.querySelector('h3');
+            // Get the card title from h3 - check inside card first, then check previous sibling for external titles
+            let titleElement = cardContainer.querySelector('h3');
+            let titleText = '';
+            
+            // If not found inside card, check previous sibling (for summary-card-title-outside)
             if (!titleElement) {
-                return null;
+                let sibling = cardContainer.previousElementSibling;
+                let checkedSiblings = 0;
+                // Check up to 3 previous siblings to find the title
+                while (sibling && checkedSiblings < 3) {
+                    if (sibling.classList && sibling.classList.contains('summary-card-title-outside')) {
+                        titleElement = sibling.querySelector('h3');
+                        if (titleElement) break;
+                    }
+                    sibling = sibling.previousElementSibling;
+                    checkedSiblings++;
+                }
             }
             
-            const titleText = titleElement.textContent.trim();
+            // If still not found, try to get title from data-chart-title attribute on the card or nearby chart card
+            if (!titleElement) {
+                const chartTitle = cardContainer.getAttribute('data-chart-title');
+                if (chartTitle) {
+                    titleText = chartTitle;
+                } else {
+                    // Check next/previous sibling for chart card with data-chart-title
+                    let chartCard = cardContainer.nextElementSibling;
+                    if (!chartCard || !chartCard.getAttribute('data-chart-title')) {
+                        chartCard = cardContainer.previousElementSibling;
+                    }
+                    if (chartCard) {
+                        const chartTitleAttr = chartCard.getAttribute('data-chart-title');
+                        if (chartTitleAttr) {
+                            titleText = chartTitleAttr;
+                        }
+                    }
+                }
+            } else {
+                titleText = titleElement.textContent.trim();
+            }
+            
+            if (!titleText) {
+                return null;
+            }
             
             // Find the team section to determine context for ambiguous titles
             const teamClass = findTeamSection(card);
@@ -343,27 +380,48 @@
             // This mapping should match the KPI names in tl-score-script.js
             const lagTitleToKpiMap = {
                 // Accounting Team
-                'net profit': 'FS Target : Net Profit',  // Normalized version (after removing "summary")
+                'net profit': 'FS Target : Net Profit',
+                'net profit': 'FS Target : Net Profit',
                 'revenue': 'FS Target : Total Gross Revenue',  // Normalized version
+                'gross revenue': 'FS Target : Total Gross Revenue',
+                'gross revenue': 'FS Target : Total Gross Revenue',
+                'total gross revenue': 'FS Target : Total Gross Revenue',
+                'total gross revenue': 'FS Target : Total Gross Revenue',
                 'collection': '% Collection : All Sites',  // Normalized version
+                'collection summary': '% Collection : All Sites',
                 'total operating expense': 'FS Target : Total Operating Expense',
+                'total operating expense summary': 'FS Target : Total Operating Expense',
+                'operating expense': 'FS Target : Total Operating Expense',
                 
                 // Opportunity Team
                 'rental income': 'FS Target : Rental Income',
+                'rental income summary': 'FS Target : Rental Income',
                 'critical numbers': '% Occupancy: Commercial (Units)',
+                'critical numbers summary': '% Occupancy: Commercial (Units)',
                 'occupancy rate (unit)': '% Occupancy: Commercial (Units)',
+                'occupancy rate (unit) summary': '% Occupancy: Commercial (Units)',
                 'occupancy rate (area)': '% Occupancy: Commercial (Area)',
+                'occupancy rate (area) summary': '% Occupancy: Commercial (Area)',
                 'occupancy rate (p-value)': '% Occupancy: Commercial (PValue)',
+                'occupancy rate (p-value) summary': '% Occupancy: Commercial (PValue)',
                 'closed inquiries': '% Pull Out - Aversion',
+                'closed inquiries summary': '% Pull Out - Aversion',
                 'pullout aversion': '% Pull Out - Aversion',
+                'pullout aversion summary': '% Pull Out - Aversion',
                 
                 // Gathering Team
                 'venue (p-value)': '% Occupancy: Venue (PValue)',
+                'venue (p-value) summary': '% Occupancy: Venue (PValue)',
                 'venue (pvalue)': '% Occupancy: Venue (PValue)',
+                'venue (pvalue) summary': '% Occupancy: Venue (PValue)',
                 'studio (p-value)': '% Occupancy: Studio (PValue)',
+                'studio (p-value) summary': '% Occupancy: Studio (PValue)',
                 'studio (pvalue)': '% Occupancy: Studio (PValue)',
+                'studio (pvalue) summary': '% Occupancy: Studio (PValue)',
                 'sports arena (p-value)': '% Occupancy: Sports Arena (PValue)',
+                'sports arena (p-value) summary': '% Occupancy: Sports Arena (PValue)',
                 'sports arena (pvalue)': '% Occupancy: Sports Arena (PValue)',
+                'sports arena (pvalue) summary': '% Occupancy: Sports Arena (PValue)',
                 'lotus mall foot traffic': '# of Average Daily Foot Traffic',
                 'portal mall foot traffic': '# of Average Daily Foot Traffic',
                 'stadium shopping strip foot traffic': '# of Average Daily Foot Traffic',
@@ -379,16 +437,25 @@
                 
                 // Operations Team
                 'parking income': 'FS Target : Parking Income',
+                'parking income summary': 'FS Target : Parking Income',
                 'electricity expense': 'FS Target : Electricity Expense',
+                'electricity expense summary': 'FS Target : Electricity Expense',
                 'water expense': 'FS Target : Water Expense',
+                'water expense summary': 'FS Target : Water Expense',
                 'security expense': 'FS Target : Security Expense',
+                'security expense summary': 'FS Target : Security Expense',
                 'agency expense': 'FS Target : Agency Expense',
+                'agency expense summary': 'FS Target : Agency Expense',
                 
                 // LRAD Team
                 'salary expense': 'FS Target : Salary Expense',
+                'salary expense summary': 'FS Target : Salary Expense',
                 'regular events plan': '% Planned vs Actual - Regular Events Plan: Lotuszen',
+                'regular events plan summary': '% Planned vs Actual - Regular Events Plan: Lotuszen',
                 'culture dev\'t activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                'culture dev\'t activities plan summary': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
                 'culture dev activities plan': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
+                'culture dev activities plan summary': '% Planned vs Actual - Culture Dev\'t Activities Plan: Lotuszen',
                 
                 // Marcom Team
                 'marketing expense (+gifts & decor)': 'FS Target : Marketing Expense (+Gifts & Decor) (MARCOM)',
@@ -485,12 +552,15 @@
             // Use the appropriate map based on whether it's a Lead section
             const titleToKpiMap = isLeadSection ? leadTitleToKpiMap : lagTitleToKpiMap;
             
-            // Normalize the title (lowercase, remove extra spaces, remove date suffixes)
+            // Normalize the title (lowercase, remove extra spaces, remove date suffixes, remove common suffixes)
             let normalizedTitle = titleText
                 .toLowerCase()
-                .replace(/\s*-\s*november\s+\d{4}/gi, '')
-                .replace(/\s*summary/gi, '')
-                .replace(/\s+/g, ' ')
+                .replace(/\s*-\s*(november|december|january|february|march|april|may|june|july|august|september|october)\s+\d{4}/gi, '') // Remove date suffixes
+                .replace(/\s*summary/gi, '') // Remove "Summary"
+                .replace(/\s*chart/gi, '') // Remove "Chart"
+                .replace(/\s*comparison/gi, '') // Remove "Comparison"
+                .replace(/\s*monthly/gi, '') // Remove "Monthly"
+                .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
                 .trim();
             
             // Handle team-specific mappings for ambiguous titles
@@ -562,11 +632,32 @@
                 }
             }
             
-            return titleToKpiMap[normalizedTitle] || null;
+            // Try exact match first
+            let kpiName = titleToKpiMap[normalizedTitle];
+            
+            // If no exact match, try partial matching (check if normalized title contains any map key)
+            if (!kpiName) {
+                for (const [mapKey, mapValue] of Object.entries(titleToKpiMap)) {
+                    // Check if the normalized title contains the map key, or vice versa
+                    if (normalizedTitle.includes(mapKey) || mapKey.includes(normalizedTitle)) {
+                        kpiName = mapValue;
+                        console.log(`[KPI Extraction] Partial match: "${normalizedTitle}" matched "${mapKey}" -> "${mapValue}"`);
+                        break;
+                    }
+                }
+            } else {
+                console.log(`[KPI Extraction] Exact match: "${normalizedTitle}" -> "${kpiName}"`);
+            }
+            
+            if (!kpiName) {
+                console.warn(`[KPI Extraction] No match found for title: "${titleText}" (normalized: "${normalizedTitle}")`);
+            }
+            
+            return kpiName || null;
         }
 
         // Function to make a stat card clickable and navigate to team leader
-        function makeStatCardClickable(card, leaderId, kpiName = null, isLeadKpi = false) {
+        function makeStatCardClickable(card, teamName, kpiName = null, isLeadKpi = false) {
             // Skip if already made clickable
             if (card.classList.contains('stat-card-link')) {
                 return;
@@ -577,9 +668,9 @@
             card.setAttribute('tabindex', '0');
             card.style.cursor = 'pointer';
 
-            const navigateToLeader = () => {
+            const navigateToTeam = () => {
                 const params = new URLSearchParams({
-                    highlightLeader: leaderId,
+                    highlightTeam: teamName,
                     highlightSource: 'lag-lead-summ'
                 });
                 
@@ -596,11 +687,11 @@
                 window.location.href = `tl-scoring.html?${params.toString()}`;
             };
 
-            card.addEventListener('click', navigateToLeader);
+            card.addEventListener('click', navigateToTeam);
             card.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
-                    navigateToLeader();
+                    navigateToTeam();
                 }
             });
         }
@@ -643,65 +734,70 @@
                         
                         // Use the improved findTeamSection function which checks ancestors and previous siblings
                         let teamClass = findTeamSection(card, companySection);
-                        let leaderId = teamClass ? teamToLeaderMap[teamClass] : null;
+                        let teamName = teamClass ? teamToTeamNameMap[teamClass] : null;
                         
                         // Extract KPI name from the card context
                         const kpiName = extractKpiNameFromCard(card, isLeadSection);
                         
-                        // For Lead KPIs, check if KPI belongs to a different leader than the team section suggests
+                        // Debug logging (can be removed in production)
+                        if (!kpiName) {
+                            console.warn('[Variance Card] Could not extract KPI name for card:', card);
+                        }
+                        
+                        // For Lead KPIs, check if KPI belongs to a different team than the team section suggests
                         // This handles cases like Site Quality/Insurance Claim under Gathering Team section
-                        // but belonging to Operations Team leader (kevin-martinez)
+                        // but belonging to Operations Team
                         if (isLeadSection && kpiName) {
-                            // Map of KPI names to their correct leader IDs for Lead KPIs
-                            // These override the team section-based leader detection
-                            const leadKpiToLeaderMap = {
+                            // Map of KPI names to their correct team names for Lead KPIs
+                            // These override the team section-based team detection
+                            const leadKpiToTeamMap = {
                                 // Operations Team KPIs (may appear under different sections)
-                                '% Score : Site Quality (by Auditor)': 'kevin-martinez',
-                                '% Insurance Claimed vs Reported': 'kevin-martinez',
-                                '% Addressed : Team/Section\'s I.C.A.R.E': 'kevin-martinez',
-                                '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': 'kevin-martinez',
+                                '% Score : Site Quality (by Auditor)': 'Operations Team',
+                                '% Insurance Claimed vs Reported': 'Operations Team',
+                                '% Addressed : Team/Section\'s I.C.A.R.E': 'Operations Team',
+                                '% Onboarded Tenants : All Tenants/Reserved (New + Existing)': 'Operations Team',
                                 
                                 // Audit Team KPIs
-                                '% Addressed : I.C.A.R.E (All Teams)': 'michael-johnson',
-                                '% On time & Accurate : PropMan Module': 'michael-johnson',
+                                '% Addressed : I.C.A.R.E (All Teams)': 'Audit Team',
+                                '% On time & Accurate : PropMan Module': 'Audit Team',
                                 
                                 // Technical Team Lead KPIs
-                                '# of Breakdowns : Engineering Department': 'sarah-mitchell',
-                                '% Predictive Maintenance Compliance': 'sarah-mitchell',
-                                '% Emergency Response Within SLA': 'sarah-mitchell',
+                                '# of Breakdowns : Engineering Department': 'Technical Team',
+                                '% Predictive Maintenance Compliance': 'Technical Team',
+                                '% Emergency Response Within SLA': 'Technical Team',
                                 
                                 // IT Team Lead KPIs
-                                '# of Breakdowns : IT': 'jennifer-lee'
+                                '# of Breakdowns : IT': 'IT Team'
                             };
                             
-                            // Override leader ID if KPI has a specific leader mapping
-                            if (leadKpiToLeaderMap[kpiName]) {
-                                leaderId = leadKpiToLeaderMap[kpiName];
+                            // Override team name if KPI has a specific team mapping
+                            if (leadKpiToTeamMap[kpiName]) {
+                                teamName = leadKpiToTeamMap[kpiName];
                             }
                         }
                         
-                        // For Lag KPIs, check if KPI belongs to a different leader than the team section suggests
+                        // For Lag KPIs, check if KPI belongs to a different team than the team section suggests
                         // This handles cases like Net Profit Summary under Revenue section
-                        // but belonging to Accounting Team leader (marcus-chen)
+                        // but belonging to Accounting Team
                         if (!isLeadSection && kpiName) {
-                            // Map of KPI names to their correct leader IDs for Lag KPIs
-                            // These override the team section-based leader detection
-                            const lagKpiToLeaderMap = {
+                            // Map of KPI names to their correct team names for Lag KPIs
+                            // These override the team section-based team detection
+                            const lagKpiToTeamMap = {
                                 // Accounting Team KPIs (may appear under Revenue section)
-                                'FS Target : Net Profit': 'marcus-chen',
-                                'FS Target : Total Gross Revenue': 'marcus-chen',
-                                'FS Target : Total Operating Expense': 'marcus-chen',
-                                '% Collection : All Sites': 'marcus-chen'
+                                'FS Target : Net Profit': 'Accounting Team',
+                                'FS Target : Total Gross Revenue': 'Accounting Team',
+                                'FS Target : Total Operating Expense': 'Accounting Team',
+                                '% Collection : All Sites': 'Accounting Team'
                             };
                             
-                            // Override leader ID if KPI has a specific leader mapping
-                            if (lagKpiToLeaderMap[kpiName]) {
-                                leaderId = lagKpiToLeaderMap[kpiName];
+                            // Override team name if KPI has a specific team mapping
+                            if (lagKpiToTeamMap[kpiName]) {
+                                teamName = lagKpiToTeamMap[kpiName];
                             }
                         }
                         
-                        if (leaderId) {
-                            makeStatCardClickable(card, leaderId, kpiName, isLeadSection);
+                        if (teamName) {
+                            makeStatCardClickable(card, teamName, kpiName, isLeadSection);
                         }
                     }
                 });
@@ -743,10 +839,10 @@
 
                         // If in revenue section or can find accounting team, make it clickable
                         if (isInRevenueSection || findTeamSection(card) === 'acc') {
-                            if (teamToLeaderMap['acc']) {
+                            if (teamToTeamNameMap['acc']) {
                                 // YoY Growth maps to Total Gross Revenue KPI
                                 const kpiName = 'FS Target : Total Gross Revenue';
-                                makeStatCardClickable(card, teamToLeaderMap['acc'], kpiName);
+                                makeStatCardClickable(card, teamToTeamNameMap['acc'], kpiName);
                             }
                         }
                     }
@@ -974,7 +1070,16 @@
 
         const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        function createStandardBarOptions(yAxisTitle) {
+        function createStandardBarOptions(
+            yAxisTitle,
+            {
+                valueFormatter = formatMillionsLabel,
+                zeroLabel = 'P0.00',
+                axisBounds = { min: 0, max: 100 },
+                beginAtZero = true
+            } = {}
+        ) {
+            const { min, max } = axisBounds || {};
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1008,7 +1113,7 @@
                             usePointStyle: true
                         }
                     },
-                tooltip: {
+                    tooltip: {
                     enabled: true,
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#525552',
@@ -1020,14 +1125,16 @@
                     callbacks: {
                         label: function(context) {
                             const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                            return `${context.dataset.label}: ${formatMillionsLabel(value)}`;
+                            return `${context.dataset.label}: ${valueFormatter(value)}`;
                         }
                     }
                 }
                 },
                 scales: {
                     y: {
-                        beginAtZero: true,
+                        beginAtZero,
+                        ...(typeof min === 'number' ? { min } : {}),
+                        ...(typeof max === 'number' ? { max } : {}),
                         grid: {
                             color: '#f5f5f5',
                             drawBorder: false
@@ -1038,13 +1145,13 @@
                             callback: function(value) {
                                 // Always display zero
                                 if (value === 0 || value === '0') {
-                                    return 'P0.00';
+                                    return zeroLabel;
                                 }
-                                return formatMillionsLabel(value);
+                                return valueFormatter(value);
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: yAxisTitle,
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -1093,23 +1200,28 @@
             data = [],
             dataLabelColor = '#586740',
             dataLabelOffset = 12,
-            tension = 0.35
+            tension = 0,
+            stepped = 'middle',
+            lineColor = 'rgba(88, 103, 64, 1)',
+            fillColor = 'rgba(88, 103, 64, 0.18)',
+            showFill = true
         }) {
-                return {
+            return {
                 label,
-                    type: 'line',
-                    order: 3,
+                type: 'line',
+                order: 3,
                 data: [...data],
-                    borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: 'rgba(88, 103, 64, 1)',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 5,
-                    tension,
-                    fill: false,
+                borderColor: lineColor,
+                backgroundColor: fillColor,
+                borderWidth: 2.5,
+                pointBackgroundColor: lineColor,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 5,
+                tension,
+                stepped,
+                fill: showFill ? 'origin' : false,
                 dataLabelColor,
                 dataLabelOffset
             };
@@ -1126,7 +1238,11 @@
             previousDataset = [],
             targetDataset = [],
             includeTarget = true,
-            includeBarLabels = true
+            includeBarLabels = true,
+            valueFormatter = formatMillionsLabel,
+            zeroLabel = 'P0.00',
+            axisBounds = { min: 0, max: 100 },
+            beginAtZero = true
         }) {
             const data = {
                 labels: [...labels],
@@ -1171,7 +1287,12 @@
             const config = {
             type: 'bar',
                 data,
-                options: createStandardBarOptions(yAxisTitle),
+                options: createStandardBarOptions(yAxisTitle, {
+                    valueFormatter,
+                    zeroLabel,
+                    axisBounds,
+                    beginAtZero
+                }),
                 plugins
         };
 
@@ -1396,7 +1517,7 @@
                     profitBarCanvas.style.cursor = 'pointer';
                     profitBarCanvas.addEventListener('click', function() {
                         const params = new URLSearchParams({
-                            highlightLeader: 'marcus-chen',
+                            highlightTeam: 'Accounting Team',
                             highlightSource: 'lag-lead-summ',
                             autoClickKpi: 'FS Target : Net Profit'
                         });
@@ -2115,168 +2236,11 @@
             }
         };
 
-        // Create standard bar options for thousands format charts
-        function createStandardBarOptionsThousands(yAxisTitle) {
-            return {
-                responsive: true,
-                maintainAspectRatio: false,
-                layout: {
-                    padding: {
-                        top: 50,
-                        right: 12,
-                        left: 8,
-                        bottom: 8
-                    }
-                },
-                datasets: {
-                    bar: {
-                        barThickness: 26,
-                        maxBarThickness: 26,
-                        categoryPercentage: 0.82,
-                        barPercentage: 0.9
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
-                    },
-                    tooltip: {
-                    enabled: true,
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        titleColor: '#525552',
-                        bodyColor: '#525552',
-                        borderColor: '#f0f0f0',
-                        borderWidth: 1,
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatThousandsLabel(value)}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f5f5f5',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#525552',
-                            font: { size: 11 },
-                            callback: function(value) {
-                                // Always display zero
-                                if (value === 0 || value === '0') {
-                                    return 'P0.00';
-                                }
-                                return formatThousandsLabel(value);
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: yAxisTitle,
-                            color: '#525552',
-                            font: { size: 12, weight: '500' }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#525552',
-                            font: { size: 11 }
-                        }
-                    }
-                }
-            };
-        }
-
-        // Create comparison chart structures for thousands format
-        function createComparisonChartStructuresThousands({
-            labels = MONTH_LABELS,
-            yAxisTitle,
-            barPluginId,
-            currentLabel = 'Year 2025',
-            previousLabel = 'Year 2024',
-            targetLabel = 'Current Year Target',
-            currentDataset = [],
-            previousDataset = [],
-            targetDataset = [],
-            includeTarget = true,
-            includeBarLabels = true
-        }) {
-            const data = {
-                labels: [...labels],
-            datasets: [
-                    createComparisonBarDataset({
-                        label: currentLabel,
-                    order: 1,
-                        data: currentDataset,
-                        dataLabelColor: '#96a840',
-                    backgroundColor: 'rgba(150, 168, 64, 0.85)',
-                    hoverBackgroundColor: 'rgba(150, 168, 64, 0.95)',
-                        borderColor: 'rgba(150, 168, 64, 1)'
-                    }),
-                    createComparisonBarDataset({
-                        label: previousLabel,
-                    order: 2,
-                        data: previousDataset,
-                        dataLabelColor: '#e5bb22',
-                    backgroundColor: 'rgba(229, 187, 34, 0.85)',
-                    hoverBackgroundColor: 'rgba(229, 187, 34, 0.95)',
-                        borderColor: 'rgba(229, 187, 34, 1)'
-                    })
-                ]
-            };
-
-            if (includeTarget) {
-                const initialTargetData = Array.isArray(targetDataset) && targetDataset.length
-                    ? [...targetDataset]
-                    : Array(labels.length).fill(null);
-
-                data.datasets.push(createTargetLineDataset({
-                    label: targetLabel,
-                    data: initialTargetData,
-                    dataLabelColor: '#586740',
-                    dataLabelOffset: 12,
-                    tension: 0.35
-                }));
-            }
-
-            const plugins = [];
-            if (includeBarLabels) {
-                plugins.push(createBarDataLabelsPlugin(barPluginId));
-            }
-
-            const config = {
-                type: 'bar',
-                data,
-                options: createStandardBarOptionsThousands(yAxisTitle),
-                plugins
-            };
-
-            return { data, config };
-        }
 
         const {
             data: venueChartData,
             config: venueChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Venue (P-Value) (Thousands ₱)',
             barPluginId: 'venueBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2285,7 +2249,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initVenueCharts() {
@@ -2343,7 +2310,7 @@
         const {
             data: studioChartData,
             config: studioChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Studio (P-Value) (Thousands ₱)',
             barPluginId: 'studioBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2352,7 +2319,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initStudioCharts() {
@@ -2410,7 +2380,7 @@
         const {
             data: sportsArenaChartData,
             config: sportsArenaChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Sports Arena (P-Value) (Thousands ₱)',
             barPluginId: 'sportsArenaBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2419,7 +2389,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initSportsArenaCharts() {
@@ -2477,7 +2450,7 @@
         const {
             data: parkingIncomeChartData,
             config: parkingIncomeChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Parking Income (Thousands ₱)',
             barPluginId: 'parkingIncomeBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2486,7 +2459,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initParkingIncomeCharts() {
@@ -2681,7 +2657,7 @@
         const {
             data: waterExpenseChartData,
             config: waterExpenseChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Water Expense (Thousands ₱)',
             barPluginId: 'waterExpenseBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2690,7 +2666,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initWaterExpenseCharts() {
@@ -2949,7 +2928,7 @@
         const {
             data: marketingExpenseChartData,
             config: marketingExpenseChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Marketing Expense (Thousands ₱)',
             barPluginId: 'marketingExpenseBarDataLabels',
             currentLabel: 'Year 2025',
@@ -2958,13 +2937,11 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: false
         });
-
-        // Override beginAtZero to false to allow negative values
-        if (marketingExpenseChartConfig.options && marketingExpenseChartConfig.options.scales && marketingExpenseChartConfig.options.scales.y) {
-            marketingExpenseChartConfig.options.scales.y.beginAtZero = false;
-        }
 
         async function initMarketingExpenseCharts() {
             if (!marketingExpenseChart) {
@@ -3021,7 +2998,7 @@
         const {
             data: marketingExpenseGatheringChartData,
             config: marketingExpenseGatheringChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Marketing Expense (Gathering) (Thousands ₱)',
             barPluginId: 'marketingExpenseGatheringBarDataLabels',
             currentLabel: 'Year 2025',
@@ -3030,7 +3007,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initMarketingExpenseGatheringCharts() {
@@ -3088,7 +3068,7 @@
         const {
             data: repairsMaintenanceLaborChartData,
             config: repairsMaintenanceLaborChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Repairs & Maintenance (Labor) (Thousands ₱)',
             barPluginId: 'repairsMaintenanceLaborBarDataLabels',
             currentLabel: 'Year 2025',
@@ -3097,7 +3077,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initRepairsMaintenanceLaborCharts() {
@@ -3155,7 +3138,7 @@
         const {
             data: repairsMaintenanceMaterialsChartData,
             config: repairsMaintenanceMaterialsChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Repairs & Maintenance (Materials) (Thousands ₱)',
             barPluginId: 'repairsMaintenanceMaterialsBarDataLabels',
             currentLabel: 'Year 2025',
@@ -3164,7 +3147,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initRepairsMaintenanceMaterialsCharts() {
@@ -3222,7 +3208,7 @@
         const {
             data: repairsMaintenanceLaborTechnicalChartData,
             config: repairsMaintenanceLaborTechnicalChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Repairs & Maintenance (Labor) - Technical (Thousands ₱)',
             barPluginId: 'repairsMaintenanceLaborTechnicalBarDataLabels',
             currentLabel: 'Year 2025',
@@ -3231,7 +3217,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initRepairsMaintenanceLaborTechnicalCharts() {
@@ -3289,7 +3278,7 @@
         const {
             data: repairsMaintenanceMaterialsTechnicalChartData,
             config: repairsMaintenanceMaterialsTechnicalChartConfig
-        } = createComparisonChartStructuresThousands({
+        } = createComparisonChartStructures({
             yAxisTitle: 'Repairs & Maintenance (Materials) - Technical (Thousands ₱)',
             barPluginId: 'repairsMaintenanceMaterialsTechnicalBarDataLabels',
             currentLabel: 'Year 2025',
@@ -3298,7 +3287,10 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            valueFormatter: formatThousandsLabel,
+            axisBounds: { min: 0, max: 100000 },
+            beginAtZero: true
         });
 
         async function initRepairsMaintenanceMaterialsTechnicalCharts() {
@@ -3501,15 +3493,16 @@
                         order: 3,
                         data: [],
                         borderColor: 'rgba(88, 103, 64, 1)',
-                        backgroundColor: 'rgba(88, 103, 64, 1)',
+                        backgroundColor: 'rgba(88, 103, 64, 0.18)',
                         borderWidth: 2.5,
                         pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
                         pointRadius: 4,
                         pointHoverRadius: 5,
-                        tension: 0.35,
-                        fill: false,
+                        tension: 0,
+                        stepped: 'middle',
+                        fill: 'origin',
                         dataLabelColor: '#586740',
                         dataLabelOffset: 12,
                         dataLabelFormatter: (value) => formatter(value)
@@ -3596,7 +3589,7 @@
                                 }
                             },
                             title: {
-                                display: true,
+                            display: false,
                                 text: yAxisTitle,
                                 color: '#525552',
                                 font: { size: 12, weight: '500' }
@@ -3835,15 +3828,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -3923,7 +3917,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4002,15 +3996,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -4090,7 +4085,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4169,15 +4164,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -4257,7 +4253,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4336,15 +4332,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -4424,7 +4421,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4503,15 +4500,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -4591,7 +4589,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4670,15 +4668,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatUnitsLabel(value)
@@ -4758,7 +4757,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Foot Traffic (Visitors)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -4986,7 +4985,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: yAxisTitle,
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -5043,15 +5042,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12
                 }
@@ -5091,15 +5091,16 @@
                     order: 3,
                     data: [],
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5182,15 +5183,16 @@
                     order: 3,
                     data: fbFollowersData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5272,7 +5274,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Followers Growth (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -5351,15 +5353,16 @@
                     order: 3,
                     data: icareData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5441,7 +5444,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Compliance Rate (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -5520,15 +5523,16 @@
                     order: 3,
                     data: siteQualityData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5610,7 +5614,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Quality Compliance (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -5689,15 +5693,16 @@
                     order: 3,
                     data: insuranceClaimData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5779,7 +5784,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Claim Resolution (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -5858,15 +5863,16 @@
                     order: 3,
                     data: regularEventsData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -5948,7 +5954,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Plan Coverage (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -6027,15 +6033,16 @@
                     order: 3,
                     data: cultureDevData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -6117,7 +6124,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Activity Completion (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -6196,15 +6203,16 @@
                     order: 3,
                     data: smdProjectsData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -6286,7 +6294,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Project Delivery (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -6365,15 +6373,16 @@
                     order: 3,
                     data: budgetProjectsData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -6455,7 +6464,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Budget Utilization (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -6534,15 +6543,16 @@
                     order: 3,
                     data: teamTargetsData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -6624,7 +6634,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Target Completion (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -6703,15 +6713,16 @@
                     order: 3,
                     data: breakdownsData.target,
                     borderColor: 'rgba(88, 103, 64, 1)',
-                    backgroundColor: 'rgba(88, 103, 64, 1)',
+                    backgroundColor: 'rgba(88, 103, 64, 0.18)',
                     borderWidth: 2.5,
                     pointBackgroundColor: 'rgba(88, 103, 64, 1)',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 5,
-                    tension: 0.35,
-                    fill: false,
+                    tension: 0,
+                    stepped: 'middle',
+                    fill: 'origin',
                     dataLabelColor: '#586740',
                     dataLabelOffset: 12,
                     dataLabelFormatter: (value) => formatPercentage(Number(value) || 0)
@@ -6793,7 +6804,7 @@
                             }
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Breakdowns Reported (%)',
                             color: '#525552',
                             font: { size: 12, weight: '500' }
@@ -7531,6 +7542,31 @@
             }, 1500);
         }
 
+        function highlightCarouselCard(teamKey) {
+            if (!teamKey) return;
+            const targetCard = document.querySelector(`.leader-card[data-team="${teamKey}"]`);
+            if (!targetCard) return;
+
+            targetCard.classList.add('carousel-card-highlight');
+            setTimeout(() => {
+                targetCard.classList.remove('carousel-card-highlight');
+            }, 1500);
+        }
+
+        function scrollToCarouselAndHighlight(teamKey) {
+            if (!teamKey) return;
+            const carouselContainer = document.querySelector('.stats-carousel-container');
+            if (carouselContainer) {
+                window.scrollTo({
+                    top: carouselContainer.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+                setTimeout(() => highlightCarouselCard(teamKey), 400);
+                return;
+            }
+            highlightCarouselCard(teamKey);
+        }
+
         function focusTeamSection(teamKey) {
             const config = teamSectionConfig[teamKey];
             if (!config) return;
@@ -7638,6 +7674,47 @@
             updateTeamCardState();
         }
 
+        function initializeTeamSectionHeaderLinks() {
+            const interactiveSections = document.querySelectorAll('.team-section[data-team-target]');
+            if (!interactiveSections.length) {
+                return;
+            }
+
+            interactiveSections.forEach(section => {
+                section.classList.add('team-section-linkable');
+
+                if (!section.hasAttribute('tabindex')) {
+                    section.setAttribute('tabindex', '0');
+                }
+
+                if (!section.hasAttribute('role')) {
+                    section.setAttribute('role', 'button');
+                }
+
+                const handleActivation = () => {
+                    const teamKey = section.dataset.teamTarget;
+                    if (!teamKey) return;
+
+                    const requiredView = section.dataset.companyViewTarget;
+                    if (requiredView && requiredView !== currentCompanyView) {
+                        toggleCompanyView(requiredView);
+                        setTimeout(() => scrollToCarouselAndHighlight(teamKey), 250);
+                        return;
+                    }
+
+                    scrollToCarouselAndHighlight(teamKey);
+                };
+
+                section.addEventListener('click', handleActivation);
+                section.addEventListener('keydown', event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleActivation();
+                    }
+                });
+            });
+        }
+
         // Function to toggle between Company Lag and Company Lead
         function toggleCompanyView(viewType) {
             const lagElements = document.querySelectorAll('[data-company-type="lag"]');
@@ -7715,13 +7792,18 @@
             toggleCompanyView(initialView);
         }
 
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeCompanyToggle);
-        } else {
-            // DOM is already ready
+        function initializeCompanyNavigationFeatures() {
             initializeCompanyToggle();
             initializeTeamCardNavigation();
+            initializeTeamSectionHeaderLinks();
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCompanyNavigationFeatures);
+        } else {
+            // DOM is already ready
+            initializeCompanyNavigationFeatures();
         }
 
 
@@ -8673,7 +8755,7 @@
                 const teamPercentages = {};
 
                 // Get all carousel stat cards
-                const carouselCards = document.querySelectorAll('.stat-card-carousel[data-team]');
+                const carouselCards = document.querySelectorAll('.leader-card[data-team]');
                 
                 // Get team breakdown container (from tl-scoring.html)
                 const teamBreakdown = document.querySelector('.team-breakdown');
