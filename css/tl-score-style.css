@@ -225,7 +225,7 @@ body {
 }
 
 .nav-wrapper {
-    width: 1500px;
+    width: 1600px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1065,6 +1065,10 @@ body {
     position: relative;
 }
 
+.performance-report-card.doughnut-mode {
+    overflow: visible;
+}
+
 .performance-report-card::after {
     content: '';
     position: absolute;
@@ -1135,6 +1139,25 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.chart-container.doughnut-mode {
+    height: auto;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 10px;
+}
+
+.chart-container.doughnut-mode .kra-weight-donut {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-container.doughnut-mode .kra-weight-donut svg {
+    width: min(360px, 100%);
+    height: auto;
 }
 
 .chart-container canvas {
