@@ -339,40 +339,57 @@ class GoogleSheetsCMS {
             const num = idx + 1;
 
             try {
-                // Try data-cms-selector attribute first
-                let el = document.querySelector(`[data-cms-selector="${selector}"]`);
-                if (!el) el = document.querySelector(selector);
-                
-                if (!el) {
-                    console.warn(`${num}. ❌ Not found: ${selector}`);
+                const trimmedSelector = selector ? selector.trim() : '';
+                if (!trimmedSelector) {
+                    console.warn(`${num}. ⚠️  Missing selector – skipped row`, item);
                     failed++;
                     return;
                 }
 
-                switch (type.toLowerCase()) {
+                // Try data-cms-selector attribute first
+                let el = document.querySelector(`[data-cms-selector="${trimmedSelector}"]`);
+                if (!el) el = document.querySelector(trimmedSelector);
+                
+                if (!el) {
+                    console.warn(`${num}. ❌ Not found: ${trimmedSelector}`);
+                    failed++;
+                    return;
+                }
+
+                let normalizedType = type ? type.trim().toLowerCase() : '';
+                if (!normalizedType && el.dataset?.cmsType) {
+                    normalizedType = el.dataset.cmsType.trim().toLowerCase();
+                    console.warn(`${num}. ℹ️  Missing type in sheet for ${trimmedSelector}; using data-cms-type="${normalizedType}"`);
+                }
+                if (!normalizedType) {
+                    normalizedType = 'text';
+                    console.warn(`${num}. ℹ️  Missing type for ${trimmedSelector}; defaulting to "text"`);
+                }
+
+                switch (normalizedType) {
                     case 'image':
                         el.setAttribute(attribute || 'src', value);
                         if (alt) el.setAttribute('alt', alt);
-                        console.log(`${num}. ✅ Image: ${selector}`);
+                        console.log(`${num}. ✅ Image: ${trimmedSelector}`);
                         break;
                     case 'text':
                         el.textContent = value;
-                        console.log(`${num}. ✅ Text: ${selector}`);
+                        console.log(`${num}. ✅ Text: ${trimmedSelector}`);
                         break;
                     case 'html':
                         el.innerHTML = value;
-                        console.log(`${num}. ✅ HTML: ${selector}`);
+                        console.log(`${num}. ✅ HTML: ${trimmedSelector}`);
                         break;
                     case 'attribute':
                         el.setAttribute(attribute || 'data-value', value);
-                        console.log(`${num}. ✅ Attr: ${selector}`);
+                        console.log(`${num}. ✅ Attr: ${trimmedSelector}`);
                         break;
                     case 'background':
                         el.style.backgroundImage = `url(${value})`;
-                        console.log(`${num}. ✅ BG: ${selector}`);
+                        console.log(`${num}. ✅ BG: ${trimmedSelector}`);
                         break;
                     default:
-                        console.warn(`${num}. ⚠️  Unknown type "${type}"`);
+                        console.warn(`${num}. ⚠️  Unknown type "${normalizedType}" on ${trimmedSelector}`);
                         failed++;
                         return;
                 }
