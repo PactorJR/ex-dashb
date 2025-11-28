@@ -19,7 +19,7 @@
 
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container">
+        <div class="container-navbar">
             <div class="nav-wrapper">
                 <div class="logo">
                     <h2>Executive Dashboard<span></span></h2>
@@ -29,16 +29,18 @@
                     <li><a href="lag-lead-summ.html">Critical Lag & Lead</a></li>
                     <li><a href="tl-scoring.html">Scoreboard</a></li>
                 </ul>
-                <div class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
             </div>
         </div>
     </nav>
 
     <main class="main-content">
+
+        <div id="scrollToTopBtn" class="scroll-top-btn" onclick="scrollToTop()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15l-6-6-6 6"/>
+            </svg>
+        </div>
+        
         <!-- Hero Section -->
         <section class="hero dashboard-section" id="home">
             <div class="hero-image">
@@ -118,9 +120,21 @@
                         <div class="graphic-progress" data-cms-selector=".graphic-card:nth-child(4) .graphic-progress" data-cms-type="text">→ LotusOS ≥85% (3yr)</div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Current Achievements Section -->
+        <section class="current-achievements-section dashboard-section" id="current-achievements">
+    
+            <!-- Overlay Layer -->
+            <div class="current-achievements-overlay"></div>
+        
+            <div class="container" style="position: relative; z-index: 10;">
                 <div class="current-achievements fade-in">
                     <h3 class="achievements-title" data-cms-selector=".achievements-title" data-cms-type="text">Current Achievements Progressing Toward Our Plans</h3>
+                    
                     <div class="achievements-grid">
+                        <!-- Item 1 -->
                         <div class="achievement-item">
                             <div class="achievement-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -136,6 +150,8 @@
                                 <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(1) .achievement-content p:nth-of-type(3) span" data-cms-type="text">100+ sites operated</span></p>
                             </div>
                         </div>
+        
+                        <!-- Item 2 -->
                         <div class="achievement-item">
                             <div class="achievement-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -151,6 +167,8 @@
                                 <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(2) .achievement-content p:nth-of-type(3) span" data-cms-type="text">≥30% Business Beginners</span></p>
                             </div>
                         </div>
+        
+                        <!-- Item 3 -->
                         <div class="achievement-item">
                             <div class="achievement-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -164,6 +182,8 @@
                                 <p><strong>10-Year Vision:</strong> <span data-cms-selector=".achievement-item:nth-child(3) .achievement-content p:nth-of-type(3) span" data-cms-type="text">≥70% Internal Managers</span></p>
                             </div>
                         </div>
+        
+                        <!-- Item 4 -->
                         <div class="achievement-item">
                             <div class="achievement-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -185,7 +205,6 @@
 
         <!-- TenYear Plan Section -->
         <section class="ten-year-plan dashboard-section" id="ten-year-plan">
-            <div class="ten-year-plan-overlay"></div>
             <div class="container">
                 <div class="section-header ten-year fade-in">
                     <h2 data-cms-selector="#ten-year-plan .section-header h2" data-cms-type="text">Our 10-Year Vision</h2>
@@ -193,26 +212,25 @@
                 </div>
                 <div class="plan-content">
                     <div class="plan-image-wrapper slide-left">
-                        <div class="plan-image">
-                            <img src="files/images/vision.png" alt="Our Vision" data-cms-selector=".plan-image img" data-cms-type="image">
-                            <div class="experience-badge">
-                                <div class="experience-number">10</div>
-                                <div class="experience-text">YEAR<br>VISION</div>
-                            </div>
-                        </div>
                         <div class="projects-badge">
                             <div class="projects-number">100+</div>
                             <div class="projects-text">SITES TARGET</div>
                         </div>
+                        <div class="plan-image-container">
+                            <div class="plan-image">
+                                <img src="files/images/vision.png" alt="Our Vision" data-cms-selector=".plan-image img" data-cms-type="image">
+                            </div>
+                        </div>
+                        
                     </div>
                     <div class="slide-right">
                         <h3 data-cms-selector="#ten-year-plan .plan-content h3" data-cms-type="text">Empowering Communities Through LIVE. WORK. PLAY.</h3>
-                        <p data-cms-selector="#ten-year-plan .plan-content > p" data-cms-type="text">Our mission is to transform communities into places of Fulfillment & Joy by developing properties that Gather & Grow communities. We operate through FEC anchors (Playspacio), Social Space, Kidzspace, and the Handaan ecosystem (H.café, Bakery by Handaan), running on LotusDŌ + LeadzZen platforms.</p>
+                        <p data-cms-selector="#ten-year-plan .plan-content > p" data-cms-type="text">Transforming communities into places of Fulfillment & Joy through properties that Gather & Grow communities via FEC anchors, Social Space, Kidzspace, and the Handaan ecosystem, powered by LotusDŌ + LeadzZen platforms.</p>
                         
-                        <div class="plan-features">
-                            <div class="feature-item">
+                        <div class="plan-features-summary">
+                            <div class="feature-item-summary">
                                 <div class="feature-icon">
-                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         <circle cx="9" cy="7" r="4" stroke-width="2"/>
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -224,9 +242,9 @@
                                 </div>
                             </div>
                             
-                            <div class="feature-item">
+                            <div class="feature-item-summary">
                                 <div class="feature-icon">
-                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </div>
@@ -236,21 +254,21 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Features Grid - 2x2 Layout -->
-                <div class="features-grid">
-                    <!-- Feature Block 1 -->
+                        
+                        <!-- Features Grid - 2x2 Layout -->
+                        <div class="features-grid features-grid-right">
+                            <!-- Feature Block 1 -->
                     <div class="feature-block fade-in">
-                        <div class="feature-icon-block">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="3" y1="9" x2="21" y2="9"></line>
-                                <line x1="9" y1="21" x2="9" y2="9"></line>
-                            </svg>
+                        <div class="feature-header">
+                            <div class="feature-icon-block">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(1) .feature-title" data-cms-type="text">100+ Sites Operated</h3>
                         </div>
-                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(1) .feature-title" data-cms-type="text">100+ Sites Operated</h3>
                         <p class="feature-description" data-cms-selector=".feature-block:nth-child(1) .feature-description" data-cms-type="text">100+ sites operated as Boutique LIVE. WORK. PLAY projects</p>
                         <div class="feature-tags">
                             <span class="feature-tag" data-cms-selector=".feature-block:nth-child(1) .feature-tag:nth-child(1)" data-cms-type="text">Scalable</span>
@@ -260,14 +278,16 @@
 
                     <!-- Feature Block 2 -->
                     <div class="feature-block fade-in" style="transition-delay: 0.1s;">
-                        <div class="feature-icon-block">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
-                            </svg>
+                        <div class="feature-header">
+                            <div class="feature-icon-block">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(2) .feature-title" data-cms-type="text">Business Beginners Focus</h3>
                         </div>
-                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(2) .feature-title" data-cms-type="text">Business Beginners Focus</h3>
                         <p class="feature-description" data-cms-selector=".feature-block:nth-child(2) .feature-description" data-cms-type="text">≥30% Business Beginners with ≥70% weekly utilization</p>
                         <div class="feature-tags">
                             <span class="feature-tag" data-cms-selector=".feature-block:nth-child(2) .feature-tag:nth-child(1)" data-cms-type="text">Inclusive</span>
@@ -277,12 +297,14 @@
 
                     <!-- Feature Block 3 -->
                     <div class="feature-block fade-in" style="transition-delay: 0.2s;">
-                        <div class="feature-icon-block">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
+                        <div class="feature-header">
+                            <div class="feature-icon-block">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(3) .feature-title" data-cms-type="text">Internal Leadership</h3>
                         </div>
-                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(3) .feature-title" data-cms-type="text">Internal Leadership</h3>
                         <p class="feature-description" data-cms-selector=".feature-block:nth-child(3) .feature-description" data-cms-type="text">≥70% Internal Managers with ≥80% Founder/Architect/Creative roles</p>
                         <div class="feature-tags">
                             <span class="feature-tag" data-cms-selector=".feature-block:nth-child(3) .feature-tag:nth-child(1)" data-cms-type="text">Empowering</span>
@@ -292,13 +314,15 @@
 
                     <!-- Feature Block 4 -->
                     <div class="feature-block fade-in" style="transition-delay: 0.3s;">
-                        <div class="feature-icon-block">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="2" x2="12" y2="22"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
+                        <div class="feature-header">
+                            <div class="feature-icon-block">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="2" x2="12" y2="22"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(4) .feature-title" data-cms-type="text">Proven Marketing Strategy</h3>
                         </div>
-                        <h3 class="feature-title" data-cms-selector=".feature-block:nth-child(4) .feature-title" data-cms-type="text">Proven Marketing Strategy</h3>
                         <p class="feature-description" data-cms-selector=".feature-block:nth-child(4) .feature-description" data-cms-type="text">Proven Marketing Strategy across Community, Target, and LotusDŌ platforms</p>
                         <div class="feature-tags">
                             <span class="feature-tag" data-cms-selector=".feature-block:nth-child(4) .feature-tag:nth-child(1)" data-cms-type="text">Strategic</span>
@@ -311,6 +335,10 @@
 
         <!-- Three Year Plan Section -->
         <section class="three-year-plan dashboard-section" id="three-year-plan">
+
+            <!-- Added the overlay div to match the CSS -->
+            <div class="three-year-plan-overlay"></div>
+            
             <div class="section-header fade-in">
                 <h2 data-cms-selector="#three-year-plan .section-header h2" data-cms-type="text">Our Three Year Plan</h2>
                 <p data-cms-selector="#three-year-plan .section-header p" data-cms-type="text">Strategic goals and metrics to drive our growth</p>
@@ -327,11 +355,9 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
+                        <h3 class="service-title" data-cms-selector=".service-card:nth-child(1) .service-title" data-cms-type="text">Advocates</h3>
                         <span class="service-tag" data-cms-selector=".service-card:nth-child(1) .service-tag" data-cms-type="text">SALES</span>
                     </div>
-                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(1) .service-title" data-cms-type="text">Advocates</h3>
-                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(1) .service-subtitle" data-cms-type="text">Loved Brand</p>
-                    <p class="service-description" data-cms-selector=".service-card:nth-child(1) .service-description" data-cms-type="text">Boutique LIVE–WORK–PLAY opportunity platform loved by families, top-of-mind for business beginners & local talents.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
                             <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
@@ -341,8 +367,6 @@
                                 <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(3)" data-cms-type="text">9–12 FEC sites</span></li>
                                 <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(4)" data-cms-type="text">12–18 Bakery kiosks</span></li>
                                 <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(5)" data-cms-type="text">4–6 Handaan/H Café units</span></li>
-                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(6)" data-cms-type="text">Beginner share ≥25%/site</span></li>
-                                <li><span data-cms-selector=".service-card:nth-child(1) .metrics-group:nth-child(1) .metrics-list li:nth-child(7)" data-cms-type="text">Community NPS ≥58</span></li>
                             </ul>
                         </div>
                         <div class="metrics-group">
@@ -364,11 +388,9 @@
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
+                        <h3 class="service-title" data-cms-selector=".service-card:nth-child(2) .service-title" data-cms-type="text">Innovator</h3>
                         <span class="service-tag" data-cms-selector=".service-card:nth-child(2) .service-tag" data-cms-type="text">PROFIT</span>
                     </div>
-                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(2) .service-title" data-cms-type="text">Innovator</h3>
-                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(2) .service-subtitle" data-cms-type="text">Living Centers</p>
-                    <p class="service-description" data-cms-selector=".service-card:nth-child(2) .service-description" data-cms-type="text">Distinct concepts & experiences make our Living Centers the home of community life.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
                             <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(2) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
@@ -398,11 +420,9 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
+                        <h3 class="service-title" data-cms-selector=".service-card:nth-child(3) .service-title" data-cms-type="text">Sages</h3>
                         <span class="service-tag" data-cms-selector=".service-card:nth-child(3) .service-tag" data-cms-type="text">PEOPLE</span>
                     </div>
-                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(3) .service-title" data-cms-type="text">Sages</h3>
-                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(3) .service-subtitle" data-cms-type="text">Everlasting Team</p>
-                    <p class="service-description" data-cms-selector=".service-card:nth-child(3) .service-description" data-cms-type="text">A culture that creates legends and changemakers, leaders who grow leaders.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
                             <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(3) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
@@ -431,11 +451,9 @@
                                 <line x1="9" y1="21" x2="9" y2="9"></line>
                             </svg>
                         </div>
+                        <h3 class="service-title" data-cms-selector=".service-card:nth-child(4) .service-title" data-cms-type="text">Essentialists</h3>
                         <span class="service-tag" data-cms-selector=".service-card:nth-child(4) .service-tag" data-cms-type="text">PROCESS</span>
                     </div>
-                    <h3 class="service-title" data-cms-selector=".service-card:nth-child(4) .service-title" data-cms-type="text">Essentialists</h3>
-                    <p class="service-subtitle" data-cms-selector=".service-card:nth-child(4) .service-subtitle" data-cms-type="text">Empowering System</p>
-                    <p class="service-description" data-cms-selector=".service-card:nth-child(4) .service-description" data-cms-type="text">A process that empowers the way— organize, simplify, and set the standard.</p>
                     <div class="service-metrics">
                         <div class="metrics-group">
                             <h4 class="metrics-heading" data-cms-selector=".service-card:nth-child(4) .metrics-group:nth-child(1) .metrics-heading" data-cms-type="text">3 Year Metrics (Lag)</h4>
@@ -459,6 +477,8 @@
                 </div>
             </div>
         </section>
+            
+            
     </main>
 </body>
 </html>

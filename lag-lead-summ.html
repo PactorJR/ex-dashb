@@ -12,7 +12,7 @@
 
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="navbar-container">
+        <div class="container-navbar">
             <div class="nav-wrapper">
                 <div class="logo">
                     <h2>Executive Dashboard<span></span></h2>
@@ -22,26 +22,19 @@
                     <li><a href="lag-lead-summ.html" class="active">Critical Lag & Lead</a></li>
                     <li><a href="tl-scoring.html">Scoreboard</a></li>
                 </ul>
-                <div class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
             </div>
         </div>
     </nav>
-    
-    <!-- Floating Scroll to Top Button Container (Bottom Right) -->
-    <div class="top-btn-container" id="topBtnContainer">
-        <button class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-        </button>
-    </div>
 
     <!-- Main Content -->
     <main class="main-content">
+
+        <div id="scrollToTopBtn" class="scroll-top-btn" onclick="scrollToTop()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15l-6-6-6 6"/>
+            </svg>
+        </div>
+        
         <!-- Top Stats Carousel -->
         <div class="leaders-section">
             <div class="leaders-grid" id="statsCarousel">
@@ -135,7 +128,7 @@
 
             <!-- Critical Numbers Summary Card - Company Lead -->
             <div class="summary-card-title-outside">
-                <h3>Critical Numbers Summary</h3>
+                <h3>Occupancy Rate (Unit) Summary</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -451,8 +444,8 @@
             </div>
 
             <!-- Number of Pax per Event Section Header -->
-            <div class="team-section gath" style="grid-column: 1 / -1; margin-top: 40px;">
-                <h2>NUMBER OF PAX PER EVENT</h2>
+            <div class="team-section" style="grid-column: 1 / -1; border-bottom: 2px solid #81f31d; margin: 40px 0 10px;">
+                <h2 style="color: #81f31d;">Number of PAX per event</h2>
             </div>
 
             <!-- Lotus Mall Pax Summary Card -->

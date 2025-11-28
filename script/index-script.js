@@ -89,14 +89,17 @@
         });
 
         // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar');
+                if (mainContent.scrollTop > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
 
         // Animate progress bars when visible
         const progressObserver = new IntersectionObserver((entries) => {
@@ -116,6 +119,51 @@
 
         document.querySelectorAll('.stat-card').forEach(card => {
             progressObserver.observe(card);
+        });
+
+        // Scroll to Top Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainContent = document.querySelector('.main-content');
+            const scrollTopBtn = document.getElementById('scrollToTopBtn');
+        
+            if (mainContent && scrollTopBtn) {
+                
+                // Function to get the current scroll position from either the mainContent div OR the window
+                // This handles both the mobile layout (where .main-content scrolls) and desktop (where window/body scrolls)
+                const getScrollPosition = () => {
+                    return mainContent.scrollTop || window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                };
+        
+                // Logic to Show/Hide button
+                const toggleVisibility = () => {
+                    if (getScrollPosition() > 300) {
+                        scrollTopBtn.classList.add('visible');
+                    } else {
+                        scrollTopBtn.classList.remove('visible');
+                    }
+                };
+        
+                // 1. Check immediately on page load
+                toggleVisibility();
+        
+                // 2. Check continuously while scrolling
+                // Attach listener to BOTH the container and the window to catch all scroll events
+                mainContent.addEventListener('scroll', toggleVisibility);
+                window.addEventListener('scroll', toggleVisibility);
+        
+                // 3. Scroll to Top Action
+                scrollTopBtn.addEventListener('click', () => {
+                    // Attempt to scroll both the element and the window to cover all bases
+                    mainContent.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
         });
 
         // Tab Switching Functionality
@@ -177,4 +225,76 @@
             animatedElements.forEach(el => observer.observe(el));
         });
 
+        // Scroll Lock Functionality
+        (function() {
+            let isScrollLocked = false;
+            let scrollLockTimeout = null;
+            const scrollLockDuration = 1500; // Duration in milliseconds (1 second)
+            const mainContent = document.querySelector('.main-content');
+            
+            if (!mainContent) return;
+
+            let lastScrollTop = mainContent.scrollTop;
+            let scrollDirection = 0;
+
+            function lockScroll() {
+                isScrollLocked = true;
+                
+                // Clear existing timeout if any
+                if (scrollLockTimeout) {
+                    clearTimeout(scrollLockTimeout);
+                }
+                
+                // Unlock after duration
+                scrollLockTimeout = setTimeout(() => {
+                    isScrollLocked = false;
+                }, scrollLockDuration);
+            }
+
+            function handleScroll(e) {
+                if (isScrollLocked) {
+                    // Prevent scrolling during lock period
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+
+                const currentScrollTop = mainContent.scrollTop;
+                const scrollDelta = currentScrollTop - lastScrollTop;
+                
+                // Only lock if there's actual scroll movement
+                if (Math.abs(scrollDelta) > 5) {
+                    lockScroll();
+                }
+                
+                lastScrollTop = currentScrollTop;
+            }
+
+            // Listen to scroll events on main-content
+            mainContent.addEventListener('scroll', handleScroll, { passive: false });
+            
+            // Also handle wheel events to prevent rapid scrolling
+            mainContent.addEventListener('wheel', function(e) {
+                if (isScrollLocked) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { passive: false });
+
+            // Handle touch events for mobile
+            let touchStartY = 0;
+            mainContent.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            mainContent.addEventListener('touchmove', function(e) {
+                if (isScrollLocked) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { passive: false });
+        })();
+
+        
 

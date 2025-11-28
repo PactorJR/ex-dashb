@@ -1513,17 +1513,7 @@
                         hideChartLoading('profitBarChart');
                     }));
                     
-                    // Make the chart clickable to navigate to Net Profit KPI
-                    profitBarCanvas.style.cursor = 'pointer';
-                    profitBarCanvas.addEventListener('click', function() {
-                        const params = new URLSearchParams({
-                            highlightTeam: 'Accounting Team',
-                            highlightSource: 'lag-lead-summ',
-                            autoClickKpi: 'FS Target : Net Profit'
-                        });
-                        window.location.href = `tl-scoring.html?${params.toString()}`;
-                    });
-                            } else {
+                    } else {
                     console.warn('Canvas element with id "profitBarChart" not found');
                 }
 
@@ -1792,7 +1782,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: [],
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         let dashboardDataPromise = null;
@@ -1890,7 +1881,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: [],
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initRevenueCharts() {
@@ -2050,7 +2042,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         const COLLECTION_SUMMARY_METRICS = {
@@ -2076,7 +2069,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initRentalIncomeCharts() {
@@ -2251,7 +2245,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -2321,7 +2315,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -2391,7 +2385,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -2461,7 +2455,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -2529,7 +2523,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initElectricityExpenseCharts() {
@@ -2598,7 +2593,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initTotalOperatingExpenseCharts() {
@@ -2668,7 +2664,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -2736,7 +2732,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initSecurityExpenseCharts() {
@@ -2803,7 +2800,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initAgencyExpenseCharts() {
@@ -2870,7 +2868,8 @@
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
-            includeBarLabels: false
+            includeBarLabels: false,
+            axisBounds: {}
         });
 
         async function initSalaryExpenseCharts() {
@@ -2939,7 +2938,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: false
         });
 
@@ -3009,7 +3008,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -3079,7 +3078,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -3149,7 +3148,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -3219,7 +3218,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -3289,7 +3288,7 @@
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
             valueFormatter: formatThousandsLabel,
-            axisBounds: { min: 0, max: 100000 },
+            axisBounds: {},
             beginAtZero: true
         });
 
@@ -3359,102 +3358,6 @@
             });
         };
 
-        // Custom plugin for units format chart data labels (supports custom formatters)
-        const unitsDataLabelsPlugin = {
-            id: 'unitsDataLabels',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                const chartArea = chart.chartArea;
-                
-                ctx.save();
-                ctx.font = 'bold 10px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                
-                const labelOffset = 4; // Distance above bar top
-                
-                // Draw labels directly above each bar
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta || meta.type !== 'bar') {
-                        return;
-                    }
-                    meta.data.forEach((bar, index) => {
-                        const data = dataset.data[index];
-                        if (data !== null && data !== undefined && data > 0 && typeof bar.height === 'number' && bar.height > 0) {
-                            const customFormatter = dataset.dataLabelFormatter;
-                            const value = typeof customFormatter === 'function'
-                                ? customFormatter(data, index, dataset)
-                                : formatUnitsLabel(data);
-                            if (value) {
-                                // Position label directly above this bar
-                                const barTop = bar.y - bar.height;
-                                let labelY = barTop - labelOffset;
-                                
-                                // Ensure label is within chart area (with some margin)
-                                const minY = chartArea.top + 5;
-                                if (labelY < minY) {
-                                    labelY = minY;
-                                }
-                                
-                                // Only draw if within chart bounds
-                                if (bar.x >= chartArea.left && bar.x <= chartArea.right && 
-                                    labelY >= chartArea.top && labelY <= chartArea.bottom) {
-                                    const labelColor = resolveDataLabelColor(dataset.dataLabelColor || dataset.backgroundColor, index);
-                                    ctx.fillStyle = labelColor;
-                                    ctx.fillText(value, bar.x, labelY);
-                                }
-                            }
-                        }
-                    });
-                });
-                
-                ctx.restore();
-            }
-        };
-
-        // Custom plugin for units format line chart data labels (supports custom formatters)
-        const unitsLineDataLabelsPlugin = {
-            id: 'unitsLineDataLabels',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                ctx.font = '11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta || meta.type !== 'line') {
-                        return;
-                    }
-
-                    // Only show label for one point (e.g., first month) to avoid clutter
-                    const point = meta.data[0];
-                    if (!point) {
-                        return;
-                    }
-                    const data = dataset.data[0];
-                    if (data === null || data === undefined) {
-                        return;
-                    }
-
-                    const customFormatter = dataset.dataLabelFormatter;
-                    const label = typeof customFormatter === 'function'
-                        ? customFormatter(data, 0, dataset)
-                        : formatUnitsLabel(data);
-                    if (!label) {
-                        return;
-                    }
-                    const color = resolveDataLabelColor(dataset.dataLabelColor || dataset.borderColor, 0);
-                    const offset = dataset.dataLabelOffset || 12;
-                    ctx.fillStyle = color;
-                    ctx.fillText(label, point.x, point.y - offset);
-                });
-
-                ctx.restore();
-            }
-        };
 
         // Reusable function to create occupancy rate chart data and config
         function createOccupancyRateChartStructure(targetLabel, yAxisTitle, formatter = formatUnitsLabel) {
@@ -3935,10 +3838,7 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
+            
         };
 
         let lotusFootTrafficChart = null;
@@ -4103,10 +4003,7 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
+            
         };
 
         let portalFootTrafficChart = null;
@@ -4271,10 +4168,7 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
+            
         };
 
         let stadiumFootTrafficChart = null;
@@ -4439,10 +4333,7 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
+            
         };
 
         let yspacioFootTrafficChart = null;
@@ -4607,10 +4498,7 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
+            
         };
 
         let yspacioAlapanFootTrafficChart = null;
@@ -4775,10 +4663,6 @@
                     }
                 }
             },
-            plugins: [
-                unitsDataLabelsPlugin,
-                unitsLineDataLabelsPlugin
-            ]
         };
 
         let luminaFootTrafficChart = null;
@@ -7675,43 +7559,80 @@
         }
 
         function initializeTeamSectionHeaderLinks() {
-            const interactiveSections = document.querySelectorAll('.team-section[data-team-target]');
-            if (!interactiveSections.length) {
-                return;
-            }
+            // 1. Map section classes to the exact Team Names used in tl-scoring.html
+            const teamMap = {
+                'acc': 'Accounting Team',
+                'tech': 'Technical Team',
+                'lrad': 'LRAD Team',
+                'qual': 'Quality Team',
+                'dc': 'DC Team',
+                'it': 'IT Team',
+                'opp': 'Opportunity Team',
+                'marc': 'Marcom Team',
+                'aud': 'Audit Team',
+                'gath': 'Gathering Team',
+                'oper': 'Operations Team'
+            };
 
-            interactiveSections.forEach(section => {
-                section.classList.add('team-section-linkable');
+            // 2. Select all team sections in the document
+            const sections = document.querySelectorAll('.team-section');
 
-                if (!section.hasAttribute('tabindex')) {
-                    section.setAttribute('tabindex', '0');
+            sections.forEach(section => {
+                // 3. Determine the team name based on the section's class list
+                let teamName = null;
+                const classList = Array.from(section.classList);
+                
+                for (const cls of classList) {
+                    if (teamMap[cls]) {
+                        teamName = teamMap[cls];
+                        break;
+                    }
                 }
 
-                if (!section.hasAttribute('role')) {
-                    section.setAttribute('role', 'button');
+                // If this section doesn't belong to a mapped team, skip it
+                if (!teamName) return;
+
+                // 4. Find the header element to make clickable
+                // Targets the specific header container or the heading tag itself
+                const header = section.querySelector('.section-header, h2, h3');
+
+                if (header) {
+                    // Apply visual cues for interactivity
+                    header.classList.add('team-section-linkable');
+                    header.style.cursor = 'pointer';
+                    header.setAttribute('title', `Go to ${teamName} Scoreboard`);
+                    
+                    if (!header.hasAttribute('tabindex')) {
+                        header.setAttribute('tabindex', '0');
+                    }
+                    if (!header.hasAttribute('role')) {
+                        header.setAttribute('role', 'link');
+                    }
+
+                    // 5. Define the navigation logic
+                    const handleNavigation = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Build URL params: matches the logic in 'makeStatCardClickable'
+                        const params = new URLSearchParams({
+                            highlightTeam: teamName,
+                            highlightSource: 'lag-lead-summ'
+                        });
+
+                        // Navigate to tl-scoring.html with the team highlighted
+                        // We intentionally do NOT include 'autoClickKpi' so it won't pop up a specific metric
+                        window.location.href = `tl-scoring.html?${params.toString()}`;
+                    };
+
+                    // 6. Attach Event Listeners
+                    header.addEventListener('click', handleNavigation);
+                    header.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            handleNavigation(event);
+                        }
+                    });
                 }
-
-                const handleActivation = () => {
-                    const teamKey = section.dataset.teamTarget;
-                    if (!teamKey) return;
-
-                    const requiredView = section.dataset.companyViewTarget;
-                    if (requiredView && requiredView !== currentCompanyView) {
-                        toggleCompanyView(requiredView);
-                        setTimeout(() => scrollToCarouselAndHighlight(teamKey), 250);
-                        return;
-                    }
-
-                    scrollToCarouselAndHighlight(teamKey);
-                };
-
-                section.addEventListener('click', handleActivation);
-                section.addEventListener('keydown', event => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        handleActivation();
-                    }
-                });
             });
         }
 
@@ -8867,5 +8788,50 @@
                 });
             }
         }
+
+        // Scroll to Top Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainContent = document.querySelector('.main-content');
+            const scrollTopBtn = document.getElementById('scrollToTopBtn');
+        
+            if (mainContent && scrollTopBtn) {
+                
+                // Function to get the current scroll position from either the mainContent div OR the window
+                // This handles both the mobile layout (where .main-content scrolls) and desktop (where window/body scrolls)
+                const getScrollPosition = () => {
+                    return mainContent.scrollTop || window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                };
+        
+                // Logic to Show/Hide button
+                const toggleVisibility = () => {
+                    if (getScrollPosition() > 300) {
+                        scrollTopBtn.classList.add('visible');
+                    } else {
+                        scrollTopBtn.classList.remove('visible');
+                    }
+                };
+        
+                // 1. Check immediately on page load
+                toggleVisibility();
+        
+                // 2. Check continuously while scrolling
+                // Attach listener to BOTH the container and the window to catch all scroll events
+                mainContent.addEventListener('scroll', toggleVisibility);
+                window.addEventListener('scroll', toggleVisibility);
+        
+                // 3. Scroll to Top Action
+                scrollTopBtn.addEventListener('click', () => {
+                    // Attempt to scroll both the element and the window to cover all bases
+                    mainContent.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        });
 
 
