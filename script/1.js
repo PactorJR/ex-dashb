@@ -19,22 +19,6 @@ function normalizeTeamName(teamName) {
     return teamName.trim();
 }
 
-// Helper function to setup search container in section-header
-function setupSearchContainer(placeholder = 'Search operations...', containerId = 'operationsSearchContainer', inputId = 'searchInput') {
-    const searchContainer = document.getElementById(containerId);
-    if (searchContainer) {
-        searchContainer.style.display = 'block';
-        const existingInput = searchContainer.querySelector(`#${inputId}`);
-        if (!existingInput) {
-            searchContainer.innerHTML = `<input type="text" id="${inputId}" placeholder="${placeholder}">`;
-        } else {
-            existingInput.placeholder = placeholder;
-        }
-    }
-}
-
-
-
 const performanceData = {
             'Quality Team': {
                 '1. Team Target & Performance': {
@@ -1292,8 +1276,8 @@ const performanceData = {
                     }
                 }
             };
-            }
-            
+        }
+
         function generateDcLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
             return {
                 'FS Target : Repairs & Maintenance (Labor) (DCD) Expense': {
@@ -1468,7 +1452,7 @@ const performanceData = {
                     }
                 }
             };
-            }
+        }
 
         function generateOperationsLagKpiData(periodKey = DEFAULT_PERIOD_KEY) {
             return {
@@ -1677,8 +1661,8 @@ const performanceData = {
                     [periodKey]: {
                         target: randomFloatInRange(90, 94, 1),
                         actual: randomFloatInRange(92, 96, 1)
-                        }
-                    },
+                    }
+                },
                 '% Within Budget : Projects (Landscape)': {
                     [periodKey]: {
                         target: randomFloatInRange(87, 91, 1),
@@ -1713,14 +1697,14 @@ const performanceData = {
                     [periodKey]: {
                         target: randomFloatInRange(82, 86, 1),
                         actual: randomFloatInRange(84, 88, 1)
-                            }
-                        },
+                    }
+                },
                 '% Planned vs Actual : JO (MST)': {
                     [periodKey]: {
                         target: randomFloatInRange(88, 92, 1),
                         actual: randomFloatInRange(90, 94, 1)
-                        }
-                    },
+                    }
+                },
                 '% Planned vs Actual : JO (E&D Fab)': {
                     [periodKey]: {
                         target: randomFloatInRange(86, 90, 1),
@@ -1894,7 +1878,7 @@ const performanceData = {
         }
 
         function generateOperationsLeadKpiData(periodKey = DEFAULT_PERIOD_KEY) {
-                return {
+            return {
                 '% Addressed : Team/Section\'s I.C.A.R.E': {
                     [periodKey]: {
                         target: randomFloatInRange(94, 98, 1),
@@ -2017,7 +2001,7 @@ const performanceData = {
 
         // Store quarterly data for Gathering Team Operational KPIs
         const gatheringOperationalKpiQuarterlyData = {};
-        
+
         // Store quarterly data for Operations Team Operational KPIs
         const operationsOperationalKpiQuarterlyData = {};
 
@@ -2201,7 +2185,7 @@ const performanceData = {
                 valueType: 'thousands'
             })
         };
-                
+
         // Lead KPI Monthly Series
         const lradLeadMonthlySeries = {
             '% On time & Accurate - LMDB': generateMonthlySeries({
@@ -2861,9 +2845,6 @@ const performanceData = {
                     }
 
                     const target = button.dataset.target === 'members' ? 'members' : 'lag';
-
-
-                    
                     if (currentOperationsView === target) {
                         return;
                     }
@@ -2871,6 +2852,56 @@ const performanceData = {
                     // If switching to members view and section switch is on profile (active), switch back to operations
                     if (target === 'members' && currentView === 'profile') {
                         toggleSections();
+                    }
+
+                    // If switching to lag view, reset chart display to show bar chart
+                    if (target === 'lag') {
+                        const canvas = document.getElementById('teamPerformanceChart');
+                        const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+                        const reportCard = document.querySelector('.performance-report-card');
+                        const reportLegend = reportCard?.querySelector('.report-legend');
+                        const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+                        
+                        // If canvas doesn't exist (was removed by donut chart), recreate it
+                        let canvasElement = canvas;
+                        let needsReinit = false;
+                        if (!canvasElement && chartContainer) {
+                            chartContainer.innerHTML = '';
+                            canvasElement = document.createElement('canvas');
+                            canvasElement.id = 'teamPerformanceChart';
+                            chartContainer.appendChild(canvasElement);
+                            needsReinit = true;
+                        } else if (chartContainer) {
+                            // Remove any SVG from donut chart
+                            const svg = chartContainer.querySelector('svg.line-chart');
+                            if (svg) {
+                                chartContainer.innerHTML = '';
+                                if (!canvasElement) {
+                                    canvasElement = document.createElement('canvas');
+                                    canvasElement.id = 'teamPerformanceChart';
+                                    chartContainer.appendChild(canvasElement);
+                                    needsReinit = true;
+                                } else {
+                                    chartContainer.appendChild(canvasElement);
+                                }
+                            }
+                        }
+                        
+                        // Re-initialize chart if canvas was recreated
+                        if (needsReinit) {
+                            initTeamPerformanceChart();
+                        }
+                        
+                        // Show canvas and bar chart elements
+                        if (canvasElement) {
+                            canvasElement.style.display = 'block';
+                        }
+                        if (reportLegend) {
+                            reportLegend.style.display = 'flex';
+                        }
+                        if (yAxisLabel) {
+                            yAxisLabel.style.display = 'block';
+                        }
                     }
 
                     currentOperationsView = target;
@@ -2911,7 +2942,6 @@ const performanceData = {
         const profileSection = document.getElementById('profileSection');
         const operationsSectionTitle = document.getElementById('operationsSectionTitle');
         const operationsSectionSubtitle = document.getElementById('operationsSectionSubtitle');
-        const profileSectionSubtitle = document.getElementById('profileSectionSubtitle');
 
         function toggleSections() {
             currentView = currentView === 'operations' ? 'profile' : 'operations';
@@ -2947,11 +2977,7 @@ const performanceData = {
             } else {
                 operationsSection.classList.add('hidden');
                 profileSection.classList.remove('hidden');
-                if (selectedTeam && selectedTeamData) {
-                    // Update subtitle when switching to profile view with team selected
-                    if (profileSectionSubtitle) {
-                        profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
-                    }
+                if (selectedTeam) {
                     showReportCards();
                     // Reset to instruction message when switching
                     const reportCards = document.querySelectorAll('.report-card');
@@ -2970,11 +2996,7 @@ const performanceData = {
                         }
                     }
                 } else {
-                    // Clear subtitle when no team is selected
-                    if (profileSectionSubtitle) {
-                        profileSectionSubtitle.textContent = '';
-                    }
-                    showLegendOnly();
+                showLegendOnly();
                 }
             }
         }
@@ -3002,7 +3024,50 @@ const performanceData = {
                     icon: this.getAttribute('data-icon')
                 };
 
-
+                const teamShortNames = {
+                    'Technical Team': 'Technical',
+                    'Accounting Team': 'Accounting',
+                    'LRAD Team': 'LRAD',
+                    'DC Team': 'DC',
+                    'Opportunity Team': 'Opportunity',
+                    'Marcom Team': 'Marcom',
+                    'Gathering Team': 'Gathering',
+                    'Operations Team': 'Operations'
+                };
+                
+                const teamShortName = teamShortNames[selectedTeam] || '';
+                if (teamShortName) {
+                    resetTeamPerformanceVisuals({
+                        infoMessage: `Select a ${teamShortName} Team KPI to view its detailed monthly breakdown.`
+                    });
+                } else {
+                    resetTeamPerformanceVisuals({
+                        infoMessage: 'Select a KPI to view its detailed monthly breakdown.'
+                    });
+                }
+                
+                if (currentView === 'operations') {
+                    showReportCards();
+                } else {
+                    showLegendOnly();
+                }
+                
+                // Reset to instruction message when selecting a team
+                const reportCards = document.querySelectorAll('.report-card');
+                const performanceCard = reportCards[0];
+                if (performanceCard) {
+                    const chartSvg = performanceCard.querySelector('svg.line-chart');
+                    const reportTitle = performanceCard.querySelector('.report-title');
+                    if (chartSvg && reportTitle) {
+                        chartSvg.innerHTML = '';
+                        reportTitle.innerHTML = `
+                            Team Performance Report
+                            <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
+                                Click an Operation KPI to show the graph
+                            </div>
+                        `;
+                    }
+                }
                 
                 refreshOperationsContent();
                 updateLeadKpiSection(selectedTeam, selectedTeamData.title);
@@ -3024,15 +3089,6 @@ const performanceData = {
         const operations = teamOperationsData[teamName] || [];
         
         if (operations.length === 0) {
-            // Hide search container and table header when no data
-            const searchContainer = document.getElementById('operationsSearchContainer');
-            if (searchContainer) {
-                searchContainer.style.display = 'none';
-            }
-            const tableHeaderContainer = document.getElementById('operationsTableHeader');
-            if (tableHeaderContainer) {
-                tableHeaderContainer.style.display = 'none';
-            }
             operationsContent.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">📊</div>
@@ -3042,28 +3098,20 @@ const performanceData = {
             return;
         }
         
-        // Show and populate search container in section-header
-        setupSearchContainer('Search operations...');
-        
-        // Place table-header outside operationsContent
-        const tableHeaderContainer = document.getElementById('operationsTableHeader');
-        if (tableHeaderContainer) {
-            tableHeaderContainer.innerHTML = `
-                <div class="table-header">
-                    <div>Operation KPI</div>
-                    <div>KPI Owner</div>
-                    <div class="header-group">
-                        <div class="header-main">TARGET</div>
-                    </div>
-                    <div class="header-group">
-                        <div class="header-main">ACTUAL</div>
-                    </div>
-                </div>
-            `;
-            tableHeaderContainer.style.display = 'block';
-        }
-        
         let html = `
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search operations...">
+            </div>
+            <div class="table-header">
+                <div>Operation KPI</div>
+                <div>KPI Owner</div>
+                <div class="header-group">
+                    <div class="header-main">TARGET</div>
+                </div>
+                <div class="header-group">
+                    <div class="header-main">ACTUAL</div>
+                </div>
+            </div>
             <div id="membersList">
         `;
         
@@ -3151,24 +3199,18 @@ const performanceData = {
                 .join('') || 'TM';
         }
 
-        async function updateTeamMembersSection(teamName, teamTitle) {
+        function updateTeamMembersSection(teamName, teamTitle) {
             const operationsContent = document.getElementById('operationsContent');
             if (!operationsContent) {
                 return;
             }
             
-            // START OF TECHNICAL TEAM GRAPH CODE
             // Special handling for Technical Team with new structure
             if (teamName === 'Technical Team' && technicalTeamByOwner[teamName]) {
                 const technicalData = technicalTeamByOwner[teamName];
                 const owners = Object.keys(technicalData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -3178,30 +3220,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -3228,6 +3262,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             // Parse weight value, handling percentage signs
                             let weightValue = 0;
@@ -3348,7 +3383,6 @@ const performanceData = {
                 attachMemberRowClickHandlers();
                 return;
             }
-            // END OF TECHNICAL TEAM GRAPH CODE
             
             // Special handling for Accounting Team with new structure
             if (teamName === 'Accounting Team' && accountingTeamByOwner[teamName]) {
@@ -3356,11 +3390,6 @@ const performanceData = {
                 const owners = Object.keys(accountingData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -3370,30 +3399,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -3420,6 +3441,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             // Parse weight value, handling percentage signs
                             let weightValue = 0;
@@ -3547,11 +3569,6 @@ const performanceData = {
                 const owners = Object.keys(lradData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -3561,30 +3578,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -3611,6 +3620,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             // Parse weight value, handling percentage signs
                             let weightValue = 0;
@@ -3738,11 +3748,6 @@ const performanceData = {
                 const owners = Object.keys(qualityData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -3752,30 +3757,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -3802,6 +3799,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             // Parse weight value, handling percentage signs
                             let weightValue = 0;
@@ -3929,11 +3927,6 @@ const performanceData = {
                 const owners = Object.keys(dcData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -3943,30 +3936,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -4107,11 +4092,6 @@ const performanceData = {
                 const owners = Object.keys(opportunityData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -4121,30 +4101,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -4285,11 +4257,6 @@ const performanceData = {
                 const owners = Object.keys(itData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -4299,30 +4266,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -4463,11 +4422,6 @@ const performanceData = {
                 const owners = Object.keys(marcomData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -4477,30 +4431,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -4526,6 +4472,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             let weightValue = 0;
                             if (kpi.weight && kpi.weight !== '-') {
@@ -4643,11 +4590,6 @@ const performanceData = {
                 const owners = Object.keys(operationsData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -4657,30 +4599,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -4706,6 +4640,7 @@ const performanceData = {
                             return sum + weightValue;
                         }, 0) : 0;
                         
+                        // Collect KPI weights data for doughnut chart
                         const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
                             let weightValue = 0;
                             if (kpi.weight && kpi.weight !== '-') {
@@ -4823,11 +4758,6 @@ const performanceData = {
                 const owners = Object.keys(auditData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -4837,30 +4767,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -5001,11 +4923,6 @@ const performanceData = {
                 const owners = Object.keys(gatheringData);
                 
                 if (owners.length === 0) {
-                    // Hide search container when no data
-                    const searchContainer = document.getElementById('operationsSearchContainer');
-                    if (searchContainer) {
-                        searchContainer.style.display = 'none';
-                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -5015,30 +4932,22 @@ const performanceData = {
                     return;
                 }
                 
-                // Show and populate search container in section-header
-                setupSearchContainer('Search team members...');
-                
-                // Place table-header outside operationsContent
-                const tableHeaderContainer = document.getElementById('operationsTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.innerHTML = `
-                        <div class="table-header">
-                            <div>Role Owner</div>
-                            <div>Role Title</div>
-                            <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
-                            </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
-                            </div>
-                            <div>% Operational KPI Weight</div>
-                        </div>
-                    `;
-                    tableHeaderContainer.style.display = 'block';
-                }
-                
                 let html = `
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search team members...">
+                    </div>
+                    <div class="table-header">
+                        <div>Role Owner</div>
+                        <div>Role Title</div>
+                        <div>Operational KRA</div>
+                        <div class="header-group">
+                            <div class="header-main">TARGET</div>
+                        </div>
+                        <div class="header-group">
+                            <div class="header-main">ACTUAL</div>
+                        </div>
+                        <div>% Operational KPI Weight</div>
+                    </div>
                     <div id="membersList">
                 `;
                 
@@ -5175,9 +5084,6 @@ const performanceData = {
             
             // Original logic for other teams
             operationsContent.classList.remove('technical-team-view');
-            
-            // Fetch team members data from Google Sheets
-            await fetchTeamMembersData();
             const members = teamMembersData[teamName] || [];
 
             if (members.length === 0) {
@@ -5190,22 +5096,17 @@ const performanceData = {
                 return;
             }
 
-            // Place table-header outside operationsContent for team members view
-            const tableHeaderContainer = document.getElementById('operationsTableHeader');
-            if (tableHeaderContainer) {
-                tableHeaderContainer.innerHTML = `
-                    <div class="table-header">
-                        <div>Emp Name</div>
-                        <div>Role</div>
-                        <div>KPI</div>
-                        <div>Target</div>
-                        <div>Actual</div>
-                    </div>
-                `;
-                tableHeaderContainer.style.display = 'block';
-            }
-            
             let html = `
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search team members...">
+                </div>
+                <div class="table-header">
+                    <div>Emp Name</div>
+                    <div>Role</div>
+                    <div>KPI</div>
+                    <div>Target</div>
+                    <div>Actual</div>
+                </div>
                 <div id="membersList">
             `;
 
@@ -5215,12 +5116,6 @@ const performanceData = {
                 const actualValue = typeof member.actualValue === 'number' ? member.actualValue : '';
                 const targetLabel = member.targetLabel ?? (targetValue !== '' ? targetValue : '-');
                 const actualLabel = member.actualLabel ?? (actualValue !== '' ? actualValue : '-');
-                
-                // Get monthly data if available
-                const monthlyTarget = member.monthlyData?.target || Array(12).fill(null);
-                const monthlyActual = member.monthlyData?.actual || Array(12).fill(null);
-                const monthlyTargetJson = JSON.stringify(monthlyTarget);
-                const monthlyActualJson = JSON.stringify(monthlyActual);
 
                 html += `
                     <div class="member-row member-view-row"
@@ -5230,8 +5125,6 @@ const performanceData = {
                          data-operation="${member.kpi}"
                          data-target="${targetValue}"
                          data-actual="${actualValue}"
-                         data-monthly-target="${escapeAttributeValue(monthlyTargetJson)}"
-                         data-monthly-actual="${escapeAttributeValue(monthlyActualJson)}"
                          style="cursor: pointer;">
                         <div class="member-info">
                             <div class="member-avatar">${initials}</div>
@@ -5268,7 +5161,7 @@ const performanceData = {
                 if (operationsSectionSubtitle) {
                     operationsSectionSubtitle.textContent = isMembersView
                         ? 'Select a team to view their team members'
-                        : '';
+                        : 'Select a team to view KPIs';
                 }
                 operationsContent.innerHTML = `
                     <div class="empty-state">
@@ -5290,20 +5183,13 @@ const performanceData = {
             }
 
             if (operationsSectionSubtitle) {
-                if (isMembersView) {
-                    operationsSectionSubtitle.textContent = '';
-                } else {
-                    // Check switch state: 'profile' = Lead KPIs, 'operations' = Lag KPIs
-                    operationsSectionSubtitle.textContent = currentView === 'profile'
-                        ? `${selectedTeamData.title} lead KPIs`
-                        : `${selectedTeamData.title} lag KPIs`;
-                }
+                operationsSectionSubtitle.textContent = isMembersView
+                    ? `People reporting under ${selectedTeamData.name || selectedTeamData.title}`
+                    : `${selectedTeamData.title} lag KPIs`;
             }
 
             if (isMembersView) {
-                updateTeamMembersSection(selectedTeam, selectedTeamData.title).catch(err => {
-                    console.error('Error updating team members section:', err);
-                });
+                updateTeamMembersSection(selectedTeam, selectedTeamData.title);
             } else {
                 updateOperationsSection(selectedTeam, selectedTeamData.title);
             }
@@ -5315,21 +5201,7 @@ const performanceData = {
             const profileContent = document.getElementById('profileContent');
             const leadKpis = leadKpiData[teamName] || [];
             
-            // Update subtitle when team is selected
-            if (profileSectionSubtitle && selectedTeamData) {
-                profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
-            }
-            
             if (leadKpis.length === 0) {
-                // Hide search container and table header when no data
-                const searchContainer = document.getElementById('profileSearchContainer');
-                if (searchContainer) {
-                    searchContainer.style.display = 'none';
-                }
-                const tableHeaderContainer = document.getElementById('profileTableHeader');
-                if (tableHeaderContainer) {
-                    tableHeaderContainer.style.display = 'none';
-                }
                 profileContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📊</div>
@@ -5339,28 +5211,20 @@ const performanceData = {
                 return;
             }
         
-            // Show and populate search container in section-header
-            setupSearchContainer('Search operations...', 'profileSearchContainer', 'searchInputLead');
-            
-            // Place table-header outside profileContent
-            const tableHeaderContainer = document.getElementById('profileTableHeader');
-            if (tableHeaderContainer) {
-                tableHeaderContainer.innerHTML = `
-                    <div class="table-header">
-                        <div>Operation KPI</div>
-                        <div>KPI Owner</div>
-                        <div class="header-group">
-                            <div class="header-main">TARGET</div>
-                        </div>
-                        <div class="header-group">
-                            <div class="header-main">ACTUAL</div>
-                        </div>
-                    </div>
-                `;
-                tableHeaderContainer.style.display = 'block';
-            }
-            
             let html = `
+                <div class="search-box">
+                    <input type="text" id="searchInputLead" placeholder="Search operations...">
+            </div>
+                <div class="table-header">
+                    <div>Operation KPI</div>
+                    <div>KPI Owner</div>
+                    <div class="header-group">
+                        <div class="header-main">TARGET</div>
+                    </div>
+                    <div class="header-group">
+                        <div class="header-main">ACTUAL</div>
+                    </div>
+                </div>
                 <div id="leadKpiList">
             `;
             
@@ -5407,7 +5271,7 @@ const performanceData = {
 
         const performanceReportCopy = {
             defaultTitle: '--',
-            defaultSubtitle: ''
+            defaultSubtitle: 'Click a team leader KPI to see its current actual vs target snapshot.'
         };
 
         const defaultTeamPerformanceSeries = {
@@ -5420,27 +5284,33 @@ const performanceData = {
             valueType: 'thousands'
         };
 
-        // Initialize chart data using dynamic design pattern from lag-lead-script.js
-        const initialChartStructure = createComparisonChartStructures({
+        const teamPerformanceChartData = {
             labels: [...defaultTeamPerformanceSeries.labels],
-            yAxisTitle: '',
-            barPluginId: 'teamPerformanceBarDataLabels',
-            currentLabel: 'Year 2025',
-            previousLabel: 'Year 2024',
-            targetLabel: 'Current Year Target',
-            currentDataset: [...defaultTeamPerformanceSeries.actual],
-            previousDataset: Array(defaultTeamPerformanceSeries.labels.length).fill(0),
-            targetDataset: [...defaultTeamPerformanceSeries.target],
-            includeTarget: true,
-            includeBarLabels: false,
-            valueFormatter: formatMillionsLabel,
-            zeroLabel: 'P0.00',
-            axisBounds: {},
-            beginAtZero: true,
-            valueType: 'thousands'
-        });
-
-        const teamPerformanceChartData = initialChartStructure.data;
+            datasets: [
+                {
+                    label: 'Target',
+                    type: 'bar',
+                    order: 1,
+                    data: [...defaultTeamPerformanceSeries.target],
+                    backgroundColor: '#f2c53d',
+                    borderColor: '#f2c53d',
+                    hoverBackgroundColor: '#f5cf5d',
+                    borderWidth: 0,
+                    borderRadius: 10
+                },
+                {
+                    label: 'Actual',
+                    type: 'bar',
+                    order: 2,
+                    data: [...defaultTeamPerformanceSeries.actual],
+                    backgroundColor: '#8faf3c',
+                    borderColor: '#8faf3c',
+                    hoverBackgroundColor: '#97bb3f',
+                    borderWidth: 0,
+                    borderRadius: 10
+                }
+            ]
+        };
 
         let activeTeamPerformanceSeries = defaultTeamPerformanceSeries;
         let currentValueFormat = 'thousands'; // 'thousands' | 'percentage' | 'count'
@@ -5462,6 +5332,19 @@ const performanceData = {
             return Math.max(...values);
         }
 
+        function updateYAxisLabel() {
+            const labelElement = document.querySelector('.performance-report-card .y-axis-label');
+            if (!labelElement) {
+                return;
+            }
+            if (currentValueFormat === 'percentage') {
+                labelElement.textContent = 'KPI Value (%)';
+            } else if (currentValueFormat === 'count') {
+                labelElement.textContent = 'KPI Value (Units)';
+            } else {
+                labelElement.textContent = 'KPI Value (₱ Thousands)';
+            }
+        }
 
         function updatePerformanceCardCopy(series = defaultTeamPerformanceSeries) {
             const titleEl = document.querySelector('.performance-report-card .report-title');
@@ -5486,26 +5369,12 @@ const performanceData = {
             const actualData = (activeTeamPerformanceSeries.actual && activeTeamPerformanceSeries.actual.length)
                 ? [...activeTeamPerformanceSeries.actual]
                 : new Array(labels.length).fill(0);
-            // Get previous year data if available (from monthlySeries.previous)
-            const previousData = (activeTeamPerformanceSeries.previous && activeTeamPerformanceSeries.previous.length)
-                ? [...activeTeamPerformanceSeries.previous]
-                : new Array(labels.length).fill(0);
 
             teamPerformanceChartData.labels = labels;
 
-            // Update datasets - using dynamic design structure: [current (2025), previous (2024), target (line)]
-            const [currentDataset, previousDataset, targetDataset] = teamPerformanceChartData.datasets;
-            if (currentDataset) {
-                currentDataset.data = actualData;
-                currentDataset.valueType = series?.valueType || 'thousands';
-            }
-            if (previousDataset) {
-                previousDataset.data = previousData;
-                previousDataset.valueType = series?.valueType || 'thousands';
-            }
-            if (targetDataset) {
-                targetDataset.data = targetData;
-            }
+            const [targetDataset, actualDataset] = teamPerformanceChartData.datasets;
+            targetDataset.data = targetData;
+            actualDataset.data = actualData;
 
             if (series?.valueType === 'percentage') {
                 currentValueFormat = 'percentage';
@@ -5514,32 +5383,9 @@ const performanceData = {
             } else {
                 currentValueFormat = 'thousands';
             }
+            updateYAxisLabel();
 
             if (teamPerformanceChart) {
-                // Update value formatter based on value type
-                const valueFormatter = currentValueFormat === 'percentage' 
-                    ? formatPercentageLabel 
-                    : (currentValueFormat === 'count' 
-                        ? (v) => Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })
-                        : formatThousandsLabel);
-                
-                // Update chart options to use correct formatter
-                if (teamPerformanceChart.options?.scales?.y?.ticks) {
-                    teamPerformanceChart.options.scales.y.ticks.callback = function(value) {
-                        if (value === 0 || value === '0') {
-                            return currentValueFormat === 'percentage' ? '0%' : (currentValueFormat === 'count' ? '0' : 'P0.00');
-                        }
-                        return valueFormatter(value);
-                    };
-                }
-                
-                if (teamPerformanceChart.options?.plugins?.tooltip?.callbacks?.label) {
-                    teamPerformanceChart.options.plugins.tooltip.callbacks.label = function(context) {
-                        const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                        return `${context.dataset.label}: ${valueFormatter(value)}`;
-                    };
-                }
-
                 const yScale = teamPerformanceChart.options?.scales?.y;
                 if (yScale) {
                     const maxValue = computeDatasetMaxValue();
@@ -5557,6 +5403,7 @@ const performanceData = {
             targetDataset.data = [...defaultTeamPerformanceSeries.target];
             actualDataset.data = [...defaultTeamPerformanceSeries.actual];
             currentValueFormat = 'thousands';
+            updateYAxisLabel();
             if (teamPerformanceChart) {
                 teamPerformanceChart.update();
             }
@@ -5584,6 +5431,12 @@ const performanceData = {
                 quarterFilter.remove();
             }
             
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
 
             setPerformanceReportCardMode('bar');
             
@@ -5594,15 +5447,15 @@ const performanceData = {
         }
 
         function setPerformanceReportCardMode(mode = 'bar') {
-            // Function kept for compatibility, but doughnut mode is no longer supported
             const reportCard = document.querySelector('.performance-report-card');
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             if (!reportCard || !chartContainer) {
                 return;
             }
-            // Remove doughnut-mode class if it exists
-            reportCard.classList.remove('doughnut-mode');
-            chartContainer.classList.remove('doughnut-mode');
+
+            const isDoughnutMode = mode === 'doughnut';
+            reportCard.classList.toggle('doughnut-mode', isDoughnutMode);
+            chartContainer.classList.toggle('doughnut-mode', isDoughnutMode);
         }
 
         function average(values) {
@@ -5710,98 +5563,143 @@ const performanceData = {
                 teamPerformanceChart.destroy();
             }
 
-            // Use dynamic chart structure from createComparisonChartStructures
-            const chartConfig = createComparisonChartStructures({
-                labels: teamPerformanceChartData.labels,
-                yAxisTitle: '',
-                barPluginId: 'teamPerformanceBarDataLabels',
-                currentLabel: 'Year 2025',
-                previousLabel: 'Year 2024',
-                targetLabel: 'Current Year Target',
-                currentDataset: teamPerformanceChartData.datasets[0]?.data || [],
-                previousDataset: teamPerformanceChartData.datasets[1]?.data || [],
-                targetDataset: teamPerformanceChartData.datasets[2]?.data || [],
-                includeTarget: true,
-                includeBarLabels: false,
-                valueFormatter: formatThousandsLabel,
-                zeroLabel: 'P0.00',
-                axisBounds: {},
-                beginAtZero: true,
-                valueType: currentValueFormat
-            });
-
-            // Merge with custom options for this specific chart
-            chartConfig.config.options = {
-                ...chartConfig.config.options,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                animation: {
-                    duration: 900,
-                    easing: 'cubicBezier(0.33, 1, 0.68, 1)',
-                    delay(context) {
-                        if (context.type === 'data' && context.mode === 'default' && context.dataIndex !== undefined) {
-                            return context.dataIndex * 40;
-                        }
-                        return 0;
-                    }
-                },
-                plugins: {
-                    ...chartConfig.config.options.plugins,
-                    legend: {
-                        ...chartConfig.config.options.plugins.legend,
-                        display: true // Show legend for dynamic design
-                    }
-                },
-                scales: {
-                    ...chartConfig.config.options.scales,
-                    y: {
-                        ...chartConfig.config.options.scales.y,
-                        grid: {
-                            color: '#e4e8d7',
-                            drawTicks: false
-                        },
-                        border: {
-                            display: false
+            teamPerformanceChart = new Chart(canvas, {
+                type: 'bar',
+                data: teamPerformanceChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    layout: {
+                        padding: {
+                            top: 24,
+                            right: 24,
+                            left: 0,
+                            bottom: 12
                         }
                     },
-                    x: {
-                        ...chartConfig.config.options.scales.x,
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                weight: 600
+                    datasets: {
+                        bar: {
+                            barThickness: 16,
+                            maxBarThickness: 20,
+                            categoryPercentage: 0.65,
+                            barPercentage: 0.8,
+                            borderSkipped: false
+                        }
+                    },
+                    animation: {
+                        duration: 900,
+                        easing: 'cubicBezier(0.33, 1, 0.68, 1)',
+                        delay(context) {
+                            if (context.type === 'data' && context.mode === 'default' && context.dataIndex !== undefined) {
+                                return context.dataIndex * 40;
+                            }
+                            return 0;
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#ffffff',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                    if (currentValueFormat === 'percentage') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        const fixed = numeric.toFixed(1);
+                                        const formatted = fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
+                                        return `${context.dataset.label}: ${formatted}%`;
+                                    }
+                                    if (currentValueFormat === 'count') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        return `${context.dataset.label}: ${numeric.toLocaleString('en-US')}`;
+                                    }
+                                    return `${context.dataset.label}: ${formatPesoIfNeeded(value, true)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    weight: 600
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                padding: 10,
+                                callback: function(value) {
+                                    const numeric = Number(value) || 0;
+                                    if (currentValueFormat === 'percentage') {
+                                        return `${numeric.toLocaleString('en-US', { maximumFractionDigits: 0 })}%`;
+                                    }
+                                    if (currentValueFormat === 'count') {
+                                        return numeric.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                                    }
+                                    const thousands = numeric / 1_000;
+                                    return `₱${thousands.toLocaleString('en-US', { maximumFractionDigits: 1 })}K`;
+                                }
+                            },
+                            grid: {
+                                color: '#e4e8d7',
+                                drawTicks: false
+                            },
+                            border: {
+                                display: false
                             }
                         }
                     }
-                }
-            };
-
-            teamPerformanceChart = new Chart(canvas, chartConfig.config);
+                },
+                plugins: []
+            });
 
             applyTeamPerformanceSeries(activeTeamPerformanceSeries);
             updateTeamPerformanceInsight();
         }
 
-        let currentLagLeadQuarter = `Q${Math.floor(new Date().getMonth() / 3) + 1}`;
-
         function updateTeamPerformanceBarChart(operationName, target, actual) {
-            console.groupCollapsed(`[Debug] Critical Numbers Graph`);
-            console.log('KPI:', operationName);
-            console.log('Target:', target);
-            console.log('Actual:', actual);
-
+            // Remove doughnut chart if it exists (when switching from Technical Team KRA to other charts)
             const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+            
+            // Show canvas and hide any SVG
             const canvas = document.getElementById('teamPerformanceChart');
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
-            
-            if (chartContainer) {
-                chartContainer.style.display = 'block';
-            }
-
             const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             
+            // If canvas doesn't exist (was removed by donut chart), recreate it
             let canvasElement = canvas;
             let needsReinit = false;
             if (!canvasElement && chartContainer) {
@@ -5811,6 +5709,7 @@ const performanceData = {
                 chartContainer.appendChild(canvasElement);
                 needsReinit = true;
             } else if (chartContainer) {
+                // Clear any SVG from donut chart
                 const svg = chartContainer.querySelector('svg.line-chart');
                 if (svg) {
                     chartContainer.innerHTML = '';
@@ -5829,8 +5728,18 @@ const performanceData = {
                 canvasElement.style.display = 'block';
             }
             
+            // Re-initialize chart if canvas was recreated
             if (needsReinit) {
                 initTeamPerformanceChart();
+            }
+            setPerformanceReportCardMode('bar');
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
             }
             setPerformanceReportCardMode('bar');
 
@@ -5840,11 +5749,10 @@ const performanceData = {
 
             if (!operationName) {
                 resetTeamPerformanceVisuals();
-                console.groupEnd();
                 return;
             }
 
-            // Check if this KPI has monthly series data
+            // Check if this KPI has monthly series data (both Lag and Lead KPIs)
             const monthlySeries = technicalMonthlySeries[operationName] 
                 || accountingMonthlySeries[operationName]
                 || lradMonthlySeries[operationName]
@@ -5863,37 +5771,19 @@ const performanceData = {
                 || gatheringLeadMonthlySeries[operationName]
                 || operationsLeadMonthlySeries[operationName];
 
-            // MODIFIED: If monthly series data exists, use ANNUAL/MONTHLY view (12 months)
+            // If monthly series data exists, use it
             if (monthlySeries) {
-                console.log('Monthly Series Data:', JSON.parse(JSON.stringify(monthlySeries)));
-                
-                // Remove any existing quarter filter
-                const reportCardHeader = reportCard?.querySelector('.report-card-header');
-                if (reportCardHeader) {
-                    let existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
-                    if (existingFilter) existingFilter.remove();
+                // Remove quarter filter if it exists (for when switching from quarterly to monthly)
+                const quarterFilter = reportCard?.querySelector('.quarter-filter-container');
+                if (quarterFilter) {
+                    quarterFilter.remove();
                 }
-
-                // MODIFIED: Use monthly labels (Jan-Dec) instead of quarterly
-                const monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
+                
                 applyTeamPerformanceSeries({
-                    labels: monthlyLabels,  // CHANGED: Always use 12 months
+                    labels: monthlySeries.labels,
                     target: monthlySeries.target,
                     actual: monthlySeries.actual,
-                    previous: monthlySeries.previous,
                     valueType: monthlySeries.valueType
-                });
-
-                const isPercentageSeries = monthlySeries.valueType === 'percentage';
-                updateTeamPerformanceInsight({
-                    operationName,
-                    leaderName: teamMemberName,
-                    targetValue: monthlySeries.totalTarget,
-                    actualValue: monthlySeries.totalActual,
-                    isPercentage: isPercentageSeries,
-                    valueFormat: monthlySeries.valueType
                 });
 
                 updatePerformanceCardCopy({
@@ -5901,31 +5791,161 @@ const performanceData = {
                     subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
                 });
 
-                console.groupEnd();
+                const isPercentageSeries = monthlySeries.valueType === 'percentage';
+                updateTeamPerformanceInsight({
+                    operationName,
+                    leaderName: teamMemberName,
+                    targetValue: target ?? monthlySeries.totalTarget,
+                    actualValue: actual ?? monthlySeries.totalActual,
+                    isPercentage: isPercentageSeries || /%|percent/i.test(operationName.toLowerCase()),
+                    valueFormat: monthlySeries.valueType
+                });
                 return;
             }
 
-            // Fallback for single value bar chart
+            // Check if this is a Technical Team Operational KPI (needs quarterly filtering)
+            const isTechnicalOperationalKpi = teamName === 'Technical Team' && 
+                !monthlySeries && 
+                (target !== null && target !== undefined && actual !== null && actual !== undefined);
+
+            if (isTechnicalOperationalKpi) {
+                // Generate quarterly data if it doesn't exist
+                if (!technicalOperationalKpiQuarterlyData[operationName]) {
+                    const isPercentage = /%|percent/i.test(operationName.toLowerCase());
+                    const isCount = /#|number|count/i.test(operationName.toLowerCase());
+                    
+                    let targetRange, actualRange, decimals, valueType;
+                    
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                    
+                    technicalOperationalKpiQuarterlyData[operationName] = generateQuarterlyData({
+                        targetRange,
+                        actualRange,
+                        decimals,
+                        valueType
+                    });
+                }
+
+                // Add quarter dropdown to report card header
+                const reportCardHeader = reportCard?.querySelector('.report-card-header');
+                if (reportCardHeader) {
+                    // Remove existing quarter filter if any
+                    const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                    if (existingFilter) {
+                        existingFilter.remove();
+                    }
+
+                    // Create quarter filter dropdown
+                    const filterContainer = document.createElement('div');
+                    filterContainer.className = 'quarter-filter-container';
+                    filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                    
+                    const filterLabel = document.createElement('label');
+                    filterLabel.textContent = 'Quarter:';
+                    filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                    
+                    const filterSelect = document.createElement('select');
+                    filterSelect.id = 'quarterFilter';
+                    filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                    filterSelect.innerHTML = `
+                        <option value="Q1">Q1 (Jan-Mar)</option>
+                        <option value="Q2">Q2 (Apr-Jun)</option>
+                        <option value="Q3">Q3 (Jul-Sep)</option>
+                        <option value="Q4">Q4 (Oct-Dec)</option>
+                    `;
+                    
+                    // Set default to current quarter (or Q1)
+                    const currentMonth = new Date().getMonth();
+                    const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                    filterSelect.value = `Q${currentQuarter}`;
+                    
+                    filterContainer.appendChild(filterLabel);
+                    filterContainer.appendChild(filterSelect);
+                    reportCardHeader.appendChild(filterContainer);
+
+                    // Function to update chart based on selected quarter
+                    const updateQuarterlyChart = (selectedQuarter) => {
+                        const quarterlyData = technicalOperationalKpiQuarterlyData[operationName][selectedQuarter];
+                        if (quarterlyData) {
+                            applyTeamPerformanceSeries({
+                                labels: quarterlyData.labels,
+                                target: quarterlyData.target,
+                                actual: quarterlyData.actual,
+                                valueType: quarterlyData.valueType
+                            });
+
+                            const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                            const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                            const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                            
+                            updateTeamPerformanceInsight({
+                                operationName,
+                                leaderName: teamMemberName,
+                                targetValue: totalTarget,
+                                actualValue: totalActual,
+                                isPercentage: isPercentageKpi,
+                                valueFormat: quarterlyData.valueType
+                            });
+                        }
+                    };
+
+                    // Initial load with default quarter
+                    updateQuarterlyChart(filterSelect.value);
+
+                    // Add change event listener
+                    filterSelect.addEventListener('change', (e) => {
+                        updateQuarterlyChart(e.target.value);
+                    });
+                }
+
+                updatePerformanceCardCopy({
+                    title: operationName,
+                    subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
+                });
+
+                return;
+            }
+
+            // For other teams or KPIs without monthly series, use single value bar chart
+
             if (target === null || target === undefined || actual === null || actual === undefined) {
                 resetTeamPerformanceVisuals({
                     infoMessage: 'No actual vs target values are available for this KPI.'
                 });
-                console.groupEnd();
                 return;
             }
 
             const isPercentage = /%|percent/i.test(operationName.toLowerCase());
+
             const series = {
                 labels: ['KPI Value'],
                 target: [target],
                 actual: [actual],
                 valueType: isPercentage ? 'percentage' : 'thousands'
             };
+
             applyTeamPerformanceSeries(series);
             updatePerformanceCardCopy({
                 title: operationName,
                 subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
             });
+
             updateTeamPerformanceInsight({
                 operationName,
                 leaderName: teamMemberName,
@@ -5933,57 +5953,37 @@ const performanceData = {
                 actualValue: actual,
                 isPercentage
             });
-            console.groupEnd();
         }
 
-        // Store team member chart instance
-        let teamMemberChart = null;
-        let currentTeamMemberView = 'quarterly'; // 'monthly' or 'quarterly'
-
-        function updateMemberPerformanceChart(kpiName, target, actual, monthlyTarget = null, monthlyActual = null) {
-            console.groupCollapsed(`[Debug] Team Member Graph`);
-            console.log('KPI:', kpiName);
-            console.log('Overall Target:', target);
-            console.log('Overall Actual:', actual);
-            console.log('Monthly Target Data:', monthlyTarget);
-            console.log('Monthly Actual Data:', monthlyActual);
-
-            const quarterlyActual = convertToQuarterly(actualData);
-            const quarterlyTarget = convertToQuarterly(targetData);
+        function updateMemberPerformanceChart(kpiName, target, actual) {
+            // Remove doughnut chart if it exists (when switching from Technical Team KRA to other charts)
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+            
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
-
-            if (!chartContainer) {
-                console.groupEnd();
-                return;
-            }
-
-            // Ensure canvas exists, recreate if necessary
-            let canvas = document.getElementById('teamPerformanceChart'); // Renamed from 'canvas' to avoid conflict
-            if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
-                chartContainer.innerHTML = ''; // Clear container
-                canvas = document.createElement('canvas');
-                canvas.id = 'teamPerformanceChart';
-                chartContainer.appendChild(canvas);
-            }
-
-            chartContainer.style.display = 'block';
-
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            if (!chartContainer) return;
 
-
-            // Show canvas and bar chart elements
+            // Hide canvas and bar chart elements (legend, y-axis) if they exist
+            const canvas = document.getElementById('teamPerformanceChart');
             if (canvas) {
-                canvas.style.display = 'block';
+                canvas.style.display = 'none';
             }
-
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
             // If no data, show empty state
             if (target === null || actual === null || kpiName === null) {
-                if (teamMemberChart) {
-                    teamMemberChart.destroy();
-                    teamMemberChart = null;
-                }
                 chartContainer.innerHTML = '';
                 if (reportTitle) {
                     reportTitle.innerHTML = `
@@ -5996,103 +5996,252 @@ const performanceData = {
                 return;
             }
 
-            // Prepare monthly data - use provided data or create from target/actual
-            const targetData = monthlyTarget && Array.isArray(monthlyTarget) && monthlyTarget.length === 12
-                ? monthlyTarget.map(v => v !== null && v !== undefined ? Number(v) : null)
-                : Array(12).fill(null);
-            const actualData = monthlyActual && Array.isArray(monthlyActual) && monthlyActual.length === 12
-                ? monthlyActual.map(v => v !== null && v !== undefined ? Number(v) : null)
-                : Array(12).fill(null);
-
-            // Determine value formatter based on KPI type
+            // Calculate difference
+            const difference = actual - target;
+            const diffPercent = ((difference / target) * 100).toFixed(1);
+            const isPositive = difference >= 0;
             const isPercentageKpi = kpiName && (kpiName.includes('%') || kpiName.toLowerCase().includes('percent') || 
-                                 kpiName.toLowerCase().includes('rate') || kpiName.toLowerCase().includes('uptime') ||
-                                 kpiName.toLowerCase().includes('compliance') || kpiName.toLowerCase().includes('accuracy') ||
-                                 kpiName.toLowerCase().includes('efficiency') || kpiName.toLowerCase().includes('quality'));
+                                     kpiName.toLowerCase().includes('rate') || kpiName.toLowerCase().includes('uptime') ||
+                                     kpiName.toLowerCase().includes('compliance') || kpiName.toLowerCase().includes('accuracy') ||
+                                     kpiName.toLowerCase().includes('efficiency') || kpiName.toLowerCase().includes('quality'));
+
+            // Donut chart dimensions
+            const chartWidth = 400;
+            const chartHeight = 200;
+            const centerX = chartWidth / 2;
+            const centerY = chartHeight / 2;
+            const outerRadius = 75;
+            const innerRadius = 45;
             
-            const valueFormatter = isPercentageKpi 
-                ? (value) => `${Number(value).toFixed(1)}%`
-                : formatThousandsLabel;
+            // Calculate proportions for donut segments
+            const total = target + actual;
+            const targetPercent = (target / total) * 100;
+            const actualPercent = (actual / total) * 100;
+            
+            // Convert percentages to angles
+            const targetAngle = (targetPercent / 100) * 360;
+            const actualAngle = (actualPercent / 100) * 360;
+            
+            // Helper function to create donut segment
+            const createDonutSegment = (startAngle, endAngle) => {
+                const start = (startAngle - 90) * (Math.PI / 180);
+                const end = (endAngle - 90) * (Math.PI / 180);
+                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+                
+                const x1 = centerX + outerRadius * Math.cos(start);
+                const y1 = centerY + outerRadius * Math.sin(start);
+                const x2 = centerX + outerRadius * Math.cos(end);
+                const y2 = centerY + outerRadius * Math.sin(end);
+                const x3 = centerX + innerRadius * Math.cos(end);
+                const y3 = centerY + innerRadius * Math.sin(end);
+                const x4 = centerX + innerRadius * Math.cos(start);
+                const y4 = centerY + innerRadius * Math.sin(start);
+                
+                return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} 
+                        L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+            };
+            
+            const targetSegment = createDonutSegment(0, targetAngle);
+            const actualSegment = createDonutSegment(targetAngle, targetAngle + actualAngle);
 
-            // Create chart structure with quarterly support
-            const { data: chartData, config: chartConfig } = createComparisonChartStructures({
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],  // Already quarterly
-                yAxisTitle: kpiName,
-                barPluginId: 'teamMemberBarDataLabels',
-                currentLabel: 'Actual',
-                previousLabel: 'Target',
-                targetLabel: '',
-                currentDataset: quarterlyActual,
-                previousDataset: quarterlyTarget,
-                targetDataset: [],
-                includeTarget: false,
-                includeBarLabels: true,
-                valueFormatter: valueFormatter,
-                zeroLabel: isPercentageKpi ? '0%' : '0',
-                axisBounds: {},
-                beginAtZero: true,
-                valueType: isPercentageKpi ? 'percentage' : 'thousands'
-            });
+            const defs = `
+                <defs>
+                    <filter id="donutShadow">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+            `;
 
-            // Destroy existing chart if it exists
-            if (teamMemberChart) {
-                teamMemberChart.destroy();
-            }
+            // Format value for display
+            const formatValue = (value) => {
+                if (isPercentageKpi) {
+                    return value.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + '%';
+                } else if (value >= 1000) {
+                    if (value >= 1000000) {
+                        return (value / 1000000).toFixed(1) + 'M';
+                    } else if (value >= 1000) {
+                        return (value / 1000).toFixed(1) + 'K';
+                    }
+                }
+                return value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            };
 
-            // Create new chart
-            if (canvas) {
-                teamMemberChart = new Chart(canvas, chartConfig);
-            }
+            // Build chart
+            const diffColor = isPositive ? '#4ade80' : '#f87171';
+            const diffSymbol = isPositive ? '↑' : '↓';
+            const diffDisplay = formatValue(Math.abs(difference));
+            
+            const chartHTML = `
+                <svg class="line-chart" width="${chartWidth}" height="${chartHeight}" viewBox="0 0 ${chartWidth} ${chartHeight}">
+                    ${defs}
+                    <path id="targetSegment" d="${targetSegment}" 
+                          fill="#96a840" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${target}"
+                          data-label="Target"
+                          data-percent="${targetPercent.toFixed(1)}" />
+                    <path id="actualSegment" d="${actualSegment}" 
+                          fill="#e5bb22" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${actual}"
+                          data-label="Actual"
+                          data-percent="${actualPercent.toFixed(1)}" />
+                    <text x="${centerX}" y="${centerY - 5}" 
+                          text-anchor="middle" font-size="16" fill="${diffColor}" font-weight="700">
+                        ${diffSymbol} ${diffDisplay}
+                    </text>
+                    <text x="${centerX}" y="${centerY + 12}" 
+                          text-anchor="middle" font-size="11" fill="#6b7280" font-weight="500">
+                        ${Math.abs(diffPercent)}%
+                    </text>
+                </svg>
+            `;
 
-            // Update title
+            chartContainer.innerHTML = chartHTML;
+
+            // Update title with KPI, Target, and Actual
             if (reportTitle) {
                 const shortName = kpiName.length > 50 ? kpiName.substring(0, 50) + '...' : kpiName;
+                
                 reportTitle.innerHTML = `
-                    Team Performance Report - ${shortName}`;
+                    Team Performance Report - ${shortName}
+                    <div style="font-size: 12px; margin-top: 15px; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #96a840;"></span>
+                            <span style="color: #525552;">Target: ${formatValue(target)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #e5bb22;"></span>
+                            <span style="color: #525552;">Actual: ${formatValue(actual)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="color: ${diffColor}; font-weight: 600;">${diffSymbol} ${diffDisplay} (${Math.abs(diffPercent)}%)</span>
+                        </div>
+                    </div>
+                `;
             }
         }
-
-        // Helper function to convert monthly data to quarterly
-        function convertToQuarterly(monthlyData) {
-            if (!Array.isArray(monthlyData) || monthlyData.length !== 12) {
-                return [null, null, null, null];
-            }
-            
-            const quarters = [
-                [0, 1, 2],   // Q1: Jan, Feb, Mar
-                [3, 4, 5],   // Q2: Apr, May, Jun
-                [6, 7, 8],   // Q3: Jul, Aug, Sep
-                [9, 10, 11]  // Q4: Oct, Nov, Dec
-            ];
-
-            return quarters.map(quarterIndices => {
-                const quarterValues = quarterIndices
-                    .map(idx => monthlyData[idx])
-                    .filter(val => val !== null && val !== undefined && !isNaN(val));
-                
-                if (quarterValues.length === 0) return null;
-                
-                // Calculate sum for the quarter
-                const sum = quarterValues.reduce((acc, val) => acc + Number(val), 0);
-                return sum;
-            });
-        }
-
-        // END OF GRAPH-RELATED CODE
 
         function updateTechnicalTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             if (!chartContainer) return;
 
-            // Clear and hide chart container and legend for text-only display
-            chartContainer.innerHTML = '';
-            chartContainer.style.display = 'none';
+            // Hide canvas and bar chart elements - only show doughnut chart
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
+            // Get all KRAs for this owner
+            const technicalData = technicalTeamByOwner['Technical Team'];
+            const ownerKras = technicalData[owner] || [];
+            
+            // Find the selected KRA to show its KPI weights
+            const selectedKraData = ownerKras.find(kraData => kraData.kra === kraName);
+            
+            // Debug logging
+            if (!selectedKraData) {
+                console.warn('KRA not found:', kraName, 'Available KRAs:', ownerKras.map(k => k.kra));
+            }
+            
+            // If we have a selected KRA with KPIs, show KPI-level weights
+            // Otherwise, show KRA-level weights (fallback)
+            let chartData = [];
+            let totalWeight = 0;
+            
+            if (selectedKraData && selectedKraData.kpis && selectedKraData.kpis.length > 0) {
+                // Show KPI weights for the selected KRA
+                chartData = selectedKraData.kpis.map(kpi => {
+                    let weight = parseNumericValue(kpi.weight || '0%');
+                    // If parseNumericValue returns null, try parsing directly
+                    if (weight === null || weight === undefined) {
+                        const weightStr = String(kpi.weight || '0').replace(/%/g, '').replace(/,/g, '').trim();
+                        weight = parseFloat(weightStr) || 0;
+                    }
+                    return {
+                        name: kpi.kpi,
+                        weight: weight || 0
+                    };
+                }).filter(item => item.weight > 0);
+                
+                totalWeight = chartData.reduce((sum, item) => sum + item.weight, 0);
+                
+                // Debug logging
+                console.log('Selected KRA data:', selectedKraData);
+                console.log('Chart data after mapping:', chartData);
+                console.log('Total weight:', totalWeight);
+            } else {
+                // Fallback: Calculate weight percentages for each KRA
+                const kraWeights = ownerKras.map(kraData => {
+                    const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                        const weight = parseNumericValue(kpi.weight || '0%');
+                        return sum + (weight || 0);
+                    }, 0) : 0;
+                    return {
+                        name: kraData.kra,
+                        weight: totalKraWeight
+                    };
+                });
+                
+                totalWeight = kraWeights.reduce((sum, kra) => sum + kra.weight, 0);
+                chartData = kraWeights;
+            }
 
-            setPerformanceReportCardMode('bar');
+            // Use the dynamic doughnut chart function - just pass the dataset
+            // Only create doughnut chart if we have valid chart data
+            if (chartData && chartData.length > 0) {
+                const kpiWeightsForChart = chartData.map(item => ({
+                    name: item.name,
+                    weight: item.weight
+                }));
+                
+                const donutChartHTMLContent = createDynamicDoughnutChart(kpiWeightsForChart, {
+                    centerSubtext: 'Total Weight',
+                    legendMaxLength: 40
+                });
+            
+                // Only create and show doughnut chart if we have valid content
+                if (donutChartHTMLContent && donutChartHTMLContent.trim() !== '') {
+                    // Create doughnut chart HTML wrapper (removed top border/margin since it's the only chart)
+                    const donutChartHTML = `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: #586740; margin-bottom: 15px; text-align: center;">
+                                Operational KPI Weight Distribution
+                            </h4>
+                            ${donutChartHTMLContent}
+                        </div>
+                    `;
+
+                    // Replace chart container content with doughnut chart
+                    chartContainer.innerHTML = donutChartHTML;
+                    setPerformanceReportCardMode('doughnut');
+                    
+                    // Attach click event listeners to donut chart segments
+                    setTimeout(() => {
+                        attachDonutChartListeners();
+                    }, 0);
+                } else {
+                    console.warn('Doughnut chart content is empty for KRA:', kraName);
+                    chartContainer.innerHTML = '';
+                    setPerformanceReportCardMode('bar');
+                }
+            } else {
+                console.warn('No chart data available for doughnut chart. KRA:', kraName, 'Chart data:', chartData);
+                chartContainer.innerHTML = '';
+                setPerformanceReportCardMode('bar');
+            }
 
             // Update title
             if (reportTitle) {
@@ -6119,15 +6268,115 @@ const performanceData = {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             if (!chartContainer) return;
 
-            // Clear and hide chart container and legend for text-only display
-            chartContainer.innerHTML = '';
-            chartContainer.style.display = 'none';
+            // Hide canvas and bar chart elements - only show doughnut chart
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
+            // Get all KRAs for this owner
+            const accountingData = accountingTeamByOwner['Accounting Team'];
+            const ownerKras = accountingData[owner] || [];
             
-            setPerformanceReportCardMode('bar');
+            // Find the selected KRA to show its KPI weights
+            const selectedKraData = ownerKras.find(kraData => kraData.kra === kraName);
+            
+            // Debug logging
+            if (!selectedKraData) {
+                console.warn('KRA not found:', kraName, 'Available KRAs:', ownerKras.map(k => k.kra));
+            }
+            
+            // If we have a selected KRA with KPIs, show KPI-level weights
+            // Otherwise, show KRA-level weights (fallback)
+            let chartData = [];
+            let totalWeight = 0;
+            
+            if (selectedKraData && selectedKraData.kpis && selectedKraData.kpis.length > 0) {
+                // Show KPI weights for the selected KRA
+                chartData = selectedKraData.kpis.map(kpi => {
+                    let weight = parseNumericValue(kpi.weight || '0%');
+                    // If parseNumericValue returns null, try parsing directly
+                    if (weight === null || weight === undefined) {
+                        const weightStr = String(kpi.weight || '0').replace(/%/g, '').replace(/,/g, '').trim();
+                        weight = parseFloat(weightStr) || 0;
+                    }
+                    return {
+                        name: kpi.kpi,
+                        weight: weight || 0
+                    };
+                }).filter(item => item.weight > 0);
+                
+                totalWeight = chartData.reduce((sum, item) => sum + item.weight, 0);
+                
+                // Debug logging
+                console.log('Selected KRA data:', selectedKraData);
+                console.log('Chart data after mapping:', chartData);
+                console.log('Total weight:', totalWeight);
+            } else {
+                // Fallback: Calculate weight percentages for each KRA
+                const kraWeights = ownerKras.map(kraData => {
+                    const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                        const weight = parseNumericValue(kpi.weight || '0%');
+                        return sum + (weight || 0);
+                    }, 0) : 0;
+                    return {
+                        name: kraData.kra,
+                        weight: totalKraWeight
+                    };
+                });
+                
+                totalWeight = kraWeights.reduce((sum, kra) => sum + kra.weight, 0);
+                chartData = kraWeights;
+            }
+
+            // Use the dynamic doughnut chart function - just pass the dataset
+            // Only create doughnut chart if we have valid chart data
+            if (chartData && chartData.length > 0) {
+                const kpiWeightsForChart = chartData.map(item => ({
+                    name: item.name,
+                    weight: item.weight
+                }));
+                
+                const donutChartHTMLContent = createDynamicDoughnutChart(kpiWeightsForChart, {
+                    centerSubtext: 'Total Weight',
+                    legendMaxLength: 40
+                });
+            
+                // Only create and show doughnut chart if we have valid content
+                if (donutChartHTMLContent && donutChartHTMLContent.trim() !== '') {
+                    // Create doughnut chart HTML wrapper (removed top border/margin since it's the only chart)
+                    const donutChartHTML = `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: #586740; margin-bottom: 15px; text-align: center;">
+                                Operational KPI Weight Distribution
+                            </h4>
+                            ${donutChartHTMLContent}
+                        </div>
+                    `;
+
+                    // Replace chart container content with doughnut chart
+                    chartContainer.innerHTML = donutChartHTML;
+                    setPerformanceReportCardMode('doughnut');
+                } else {
+                    console.warn('Doughnut chart content is empty for KRA:', kraName);
+                    chartContainer.innerHTML = '';
+                    setPerformanceReportCardMode('bar');
+                }
+            } else {
+                console.warn('No chart data available for doughnut chart. KRA:', kraName, 'Chart data:', chartData);
+                chartContainer.innerHTML = '';
+                setPerformanceReportCardMode('bar');
+            }
 
             // Update title
             if (reportTitle) {
@@ -6154,15 +6403,120 @@ const performanceData = {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             if (!chartContainer) return;
 
-            // Clear and hide chart container and legend for text-only display
-            chartContainer.innerHTML = '';
-            chartContainer.style.display = 'none';
+            // Hide canvas and bar chart elements - only show doughnut chart
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
+            // Get all KRAs for this owner
+            const lradData = lradTeamByOwner['LRAD Team'];
+            const ownerKras = lradData[owner] || [];
+            
+            // Find the selected KRA to show its KPI weights
+            const selectedKraData = ownerKras.find(kraData => kraData.kra === kraName);
+            
+            // Debug logging
+            if (!selectedKraData) {
+                console.warn('KRA not found:', kraName, 'Available KRAs:', ownerKras.map(k => k.kra));
+            }
+            
+            // If we have a selected KRA with KPIs, show KPI-level weights
+            // Otherwise, show KRA-level weights (fallback)
+            let chartData = [];
+            let totalWeight = 0;
+            
+            if (selectedKraData && selectedKraData.kpis && selectedKraData.kpis.length > 0) {
+                // Show KPI weights for the selected KRA
+                chartData = selectedKraData.kpis.map(kpi => {
+                    let weight = parseNumericValue(kpi.weight || '0%');
+                    // If parseNumericValue returns null, try parsing directly
+                    if (weight === null || weight === undefined) {
+                        const weightStr = String(kpi.weight || '0').replace(/%/g, '').replace(/,/g, '').trim();
+                        weight = parseFloat(weightStr) || 0;
+                    }
+                    return {
+                        name: kpi.kpi,
+                        weight: weight || 0
+                    };
+                }).filter(item => item.weight > 0);
+                
+                totalWeight = chartData.reduce((sum, item) => sum + item.weight, 0);
+                
+                // Debug logging
+                console.log('Selected KRA data:', selectedKraData);
+                console.log('Chart data after mapping:', chartData);
+                console.log('Total weight:', totalWeight);
+            } else {
+                // Fallback: Calculate weight percentages for each KRA
+                const kraWeights = ownerKras.map(kraData => {
+                    const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                        const weight = parseNumericValue(kpi.weight || '0%');
+                        return sum + (weight || 0);
+                    }, 0) : 0;
+                    return {
+                        name: kraData.kra,
+                        weight: totalKraWeight
+                    };
+                });
+                
+                totalWeight = kraWeights.reduce((sum, kra) => sum + kra.weight, 0);
+                chartData = kraWeights;
+            }
 
-            setPerformanceReportCardMode('bar');
+            // Use the dynamic doughnut chart function - just pass the dataset
+            // Only create doughnut chart if we have valid chart data
+            if (chartData && chartData.length > 0) {
+                const kpiWeightsForChart = chartData.map(item => ({
+                    name: item.name,
+                    weight: item.weight
+                }));
+                
+                const donutChartHTMLContent = createDynamicDoughnutChart(kpiWeightsForChart, {
+                    centerSubtext: 'Total Weight',
+                    legendMaxLength: 40
+                });
+            
+                // Only create and show doughnut chart if we have valid content
+                if (donutChartHTMLContent && donutChartHTMLContent.trim() !== '') {
+                    // Create doughnut chart HTML wrapper (removed top border/margin since it's the only chart)
+                    const donutChartHTML = `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: #586740; margin-bottom: 15px; text-align: center;">
+                                Operational KPI Weight Distribution
+                            </h4>
+                            ${donutChartHTMLContent}
+                        </div>
+                    `;
+
+                    // Replace chart container content with doughnut chart
+                    chartContainer.innerHTML = donutChartHTML;
+                    setPerformanceReportCardMode('doughnut');
+                    
+                    // Attach click event listeners to donut chart segments
+                    setTimeout(() => {
+                        attachDonutChartListeners();
+                    }, 0);
+                } else {
+                    console.warn('Doughnut chart content is empty for KRA:', kraName);
+                    chartContainer.innerHTML = '';
+                    setPerformanceReportCardMode('bar');
+                }
+            } else {
+                console.warn('No chart data available for doughnut chart. KRA:', kraName, 'Chart data:', chartData);
+                chartContainer.innerHTML = '';
+                setPerformanceReportCardMode('bar');
+            }
 
             // Update title
             if (reportTitle) {
@@ -6189,15 +6543,120 @@ const performanceData = {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             if (!chartContainer) return;
 
-            // Clear and hide chart container and legend for text-only display
-            chartContainer.innerHTML = '';
-            chartContainer.style.display = 'none';
+            // Hide canvas and bar chart elements - only show doughnut chart
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
+            // Get all KRAs for this owner
+            const qualityData = qualityTeamByOwner['Quality Team'];
+            const ownerKras = qualityData[owner] || [];
+            
+            // Find the selected KRA to show its KPI weights
+            const selectedKraData = ownerKras.find(kraData => kraData.kra === kraName);
+            
+            // Debug logging
+            if (!selectedKraData) {
+                console.warn('KRA not found:', kraName, 'Available KRAs:', ownerKras.map(k => k.kra));
+            }
+            
+            // If we have a selected KRA with KPIs, show KPI-level weights
+            // Otherwise, show KRA-level weights (fallback)
+            let chartData = [];
+            let totalWeight = 0;
+            
+            if (selectedKraData && selectedKraData.kpis && selectedKraData.kpis.length > 0) {
+                // Show KPI weights for the selected KRA
+                chartData = selectedKraData.kpis.map(kpi => {
+                    let weight = parseNumericValue(kpi.weight || '0%');
+                    // If parseNumericValue returns null, try parsing directly
+                    if (weight === null || weight === undefined) {
+                        const weightStr = String(kpi.weight || '0').replace(/%/g, '').replace(/,/g, '').trim();
+                        weight = parseFloat(weightStr) || 0;
+                    }
+                    return {
+                        name: kpi.kpi,
+                        weight: weight || 0
+                    };
+                }).filter(item => item.weight > 0);
+                
+                totalWeight = chartData.reduce((sum, item) => sum + item.weight, 0);
+                
+                // Debug logging
+                console.log('Selected KRA data:', selectedKraData);
+                console.log('Chart data after mapping:', chartData);
+                console.log('Total weight:', totalWeight);
+            } else {
+                // Fallback: Calculate weight percentages for each KRA
+                const kraWeights = ownerKras.map(kraData => {
+                    const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                        const weight = parseNumericValue(kpi.weight || '0%');
+                        return sum + (weight || 0);
+                    }, 0) : 0;
+                    return {
+                        name: kraData.kra,
+                        weight: totalKraWeight
+                    };
+                });
+                
+                totalWeight = kraWeights.reduce((sum, kra) => sum + kra.weight, 0);
+                chartData = kraWeights;
+            }
 
-            setPerformanceReportCardMode('bar');
+            // Use the dynamic doughnut chart function - just pass the dataset
+            // Only create doughnut chart if we have valid chart data
+            if (chartData && chartData.length > 0) {
+                const kpiWeightsForChart = chartData.map(item => ({
+                    name: item.name,
+                    weight: item.weight
+                }));
+                
+                const donutChartHTMLContent = createDynamicDoughnutChart(kpiWeightsForChart, {
+                    centerSubtext: 'Total Weight',
+                    legendMaxLength: 40
+                });
+            
+                // Only create and show doughnut chart if we have valid content
+                if (donutChartHTMLContent && donutChartHTMLContent.trim() !== '') {
+                    // Create doughnut chart HTML wrapper (removed top border/margin since it's the only chart)
+                    const donutChartHTML = `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: #586740; margin-bottom: 15px; text-align: center;">
+                                Operational KPI Weight Distribution
+                            </h4>
+                            ${donutChartHTMLContent}
+                        </div>
+                    `;
+
+                    // Replace chart container content with doughnut chart
+                    chartContainer.innerHTML = donutChartHTML;
+                    setPerformanceReportCardMode('doughnut');
+                    
+                    // Attach click event listeners to donut chart segments
+                    setTimeout(() => {
+                        attachDonutChartListeners();
+                    }, 0);
+                } else {
+                    console.warn('Doughnut chart content is empty for KRA:', kraName);
+                    chartContainer.innerHTML = '';
+                    setPerformanceReportCardMode('bar');
+                }
+            } else {
+                console.warn('No chart data available for doughnut chart. KRA:', kraName, 'Chart data:', chartData);
+                chartContainer.innerHTML = '';
+                setPerformanceReportCardMode('bar');
+            }
 
             // Update title
             if (reportTitle) {
@@ -6225,15 +6684,104 @@ const performanceData = {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             if (!chartContainer) return;
 
-            // Clear and hide chart container and legend for text-only display
-            chartContainer.innerHTML = '';
-            chartContainer.style.display = 'none';
+            // Hide canvas and bar chart elements - only show doughnut chart
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
+            // Get all KRAs for this owner
+            const teamData = teamDataVar[teamName];
+            const ownerKras = teamData[owner] || [];
+            
+            // Find the selected KRA to show its KPI weights
+            const selectedKraData = ownerKras.find(kraData => kraData.kra === kraName);
+            
+            if (!selectedKraData) {
+                console.warn('KRA not found:', kraName, 'Available KRAs:', ownerKras.map(k => k.kra));
+            }
+            
+            let chartData = [];
+            let totalWeight = 0;
+            
+            if (selectedKraData && selectedKraData.kpis && selectedKraData.kpis.length > 0) {
+                chartData = selectedKraData.kpis.map(kpi => {
+                    let weight = parseNumericValue(kpi.weight || '0%');
+                    if (weight === null || weight === undefined) {
+                        const weightStr = String(kpi.weight || '0').replace(/%/g, '').replace(/,/g, '').trim();
+                        weight = parseFloat(weightStr) || 0;
+                    }
+                    return {
+                        name: kpi.kpi,
+                        weight: weight || 0
+                    };
+                }).filter(item => item.weight > 0);
+                
+                totalWeight = chartData.reduce((sum, item) => sum + item.weight, 0);
+            } else {
+                const kraWeights = ownerKras.map(kraData => {
+                    const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                        const weight = parseNumericValue(kpi.weight || '0%');
+                        return sum + (weight || 0);
+                    }, 0) : 0;
+                    return {
+                        name: kraData.kra,
+                        weight: totalKraWeight
+                    };
+                });
+                
+                totalWeight = kraWeights.reduce((sum, kra) => sum + kra.weight, 0);
+                chartData = kraWeights;
+            }
 
-            setPerformanceReportCardMode('bar');
+            if (chartData && chartData.length > 0) {
+                const kpiWeightsForChart = chartData.map(item => ({
+                    name: item.name,
+                    weight: item.weight
+                }));
+                
+                const donutChartHTMLContent = createDynamicDoughnutChart(kpiWeightsForChart, {
+                    centerSubtext: 'Total Weight',
+                    legendMaxLength: 40
+                });
+            
+                if (donutChartHTMLContent && donutChartHTMLContent.trim() !== '') {
+                    const donutChartHTML = `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: #586740; margin-bottom: 15px; text-align: center;">
+                                Operational KPI Weight Distribution
+                            </h4>
+                            ${donutChartHTMLContent}
+                        </div>
+                    `;
+
+                    chartContainer.innerHTML = donutChartHTML;
+                    setPerformanceReportCardMode('doughnut');
+                    
+                    // Attach click event listeners to donut chart segments
+                    setTimeout(() => {
+                        attachDonutChartListeners();
+                    }, 0);
+                } else {
+                    console.warn('Doughnut chart content is empty for KRA:', kraName);
+                    chartContainer.innerHTML = '';
+                    setPerformanceReportCardMode('bar');
+                }
+            } else {
+                console.warn('No chart data available for doughnut chart. KRA:', kraName, 'Chart data:', chartData);
+                chartContainer.innerHTML = '';
+                setPerformanceReportCardMode('bar');
+            }
 
             if (reportTitle) {
                 const shortName = kraName.length > 50 ? kraName.substring(0, 50) + '...' : kraName;
@@ -6282,66 +6830,76 @@ const performanceData = {
             updateTeamKraChartsGeneric('Gathering Team', gatheringTeamByOwner, kraName, target, actual, owner);
         }
 
-        function updateOperationalKpiChart(teamName, kpiName, target, actual) {
+        function updateTechnicalTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
-            if (chartContainer) {
-                chartContainer.style.display = 'block';
-            }
-
             const reportCard = document.querySelector('.performance-report-card');
-
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             
-            let canvas = document.getElementById('teamPerformanceChart');
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
             let needsReinit = false;
-            if (!canvas && chartContainer) {
+            if (!canvasElement && chartContainer) {
                 chartContainer.innerHTML = '';
-                canvas = document.createElement('canvas');
-                canvas.id = 'teamPerformanceChart';
-                chartContainer.appendChild(canvas);
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
                 needsReinit = true;
             } else if (chartContainer) {
-                // Clear any SVG in case it was used by another chart type
+                // Clear any SVG from donut chart
                 const svg = chartContainer.querySelector('svg.line-chart');
                 if (svg) {
                     chartContainer.innerHTML = '';
-                    if (!canvas) {
-                        canvas = document.createElement('canvas');
-                        canvas.id = 'teamPerformanceChart';
-                        chartContainer.appendChild(canvas);
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
                         needsReinit = true;
                     } else {
-                        chartContainer.appendChild(canvas);
+                        chartContainer.appendChild(canvasElement);
                     }
                 }
             }
-
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
             if (needsReinit) {
                 initTeamPerformanceChart();
             }
             
-            if (canvas) {
-                canvas.style.display = 'block';
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
             }
-            
-
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
             setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
 
             if (!kpiName) {
                 resetTeamPerformanceVisuals();
                 return;
             }
 
-            const teamQuarterlyData = allTeamsOperationalKpiQuarterlyData[teamName];
-            if (!teamQuarterlyData) {
-                console.error(`No quarterly data cache for team: ${teamName}`);
-                return;
-            }
-
-            if (!teamQuarterlyData[kpiName]) {
+            // Generate quarterly data if it doesn't exist
+            if (!technicalOperationalKpiQuarterlyData[kpiName]) {
                 const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
                 const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
                 let targetRange, actualRange, decimals, valueType;
-
+                
                 if (target !== null && actual !== null) {
                     if (isPercentage) {
                         targetRange = [Math.max(0, target * 0.85), target * 1.15];
@@ -6354,28 +6912,50 @@ const performanceData = {
                         decimals = 0;
                         valueType = 'count';
                     } else {
+                        // For monetary values, use thousands
                         targetRange = [target * 0.9, target * 1.1];
                         actualRange = [actual * 0.9, actual * 1.1];
                         decimals = 0;
                         valueType = 'thousands';
                     }
                 } else {
+                    // Default ranges if target/actual are not available
                     if (isPercentage) {
-                        targetRange = [80, 100]; actualRange = [75, 95]; decimals = 1; valueType = 'percentage';
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
                     } else if (isCount) {
-                        targetRange = [10, 50]; actualRange = [8, 45]; decimals = 0; valueType = 'count';
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
                     } else {
-                        targetRange = [10000, 50000]; actualRange = [9000, 48000]; decimals = 0; valueType = 'thousands';
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
                     }
                 }
-                teamQuarterlyData[kpiName] = generateQuarterlyData({ targetRange, actualRange, decimals, valueType });
+                
+                technicalOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
             }
 
+            // Add quarter dropdown to report card header
             const reportCardHeader = reportCard?.querySelector('.report-card-header');
             if (reportCardHeader) {
-                let existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
-                if (existingFilter) existingFilter.remove();
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
 
+                // Create quarter filter dropdown
                 const filterContainer = document.createElement('div');
                 filterContainer.className = 'quarter-filter-container';
                 filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
@@ -6394,6 +6974,7 @@ const performanceData = {
                     <option value="Q4">Q4 (Oct-Dec)</option>
                 `;
                 
+                // Set default to current quarter (or Q1)
                 const currentMonth = new Date().getMonth();
                 const currentQuarter = Math.floor(currentMonth / 3) + 1;
                 filterSelect.value = `Q${currentQuarter}`;
@@ -6402,8 +6983,9 @@ const performanceData = {
                 filterContainer.appendChild(filterSelect);
                 reportCardHeader.appendChild(filterContainer);
 
+                // Function to update chart based on selected quarter
                 const updateQuarterlyChart = (selectedQuarter) => {
-                    const quarterlyData = teamQuarterlyData[kpiName]?.[selectedQuarter];
+                    const quarterlyData = technicalOperationalKpiQuarterlyData[kpiName][selectedQuarter];
                     if (quarterlyData) {
                         applyTeamPerformanceSeries({
                             labels: quarterlyData.labels,
@@ -6412,6 +6994,7 @@ const performanceData = {
                             valueType: quarterlyData.valueType
                         });
 
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
                         const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
                         const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
                         
@@ -6420,14 +7003,16 @@ const performanceData = {
                             leaderName: '',
                             targetValue: totalTarget,
                             actualValue: totalActual,
-                            isPercentage: quarterlyData.valueType === 'percentage',
+                            isPercentage: isPercentageKpi,
                             valueFormat: quarterlyData.valueType
                         });
                     }
                 };
 
+                // Initial load with default quarter
                 updateQuarterlyChart(filterSelect.value);
 
+                // Add change event listener
                 filterSelect.addEventListener('change', (e) => {
                     updateQuarterlyChart(e.target.value);
                 });
@@ -6435,7 +7020,1947 @@ const performanceData = {
 
             updatePerformanceCardCopy({
                 title: kpiName,
-                subtitle: `${teamName} • Operational KPI`
+                subtitle: 'Technical Team • Operational KPI'
+            });
+        }
+
+        function updateAccountingTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!accountingOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                accountingOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = accountingOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Accounting Team • Operational KPI'
+            });
+        }
+
+        function updateLradTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!lradOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                lradOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = lradOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'LRAD Team • Operational KPI'
+            });
+        }
+
+        function updateQualityTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!qualityOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                qualityOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = qualityOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Quality Team • Operational KPI'
+            });
+        }
+
+        function updateDcTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!dcOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                dcOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = dcOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'DC Team • Operational KPI'
+            });
+        }
+
+        function updateItTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!itOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                itOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = itOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'IT Team • Operational KPI'
+            });
+        }
+
+        function updateOpportunityTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!opportunityOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                opportunityOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = opportunityOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Opportunity Team • Operational KPI'
+            });
+        }
+
+        function updateMarcomTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!marcomOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                marcomOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = marcomOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Marcom Team • Operational KPI'
+            });
+        }
+
+        function updateAuditTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!auditOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                auditOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = auditOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Audit Team • Operational KPI'
+            });
+        }
+
+        function updateGatheringTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!gatheringOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                gatheringOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = gatheringOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Gathering Team • Operational KPI'
+            });
+        }
+
+        function updateOperationsTeamOperationalKpiChart(kpiName, target, actual) {
+            // Show canvas and hide any SVG
+            const canvas = document.getElementById('teamPerformanceChart');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // If canvas doesn't exist (was removed by donut chart), recreate it
+            let canvasElement = canvas;
+            let needsReinit = false;
+            if (!canvasElement && chartContainer) {
+                chartContainer.innerHTML = '';
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = 'teamPerformanceChart';
+                chartContainer.appendChild(canvasElement);
+                needsReinit = true;
+            } else if (chartContainer) {
+                // Clear any SVG from donut chart
+                const svg = chartContainer.querySelector('svg.line-chart');
+                if (svg) {
+                    chartContainer.innerHTML = '';
+                    if (!canvasElement) {
+                        canvasElement = document.createElement('canvas');
+                        canvasElement.id = 'teamPerformanceChart';
+                        chartContainer.appendChild(canvasElement);
+                        needsReinit = true;
+                    } else {
+                        chartContainer.appendChild(canvasElement);
+                    }
+                }
+            }
+            
+            if (canvasElement) {
+                canvasElement.style.display = 'block';
+            }
+            
+            // Re-initialize chart if canvas was recreated
+            if (needsReinit) {
+                initTeamPerformanceChart();
+            }
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
+            }
+            setPerformanceReportCardMode('bar');
+
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+
+            if (!kpiName) {
+                resetTeamPerformanceVisuals();
+                return;
+            }
+
+            // Generate quarterly data if it doesn't exist
+            if (!operationsOperationalKpiQuarterlyData[kpiName]) {
+                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+                
+                let targetRange, actualRange, decimals, valueType;
+                
+                if (target !== null && actual !== null) {
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                } else {
+                    // Default ranges if target/actual are not available
+                    if (isPercentage) {
+                        targetRange = [80, 100];
+                        actualRange = [75, 95];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [10, 50];
+                        actualRange = [8, 45];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        targetRange = [10000, 50000];
+                        actualRange = [9000, 48000];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                }
+                
+                operationsOperationalKpiQuarterlyData[kpiName] = generateQuarterlyData({
+                    targetRange,
+                    actualRange,
+                    decimals,
+                    valueType
+                });
+            }
+
+            // Add quarter dropdown to report card header
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            if (reportCardHeader) {
+                // Remove existing quarter filter if any
+                const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                if (existingFilter) {
+                    existingFilter.remove();
+                }
+
+                // Create quarter filter dropdown
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'quarter-filter-container';
+                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                
+                const filterLabel = document.createElement('label');
+                filterLabel.textContent = 'Quarter:';
+                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                
+                const filterSelect = document.createElement('select');
+                filterSelect.id = 'quarterFilter';
+                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                filterSelect.innerHTML = `
+                    <option value="Q1">Q1 (Jan-Mar)</option>
+                    <option value="Q2">Q2 (Apr-Jun)</option>
+                    <option value="Q3">Q3 (Jul-Sep)</option>
+                    <option value="Q4">Q4 (Oct-Dec)</option>
+                `;
+                
+                // Set default to current quarter (or Q1)
+                const currentMonth = new Date().getMonth();
+                const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                filterSelect.value = `Q${currentQuarter}`;
+                
+                filterContainer.appendChild(filterLabel);
+                filterContainer.appendChild(filterSelect);
+                reportCardHeader.appendChild(filterContainer);
+
+                // Function to update chart based on selected quarter
+                const updateQuarterlyChart = (selectedQuarter) => {
+                    const quarterlyData = operationsOperationalKpiQuarterlyData[kpiName][selectedQuarter];
+                    if (quarterlyData) {
+                        applyTeamPerformanceSeries({
+                            labels: quarterlyData.labels,
+                            target: quarterlyData.target,
+                            actual: quarterlyData.actual,
+                            valueType: quarterlyData.valueType
+                        });
+
+                        const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                        
+                        updateTeamPerformanceInsight({
+                            operationName: kpiName,
+                            leaderName: '',
+                            targetValue: totalTarget,
+                            actualValue: totalActual,
+                            isPercentage: isPercentageKpi,
+                            valueFormat: quarterlyData.valueType
+                        });
+                    }
+                };
+
+                // Initial load with default quarter
+                updateQuarterlyChart(filterSelect.value);
+
+                // Add change event listener
+                filterSelect.addEventListener('change', (e) => {
+                    updateQuarterlyChart(e.target.value);
+                });
+            }
+
+            updatePerformanceCardCopy({
+                title: kpiName,
+                subtitle: 'Operations Team • Operational KPI'
             });
         }
 
@@ -6474,53 +8999,47 @@ const performanceData = {
                     const isOperationsTeamKra = this.classList.contains('operations-team-kra-row');
                     
                     if (isTechnicalTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Technical Team KRAs
                         updateTechnicalTeamKraCharts(operationName, target, actual, owner);
                     } else if (isAccountingTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Accounting Team KRAs
                         updateAccountingTeamKraCharts(operationName, target, actual, owner);
                     } else if (isLradTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for LRAD Team KRAs
                         updateLradTeamKraCharts(operationName, target, actual, owner);
                     } else if (isQualityTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Quality Team KRAs
                         updateQualityTeamKraCharts(operationName, target, actual, owner);
                     } else if (isDcTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for DC Team KRAs
                         updateDcTeamKraCharts(operationName, target, actual, owner);
                     } else if (isOpportunityTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Opportunity Team KRAs
                         updateOpportunityTeamKraCharts(operationName, target, actual, owner);
                     } else if (isItTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for IT Team KRAs
                         updateItTeamKraCharts(operationName, target, actual, owner);
                     } else if (isMarcomTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Marcom Team KRAs
                         updateMarcomTeamKraCharts(operationName, target, actual, owner);
                     } else if (isOperationsTeamKra && owner) {
+                        // Show both bar chart and doughnut chart for Operations Team KRAs
                         updateOperationsTeamKraCharts(operationName, target, actual, owner);
                     } else if (this.classList.contains('audit-team-kra-row') && owner) {
+                        // Show both bar chart and doughnut chart for Audit Team KRAs
                         updateAuditTeamKraCharts(operationName, target, actual, owner);
                     } else if (this.classList.contains('gathering-team-kra-row') && owner) {
+                        // Show both bar chart and doughnut chart for Gathering Team KRAs
                         updateGatheringTeamKraCharts(operationName, target, actual, owner);
                     } else {
                         // Check if this is a team member row (has member-view-row class)
+                        // Team members = doughnut chart, Team leader KPIs = bar chart
                         const isTeamMember = this.classList.contains('member-view-row');
                         
                         if (isTeamMember) {
-                            // Use dynamic chart for team members with monthly/quarterly view
+                            // Use doughnut chart for team members (from teamMembersData)
                             if (target !== null && actual !== null) {
-                                // Get monthly data from data attributes
-                                const monthlyTargetStr = this.getAttribute('data-monthly-target');
-                                const monthlyActualStr = this.getAttribute('data-monthly-actual');
-                                
-                                let monthlyTarget = null;
-                                let monthlyActual = null;
-                                
-                                try {
-                                    if (monthlyTargetStr) {
-                                        monthlyTarget = JSON.parse(monthlyTargetStr);
-                                    }
-                                    if (monthlyActualStr) {
-                                        monthlyActual = JSON.parse(monthlyActualStr);
-                                    }
-                                } catch (e) {
-                                    console.warn('Error parsing monthly data:', e);
-                                }
-                                
-                                updateMemberPerformanceChart(operationName, target, actual, monthlyTarget, monthlyActual);
+                                updateMemberPerformanceChart(operationName, target, actual);
                             } else {
                                 updateMemberPerformanceChart(operationName, null, null);
                             }
@@ -6647,6 +9166,355 @@ const performanceData = {
             });
         }
 
+        // Dynamic doughnut chart function - just pass the dataset
+        function createDynamicDoughnutChart(dataset, options = {}) {
+            // Default options
+            const {
+                width = 400,
+                height = 200,
+                outerRadius = 75,
+                innerRadius = 45,
+                colors = ['#96a840', '#e5bb22', '#587340', '#ff94ad', '#aff598', '#81f31d', '#ff3146', '#4ade80', '#f87171', '#60a5fa'],
+                centerText = null,
+                centerSubtext = 'Total Weight',
+                showLegend = true,
+                legendMaxLength = 40
+            } = options;
+            
+            if (!dataset || !Array.isArray(dataset) || dataset.length === 0) {
+                return '';
+            }
+            
+            // Normalize dataset - handle both {name, weight} and {kpi, weight} formats
+            const normalizedData = dataset.map(item => {
+                let weight = item.weight;
+                const name = item.name || item.kpi || '';
+                
+                // Parse weight if it's a string
+                if (typeof weight === 'string') {
+                    weight = parseFloat(weight.replace(/%/g, '').replace(/,/g, '').trim()) || 0;
+                }
+                
+                // Ensure weight is a valid number
+                weight = typeof weight === 'number' && !isNaN(weight) && weight >= 0 ? weight : 0;
+                
+                return { name, weight };
+            }).filter(item => item.weight > 0); // Filter out zero weights
+            
+            if (normalizedData.length === 0) {
+                return '';
+            }
+            
+            // Calculate total and percentages
+            const totalWeight = normalizedData.reduce((sum, item) => sum + item.weight, 0);
+            const dataWithPercentages = normalizedData.map(item => ({
+                ...item,
+                percentage: totalWeight > 0 ? (item.weight / totalWeight) * 100 : 0
+            }));
+            
+            // Chart dimensions
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // Helper function to create donut segment with better handling of small angles
+            const createDonutSegment = (startAngle, endAngle) => {
+                // Handle full circle (360 degrees) specially
+                const angleDiff = endAngle - startAngle;
+                const isFullCircle = Math.abs(angleDiff - 360) < 0.1 || angleDiff >= 360;
+                
+                if (isFullCircle) {
+                    // For a full circle, create two 180-degree arcs
+                    const start = (startAngle - 90) * (Math.PI / 180);
+                    const mid = (startAngle + 180 - 90) * (Math.PI / 180);
+                    const end = (startAngle + 360 - 90) * (Math.PI / 180);
+                    
+                    const x1 = centerX + outerRadius * Math.cos(start);
+                    const y1 = centerY + outerRadius * Math.sin(start);
+                    const x2 = centerX + outerRadius * Math.cos(mid);
+                    const y2 = centerY + outerRadius * Math.sin(mid);
+                    const x3 = centerX + outerRadius * Math.cos(end);
+                    const y3 = centerY + outerRadius * Math.sin(end);
+                    const x4 = centerX + innerRadius * Math.cos(end);
+                    const y4 = centerY + innerRadius * Math.sin(end);
+                    const x5 = centerX + innerRadius * Math.cos(mid);
+                    const y5 = centerY + innerRadius * Math.sin(mid);
+                    const x6 = centerX + innerRadius * Math.cos(start);
+                    const y6 = centerY + innerRadius * Math.sin(start);
+                    
+                    return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 1 1 ${x2} ${y2} 
+                            A ${outerRadius} ${outerRadius} 0 1 1 ${x3} ${y3}
+                            L ${x4} ${y4} A ${innerRadius} ${innerRadius} 0 1 0 ${x5} ${y5}
+                            A ${innerRadius} ${innerRadius} 0 1 0 ${x6} ${y6} Z`;
+                }
+                
+                // Ensure minimum angle for visibility (0.5 degrees)
+                const actualEndAngle = Math.max(endAngle, startAngle + 0.5);
+                
+                const start = (startAngle - 90) * (Math.PI / 180);
+                const end = (actualEndAngle - 90) * (Math.PI / 180);
+                const actualAngleDiff = actualEndAngle - startAngle;
+                const largeArc = actualAngleDiff > 180 ? 1 : 0;
+                
+                const x1 = centerX + outerRadius * Math.cos(start);
+                const y1 = centerY + outerRadius * Math.sin(start);
+                const x2 = centerX + outerRadius * Math.cos(end);
+                const y2 = centerY + outerRadius * Math.sin(end);
+                const x3 = centerX + innerRadius * Math.cos(end);
+                const y3 = centerY + innerRadius * Math.sin(end);
+                const x4 = centerX + innerRadius * Math.cos(start);
+                const y4 = centerY + innerRadius * Math.sin(start);
+                
+                return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} 
+                        L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+            };
+            
+            // Build segments with proper angle handling
+            let currentAngle = 0;
+            const segments = [];
+            const totalAngle = 360;
+            
+            // Special handling for single item - create a full circle
+            if (dataWithPercentages.length === 1) {
+                const item = dataWithPercentages[0];
+                const color = colors[0];
+                // Create a full circle (360 degrees)
+                const startAngle = 0;
+                const endAngle = 360;
+                const segment = createDonutSegment(startAngle, endAngle);
+                
+                segments.push(`
+                    <path d="${segment}" 
+                          fill="${color}" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-name="${item.name.replace(/"/g, '&quot;')}"
+                          data-weight="${item.weight}"
+                          data-percent="${item.percentage.toFixed(1)}" />
+                `);
+            } else {
+                // Multiple items - normal handling
+                dataWithPercentages.forEach((item, index) => {
+                    const angle = (item.percentage / 100) * totalAngle;
+                    const startAngle = currentAngle;
+                    let endAngle = currentAngle + angle;
+                    
+                    // For the last segment, ensure it closes the circle (handle rounding errors)
+                    if (index === dataWithPercentages.length - 1) {
+                        endAngle = startAngle + totalAngle - currentAngle;
+                    }
+                    
+                    // Only create segment if angle is meaningful
+                    if (angle > 0.01) {
+                        const segment = createDonutSegment(startAngle, endAngle);
+                        const color = colors[index % colors.length];
+                        
+                        segments.push(`
+                            <path d="${segment}" 
+                                  fill="${color}" 
+                                  filter="url(#donutShadow)"
+                                  style="cursor: pointer; transition: opacity 0.2s;"
+                                  data-name="${item.name.replace(/"/g, '&quot;')}"
+                                  data-weight="${item.weight}"
+                                  data-percent="${item.percentage.toFixed(1)}" />
+                        `);
+                    }
+                    
+                    currentAngle = endAngle;
+                });
+            }
+            
+            const defs = `
+                <defs>
+                    <filter id="donutShadow">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+            `;
+            
+            const centerDisplayText = centerText !== null ? centerText : `${totalWeight.toFixed(1)}%`;
+            
+            const svgContent = `
+                <svg class="line-chart" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display: block; margin: 0 auto;">
+                    ${defs}
+                    ${segments.join('')}
+                    <text x="${centerX}" y="${centerY - 5}" 
+                          text-anchor="middle" font-size="16" fill="#586740" font-weight="700">
+                        ${centerDisplayText}
+                    </text>
+                    <text x="${centerX}" y="${centerY + 12}" 
+                          text-anchor="middle" font-size="11" fill="#6b7280" font-weight="500">
+                        ${centerSubtext}
+                    </text>
+                </svg>
+            `;
+            
+            const legendContent = showLegend ? `
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px;">
+                    ${dataWithPercentages.map((item, index) => {
+                        const color = colors[index % colors.length];
+                        const displayName = item.name.length > legendMaxLength 
+                            ? item.name.substring(0, legendMaxLength) + '...' 
+                            : item.name;
+                        return `
+                            <div style="display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 4px;">
+                                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: ${color};"></span>
+                                <span style="font-size: 11px; color: #525552;">${displayName}: ${item.percentage.toFixed(1)}%</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            ` : '';
+
+            const wrapperClass = options.wrapperClass || 'kra-weight-donut';
+            
+            return `
+                <div class="${wrapperClass}">
+                    ${svgContent}
+                    ${legendContent}
+                </div>
+            `;
+        }
+
+        // Function to attach click event listeners to donut chart segments
+        function attachDonutChartListeners() {
+            const donutChart = document.querySelector('.kra-weight-donut');
+            if (!donutChart) return;
+            
+            const paths = donutChart.querySelectorAll('svg path[data-name]');
+            paths.forEach(path => {
+                // Remove existing listeners by cloning
+                const newPath = path.cloneNode(true);
+                path.parentNode.replaceChild(newPath, path);
+                
+                newPath.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const weight = this.getAttribute('data-weight');
+                    const percent = this.getAttribute('data-percent');
+                    
+                    // Get all paths again (after replacements) to reset styles
+                    const allPaths = donutChart.querySelectorAll('svg path[data-name]');
+                    allPaths.forEach(p => {
+                        p.style.opacity = '1';
+                        p.style.stroke = 'none';
+                        p.style.strokeWidth = '0';
+                    });
+                    
+                    // Highlight clicked segment
+                    this.style.opacity = '0.8';
+                    this.style.stroke = '#586740';
+                    this.style.strokeWidth = '2';
+                    
+                    // Update insight with clicked segment info
+                    updateTeamPerformanceInsight({
+                        operationName: name,
+                        leaderName: '',
+                        targetValue: null,
+                        actualValue: null,
+                        isPercentage: false,
+                        infoMessage: `Weight: ${weight}% | Percentage: ${percent}%`
+                    });
+                });
+                
+                // Add hover effects
+                newPath.addEventListener('mouseenter', function() {
+                    if (this.style.opacity !== '0.8') {
+                        this.style.opacity = '0.9';
+                    }
+                });
+                
+                newPath.addEventListener('mouseleave', function() {
+                    if (this.style.opacity !== '0.8') {
+                        this.style.opacity = '1';
+                    }
+                });
+            });
+        }
+
+        function updateOperationalKpiWeightDoughnut(kraName, kpiWeights, owner) {
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportTitle = document.querySelector('.performance-report-card .report-title');
+            const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // Hide canvas and bar chart elements
+            const canvas = document.getElementById('teamPerformanceChart');
+            if (canvas) {
+                canvas.style.display = 'none';
+            }
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
+            
+            // Remove quarter filter if it exists
+            const reportCardHeader = reportCard?.querySelector('.report-card-header');
+            const quarterFilter = reportCardHeader?.querySelector('.quarter-filter-container');
+            if (quarterFilter) {
+                quarterFilter.remove();
+            }
+            
+            // Remove existing doughnut chart if any
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+            
+            if (!chartContainer || !kpiWeights || kpiWeights.length === 0) {
+                return;
+            }
+            
+            // Use the dynamic doughnut chart function - just pass the dataset
+            const donutChartHTML = createDynamicDoughnutChart(kpiWeights, {
+                centerSubtext: 'Total Weight',
+                legendMaxLength: 40
+            });
+            
+            if (!donutChartHTML) {
+                return;
+            }
+            
+            chartContainer.innerHTML = donutChartHTML;
+            setPerformanceReportCardMode('doughnut');
+            
+            // Attach click event listeners to donut chart segments
+            setTimeout(() => {
+                attachDonutChartListeners();
+            }, 0);
+            
+            // Update title
+            if (reportTitle) {
+                const shortName = kraName.length > 50 ? kraName.substring(0, 50) + '...' : kraName;
+                reportTitle.innerHTML = `
+                    ${shortName}
+                    <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
+                        ${owner} • Operational KPI Weight Distribution
+                    </div>
+                `;
+            }
+            
+            // Calculate total weight for insight
+            const totalWeight = kpiWeights.reduce((sum, kpi) => {
+                let weight = kpi.weight;
+                if (typeof weight === 'string') {
+                    weight = parseFloat(weight.replace(/%/g, '').replace(/,/g, '').trim()) || 0;
+                }
+                return sum + (typeof weight === 'number' && !isNaN(weight) ? weight : 0);
+            }, 0);
+            
+            // Update insight
+            updateTeamPerformanceInsight({
+                operationName: kraName,
+                leaderName: owner,
+                targetValue: null,
+                actualValue: null,
+                isPercentage: false,
+                infoMessage: `Total Operational KPI Weight: ${totalWeight.toFixed(1)}%`
+            });
+        }
 
         // Update the dropdown functionality to trigger graph update
         function attachDropdownFunctionality(teamName) {
@@ -6654,13 +9522,27 @@ const performanceData = {
             
             memberRows.forEach(row => {
                 row.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on a link or button
                     if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
                         return;
                     }
 
                     const index = this.getAttribute('data-index');
                     const dropdown = document.getElementById(`dropdown-${index}`);
+                    const operationRole = this.querySelector('.member-name').textContent;
                     
+                    // Check if this is a Technical Team, Accounting Team, LRAD Team, Quality Team, DC Team, Opportunity Team, IT Team, Marcom Team, Operations Team, Audit Team, or Gathering Team KRA row
+                    const isTechnicalTeamKra = this.classList.contains('technical-team-kra-row');
+                    const isAccountingTeamKra = this.classList.contains('accounting-team-kra-row');
+                    const isLradTeamKra = this.classList.contains('lrad-team-kra-row');
+                    const isQualityTeamKra = this.classList.contains('quality-team-kra-row');
+                    const isDcTeamKra = this.classList.contains('dc-team-kra-row');
+                    const isOpportunityTeamKra = this.classList.contains('opportunity-team-kra-row');
+                    const isItTeamKra = this.classList.contains('it-team-kra-row');
+                    const isMarcomTeamKra = this.classList.contains('marcom-team-kra-row');
+                    const isOperationsTeamKra = this.classList.contains('operations-team-kra-row');
+                    const isAuditTeamKra = this.classList.contains('audit-team-kra-row');
+                    const isGatheringTeamKra = this.classList.contains('gathering-team-kra-row');
                     const owner = this.getAttribute('data-owner');
                     const operationName = this.getAttribute('data-operation');
                     const targetStr = this.getAttribute('data-target');
@@ -6668,63 +9550,332 @@ const performanceData = {
                     const target = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
                     const actual = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
                     
-                    const isAnyTeamKra = this.classList.contains('technical-team-kra-row') ||
-                                        this.classList.contains('accounting-team-kra-row') ||
-                                        this.classList.contains('lrad-team-kra-row') ||
-                                        this.classList.contains('quality-team-kra-row') ||
-                                        this.classList.contains('dc-team-kra-row') ||
-                                        this.classList.contains('opportunity-team-kra-row') ||
-                                        this.classList.contains('it-team-kra-row') ||
-                                        this.classList.contains('marcom-team-kra-row') ||
-                                        this.classList.contains('operations-team-kra-row') ||
-                                        this.classList.contains('audit-team-kra-row') ||
-                                        this.classList.contains('gathering-team-kra-row');
-
-                    if (isAnyTeamKra && owner) {
+                    // For Technical Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isTechnicalTeamKra && teamName === 'Technical Team' && owner) {
+                        // Remove active class from all rows
                         document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
                         this.classList.add('row-active');
-                        // Call the generic KRA text-display function for all teams.
-                        updateTeamKraChartsGeneric(teamName, null, operationName, target, actual, owner);
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateTechnicalTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For Accounting Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isAccountingTeamKra && teamName === 'Accounting Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateAccountingTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For LRAD Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isLradTeamKra && teamName === 'LRAD Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateLradTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For Quality Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isQualityTeamKra && teamName === 'Quality Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateQualityTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For DC Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isDcTeamKra && teamName === 'DC Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateDcTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For Opportunity Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isOpportunityTeamKra && teamName === 'Opportunity Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateOpportunityTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For IT Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isItTeamKra && teamName === 'IT Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateItTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For Marcom Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isMarcomTeamKra && teamName === 'Marcom Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateMarcomTeamKraCharts(operationName, target, actual, owner);
+                    }
+                    
+                    // For Operations Team operational KRAs, show KRA-level doughnut chart when row is clicked
+                    if (isOperationsTeamKra && teamName === 'Operations Team' && owner) {
+                        // Remove active class from all rows
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        // Add active class to clicked row
+                        this.classList.add('row-active');
+                        // Show both bar chart and KRA-level doughnut chart
+                        updateOperationsTeamKraCharts(operationName, target, actual, owner);
                     }
                     
                     if (dropdown) {
                         const isExpanded = this.classList.contains('expanded');
                         
-                        document.querySelectorAll('.member-row.has-dropdown').forEach(r => r.classList.remove('expanded'));
-                        document.querySelectorAll('.sub-operations').forEach(d => d.classList.remove('show'));
+                        // Close all other dropdowns
+                        document.querySelectorAll('.member-row.has-dropdown').forEach(r => {
+                            r.classList.remove('expanded');
+                        });
+                        document.querySelectorAll('.sub-operations').forEach(d => {
+                            d.classList.remove('show');
+                        });
                         
+                        // Toggle current
                         if (!isExpanded) {
                             this.classList.add('expanded');
                             dropdown.classList.add('show');
                             
+                            // For Technical Team, Accounting Team, LRAD Team, Quality Team, DC Team, Opportunity Team, IT Team, Marcom Team, Operations Team, Audit Team, and Gathering Team, show operational KPI weight doughnut chart when dropdown opens
+                            if (teamName === 'Technical Team' || teamName === 'Accounting Team' || teamName === 'LRAD Team' || teamName === 'Quality Team' || teamName === 'DC Team' || teamName === 'Opportunity Team' || teamName === 'IT Team' || teamName === 'Marcom Team' || teamName === 'Operations Team' || teamName === 'Audit Team' || teamName === 'Gathering Team') {
+                                let kpiWeightsJson = this.getAttribute('data-kpi-weights');
+                                if (kpiWeightsJson) {
+                                    try {
+                                        // Unescape HTML entities before parsing
+                                        kpiWeightsJson = kpiWeightsJson.replace(/&apos;/g, "'").replace(/&quot;/g, '"');
+                                        const kpiWeights = JSON.parse(kpiWeightsJson);
+                                        const kraName = this.getAttribute('data-operation');
+                                        const owner = this.getAttribute('data-owner');
+                                        // Debug: log the weights to verify they're correct
+                                        console.log('KPI Weights from data attribute:', kpiWeights);
+                                        updateOperationalKpiWeightDoughnut(kraName, kpiWeights, owner);
+                                    } catch (e) {
+                                        console.error('Error parsing KPI weights:', e, 'Raw JSON:', kpiWeightsJson);
+                                    }
+                                } else {
+                                    console.warn('No KPI weights data found for row');
+                                }
+                            }
+                            
+                            // Add click handlers to sub-operation items
                             const subItems = dropdown.querySelectorAll('.sub-operation-item');
                             subItems.forEach(item => {
                                 item.style.cursor = 'pointer';
-                                const clickHandler = function(event) {
-                                    event.stopPropagation();
+                                item.addEventListener('click', function(e) {
+                                    e.stopPropagation();
                                     
+                                    // Remove active class from all items
                                     subItems.forEach(i => i.style.background = '');
+                                    
+                                    // Highlight selected item
                                     this.style.background = 'rgba(229, 187, 34, 0.15)';
                                     
                                     const kpiName = this.querySelector('.sub-operation-label').textContent.replace('→', '').trim();
-                                    const targetStr = this.getAttribute('data-target');
-                                    const actualStr = this.getAttribute('data-actual');
-                                    const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
-                                    const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
                                     
-                                    // Always call the single, unified chart update function
-                                    updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);
-                                };
-                                
-                                // Remove old listener before adding new one to prevent duplication
-                                item.removeEventListener('click', item.__clickHandler);
-                                item.addEventListener('click', clickHandler);
-                                item.__clickHandler = clickHandler; // Store reference to remove later
+                                    // Handle Technical Team, Accounting Team, LRAD Team, Quality Team, DC Team, Opportunity Team, IT Team, Marcom Team, and Operations Team differently
+                                    if (teamName === 'Technical Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Technical Team Operational KPIs, always show quarterly data
+                                        updateTechnicalTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Accounting Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Accounting Team Operational KPIs, always show quarterly data
+                                        updateAccountingTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'LRAD Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For LRAD Team Operational KPIs, always show quarterly data
+                                        updateLradTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Quality Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Quality Team Operational KPIs, always show quarterly data
+                                        updateQualityTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'DC Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For DC Team Operational KPIs, always show quarterly data
+                                        updateDcTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'IT Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For IT Team Operational KPIs, always show quarterly data
+                                        updateItTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Opportunity Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Opportunity Team Operational KPIs, always show quarterly data
+                                        updateOpportunityTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Marcom Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Marcom Team Operational KPIs, always show quarterly data
+                                        updateMarcomTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Audit Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Audit Team Operational KPIs, always show quarterly data
+                                        updateAuditTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Gathering Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Gathering Team Operational KPIs, always show quarterly data
+                                        updateGatheringTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else if (teamName === 'Operations Team') {
+                                        // Get target and actual from data attributes
+                                        const targetStr = this.getAttribute('data-target');
+                                        const actualStr = this.getAttribute('data-actual');
+                                        
+                                        const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                        const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                        
+                                        // For Operations Team Operational KPIs, always show quarterly data
+                                        updateOperationsTeamOperationalKpiChart(kpiName, targetValue, actualValue);
+                                    } else {
+                                        // Original logic for other teams
+                                        updatePerformanceGraph(teamName, operationRole, kpiName);
+                                    }
+                                });
                             });
                         } else {
-                             if (isAnyTeamKra && owner) {
-                                updateTeamKraChartsGeneric(teamName, null, operationName, target, actual, owner);
-                             }
+                            // If closing dropdown, show KRA-level doughnut chart again (for Technical Team, Accounting Team, LRAD Team, Quality Team, DC Team, Opportunity Team, IT Team, Marcom Team, Operations Team, Audit Team, and Gathering Team operational KRAs)
+                            if (isTechnicalTeamKra && teamName === 'Technical Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateTechnicalTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isAccountingTeamKra && teamName === 'Accounting Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateAccountingTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isLradTeamKra && teamName === 'LRAD Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateLradTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isQualityTeamKra && teamName === 'Quality Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateQualityTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isDcTeamKra && teamName === 'DC Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateDcTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isOpportunityTeamKra && teamName === 'Opportunity Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateOpportunityTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isItTeamKra && teamName === 'IT Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateItTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isMarcomTeamKra && teamName === 'Marcom Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateMarcomTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isOperationsTeamKra && teamName === 'Operations Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateOperationsTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isAuditTeamKra && teamName === 'Audit Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateAuditTeamKraCharts(operationName, target, actual, owner);
+                            } else if (isGatheringTeamKra && teamName === 'Gathering Team' && owner) {
+                                // Show both bar chart and KRA-level doughnut chart
+                                updateGatheringTeamKraCharts(operationName, target, actual, owner);
+                            } else if (teamName === 'Technical Team' || teamName === 'Accounting Team' || teamName === 'LRAD Team' || teamName === 'Quality Team' || teamName === 'DC Team' || teamName === 'Opportunity Team' || teamName === 'IT Team' || teamName === 'Marcom Team' || teamName === 'Operations Team' || teamName === 'Audit Team' || teamName === 'Gathering Team') {
+                                // For other Technical Team or Accounting Team rows, show operational KPI weight doughnut chart
+                                let kpiWeightsJson = this.getAttribute('data-kpi-weights');
+                                if (kpiWeightsJson) {
+                                    try {
+                                        // Unescape HTML entities before parsing
+                                        kpiWeightsJson = kpiWeightsJson.replace(/&quot;/g, '"');
+                                        const kpiWeights = JSON.parse(kpiWeightsJson);
+                                        const kraName = this.getAttribute('data-operation');
+                                        const owner = this.getAttribute('data-owner');
+                                        updateOperationalKpiWeightDoughnut(kraName, kpiWeights, owner);
+                                    } catch (e) {
+                                        console.error('Error parsing KPI weights:', e, 'Raw JSON:', kpiWeightsJson);
+                                    }
+                                }
+                            } else {
+                                // For other teams, show bar chart for the row
+                                const operationName = this.getAttribute('data-operation');
+                                const targetStr = this.getAttribute('data-target');
+                                const actualStr = this.getAttribute('data-actual');
+                                
+                                const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                
+                                if (targetValue !== null && actualValue !== null) {
+                                    // Remove active class from all rows
+                                    document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                                    // Add active class to clicked row
+                                    this.classList.add('row-active');
+                                    updateTeamPerformanceBarChart(operationName, targetValue, actualValue);
+                                }
+                            }
                         }
                     }
                 });
@@ -6751,37 +9902,14 @@ const performanceData = {
                     const name = row.getAttribute('data-name') || '';
                     const team = row.getAttribute('data-team') || '';
                     const operation = row.getAttribute('data-operation') || '';
-                    const owner = row.getAttribute('data-owner') || '';
                     const memberName = row.querySelector('.member-name')?.textContent || '';
-                    
-                    // Get Role Owner text - for opportunity/operations team rows, it's the first div
-                    // For member-view-row, it's the second div after member-info
-                    let roleOwner = '';
-                    if (row.classList.contains('opportunity-team-kra-row') || row.classList.contains('operations-team-kra-row')) {
-                        // First div is Role Owner
-                        const firstDiv = row.children[0];
-                        roleOwner = firstDiv && firstDiv.tagName === 'DIV' ? firstDiv.textContent.trim() : '';
-                    } else if (row.classList.contains('member-view-row')) {
-                        // Second div after member-info is the role
-                        const children = Array.from(row.children);
-                        const memberInfoIndex = children.findIndex(child => child.classList.contains('member-info'));
-                        if (memberInfoIndex !== -1 && children[memberInfoIndex + 1]) {
-                            roleOwner = children[memberInfoIndex + 1].textContent.trim();
-                        }
-                    }
-                    
-                    // Also get all visible text content from the row for comprehensive search
-                    const rowText = row.textContent || '';
                     
                     const nameMatch = name.toLowerCase().includes(searchTerm);
                     const teamMatch = team.toLowerCase().includes(searchTerm);
                     const operationMatch = operation.toLowerCase().includes(searchTerm);
-                    const ownerMatch = owner.toLowerCase().includes(searchTerm);
                     const memberNameMatch = memberName.toLowerCase().includes(searchTerm);
-                    const roleOwnerMatch = roleOwner.toLowerCase().includes(searchTerm);
-                    const rowTextMatch = rowText.toLowerCase().includes(searchTerm);
                     
-                    if (nameMatch || teamMatch || operationMatch || ownerMatch || memberNameMatch || roleOwnerMatch || rowTextMatch || searchTerm === '') {
+                    if (nameMatch || teamMatch || operationMatch || memberNameMatch || searchTerm === '') {
                         row.classList.remove('hidden');
                     } else {
                         row.classList.add('hidden');
@@ -7227,5 +10355,3 @@ const performanceData = {
             initScoreboardToggle();
             applyIncomingLeaderHighlight();
         });
-
-        

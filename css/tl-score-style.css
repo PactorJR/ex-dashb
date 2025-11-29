@@ -1400,48 +1400,7 @@ small {
     color: #ff3146;
 }
 
-.report-legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 8px;
-    font-size: var(--fs-small);
-    color: var(--text-color);
-}
 
-.report-legend.muted {
-    color: #9ca3af;
-}
-
-.report-legend.modern {
-    justify-content: flex-start;
-    gap: 24px;
-    font-weight: 600;
-}
-
-.report-legend .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 6px;
-}
-
-.report-legend .legend-dot.legend-2025 {
-    background: #8faf3c;
-    box-shadow: 0 0 0 4px rgba(143, 175, 60, 0.15);
-}
-
-.report-legend .legend-dot.legend-2024 {
-    background: #f2c737;
-    box-shadow: 0 0 0 4px rgba(242, 199, 55, 0.2);
-}
-
-.report-legend .legend-dot.legend-target {
-    background: #3f4a2e;
-    border: 2px solid #c5cfb1;
-}
 
 .chart-wrapper {
     display: flex;
