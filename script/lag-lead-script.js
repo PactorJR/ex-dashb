@@ -1084,8 +1084,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -1101,17 +1101,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                     enabled: true,
@@ -3421,11 +3411,11 @@
                     maintainAspectRatio: false,
                     layout: {
                         padding: {
-                            top: 50,
-                            right: 12,
-                            left: 8,
-                            bottom: 8
-                        }
+                        top: 10,
+                        right: 12,
+                        left: 8,
+                        bottom: 8
+                    }
                     },
                     datasets: {
                         bar: {
@@ -3437,17 +3427,7 @@
                     },
                     plugins: {
                         legend: {
-                            position: 'top',
-                            align: 'center',
-                            labels: {
-                                font: { size: 12, weight: '600' },
-                                boxWidth: 12,
-                                boxHeight: 12,
-                                borderRadius: 6,
-                                padding: 16,
-                                color: '#4a4a4a',
-                                usePointStyle: true
-                            }
+                            display: false
                         },
                         tooltip: {
                             enabled: true,
@@ -3755,8 +3735,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -3772,17 +3752,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -3920,8 +3890,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -3937,17 +3907,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -4085,8 +4045,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -4102,17 +4062,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -4250,8 +4200,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -4267,17 +4217,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -4415,8 +4355,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -4432,17 +4372,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -4580,8 +4510,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -4597,17 +4527,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -4802,8 +4722,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -4819,17 +4739,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5091,8 +5001,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5108,17 +5018,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5261,8 +5161,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5278,17 +5178,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5431,8 +5321,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5448,17 +5338,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5601,8 +5481,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5618,17 +5498,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5771,8 +5641,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5788,17 +5658,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -5941,8 +5801,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -5958,17 +5818,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -6111,8 +5961,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -6128,17 +5978,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -6281,8 +6121,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -6298,17 +6138,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -6451,8 +6281,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -6468,17 +6298,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -6621,8 +6441,8 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        top: 50,
+                        padding: {
+                        top: 10,
                         right: 12,
                         left: 8,
                         bottom: 8
@@ -6638,17 +6458,7 @@
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            font: { size: 12, weight: '600' },
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            borderRadius: 6,
-                            padding: 16,
-                            color: '#4a4a4a',
-                            usePointStyle: true
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,

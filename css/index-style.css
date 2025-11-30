@@ -311,6 +311,15 @@ small {
     background: var(--secondary-color);
 }
 
+.ten-year-plan-container {
+    max-width: 100%;
+    margin: 0 auto;
+    margin-top: -50px;
+    padding: 0 20px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 .container {
     max-width: 100%;
     margin: 0 auto;
@@ -1059,7 +1068,7 @@ small {
     .ten-year-plan .features-grid-right .feature-block {
         width: 100%;
         height: auto;
-        max-height: 230px;
+        max-height: 230px !important;
         min-height: 0;
         padding: 12px;
     }
@@ -3328,12 +3337,31 @@ small {
     pointer-events: none;
 }
 
+.hero-new .hero-new-container {
+    max-width: 100%;
+    margin: 0 auto;
+    margin-top: -60px;
+    padding: 0 20px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+/* VISIBLE STATE (Added via JS) */
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1); /* Reset position and size */
+    pointer-events: auto; /* Clickable */
+}
+
+.scroll-top-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(229, 187, 34, 0.4);
+    background: linear-gradient(135deg, #e5bb22 0%, #96a840 100%);
+}
+
 /* Specific for 1366x768 laptop resolution */
 @media (min-width: 1024px) and (max-width: 1680px)  {
-    .main-content {
-        height: 100vh;
-        overflow-y: auto;
-    }
 
     .dashboard-section,
     .hero,
@@ -3436,7 +3464,7 @@ small {
         justify-content: flex-start;
     }
 
-    .ten-year-plan .container {
+    .ten-year-plan .ten-year-plan-container {
         max-width: 1200px;
         height: 100%;
         display: flex;
@@ -3902,10 +3930,13 @@ small {
         box-sizing: border-box;
     }
 
-    .ten-year-plan .container {
+
+
+    .ten-year-plan .ten-year-plan-container {
         max-width: 1600px;
         width: 100%;
         height: 100%;
+        margin-top: 10px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -4814,6 +4845,49 @@ small {
     gap: 12px;
     color: var(--secondary-color);
 }
+
+/* Scroll to Top Button */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #586740 0%, #96a840 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(88, 103, 64, 0.4);
+    z-index: 9999;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    
+    /* HIDDEN STATE (Default) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.8); /* Pushed down and shrunk */
+    pointer-events: none; /* Non-clickable when hidden */
+    
+    /* Smooth Bouncy Animation for appearing/disappearing */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* VISIBLE STATE (Added via JS) */
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1); /* Reset position and size */
+    pointer-events: auto; /* Clickable */
+}
+
+.scroll-top-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(229, 187, 34, 0.4);
+    background: linear-gradient(135deg, #e5bb22 0%, #96a840 100%);
+}
+
 
 /* Responsive Design for New Sections */
 @media (max-width: 1024px) {

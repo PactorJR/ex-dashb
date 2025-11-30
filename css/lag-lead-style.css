@@ -725,7 +725,7 @@ small {
     /* Team Section Headers */
     .team-section {
         grid-column: 1 / -1;
-        margin: 40px 0 20px 0;
+        margin: 10px 0 10px 0;
         padding-bottom: 15px;
         border-bottom: 3px solid var(--primary-color) !important;
         scroll-margin-top: 100px; /* Offset for fixed navbar */
@@ -789,10 +789,10 @@ small {
     /* Dashboard Grid - 2 columns layout */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+        grid-template-columns: minmax(280px, 300px) minmax(0, 1fr);
         gap: 24px;
         width: 100%;
-        max-width: calc(100vw - 40px); /* ADD THIS - accounts for padding */
+        max-width: calc(100vw - 10px); /* ADD THIS - accounts for padding */
         margin: 0 auto;
         align-items: start;
         position: relative;
@@ -835,8 +835,8 @@ small {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px 0;
-        margin: 20px 0;
+        padding: 0;
+        margin: 10px 0;
     }
 
     .company-toggle-container {
@@ -852,7 +852,7 @@ small {
         padding: 12px 32px;
         border: none;
         background: transparent;
-        color: #525552;
+        color: var(--text-color);
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;

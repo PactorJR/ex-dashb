@@ -3024,50 +3024,7 @@ const performanceData = {
                     icon: this.getAttribute('data-icon')
                 };
 
-                const teamShortNames = {
-                    'Technical Team': 'Technical',
-                    'Accounting Team': 'Accounting',
-                    'LRAD Team': 'LRAD',
-                    'DC Team': 'DC',
-                    'Opportunity Team': 'Opportunity',
-                    'Marcom Team': 'Marcom',
-                    'Gathering Team': 'Gathering',
-                    'Operations Team': 'Operations'
-                };
-                
-                const teamShortName = teamShortNames[selectedTeam] || '';
-                if (teamShortName) {
-                    resetTeamPerformanceVisuals({
-                        infoMessage: `Select a ${teamShortName} Team KPI to view its detailed monthly breakdown.`
-                    });
-                } else {
-                    resetTeamPerformanceVisuals({
-                        infoMessage: 'Select a KPI to view its detailed monthly breakdown.'
-                    });
-                }
-                
-                if (currentView === 'operations') {
-                    showReportCards();
-                } else {
-                    showLegendOnly();
-                }
-                
-                // Reset to instruction message when selecting a team
-                const reportCards = document.querySelectorAll('.report-card');
-                const performanceCard = reportCards[0];
-                if (performanceCard) {
-                    const chartSvg = performanceCard.querySelector('svg.line-chart');
-                    const reportTitle = performanceCard.querySelector('.report-title');
-                    if (chartSvg && reportTitle) {
-                        chartSvg.innerHTML = '';
-                        reportTitle.innerHTML = `
-                            Team Performance Report
-                            <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                                Click an Operation KPI to show the graph
-                            </div>
-                        `;
-                    }
-                }
+
                 
                 refreshOperationsContent();
                 updateLeadKpiSection(selectedTeam, selectedTeamData.title);
@@ -3199,7 +3156,7 @@ const performanceData = {
                 .join('') || 'TM';
         }
 
-        function updateTeamMembersSection(teamName, teamTitle) {
+        async function updateTeamMembersSection(teamName, teamTitle) {
             const operationsContent = document.getElementById('operationsContent');
             if (!operationsContent) {
                 return;
@@ -3211,6 +3168,11 @@ const performanceData = {
                 const owners = Object.keys(technicalData);
                 
                 if (owners.length === 0) {
+                    // Hide search container when no data
+                    const searchContainer = document.getElementById('operationsSearchContainer');
+                    if (searchContainer) {
+                        searchContainer.style.display = 'none';
+                    }
                     operationsContent.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">👥</div>
@@ -5084,6 +5046,9 @@ const performanceData = {
             
             // Original logic for other teams
             operationsContent.classList.remove('technical-team-view');
+            
+            // Fetch team members data from Google Sheets
+            await fetchTeamMembersData();
             const members = teamMembersData[teamName] || [];
 
             if (members.length === 0) {
@@ -5116,6 +5081,12 @@ const performanceData = {
                 const actualValue = typeof member.actualValue === 'number' ? member.actualValue : '';
                 const targetLabel = member.targetLabel ?? (targetValue !== '' ? targetValue : '-');
                 const actualLabel = member.actualLabel ?? (actualValue !== '' ? actualValue : '-');
+                
+                // Get monthly data if available
+                const monthlyTarget = member.monthlyData?.target || Array(12).fill(null);
+                const monthlyActual = member.monthlyData?.actual || Array(12).fill(null);
+                const monthlyTargetJson = JSON.stringify(monthlyTarget);
+                const monthlyActualJson = JSON.stringify(monthlyActual);
 
                 html += `
                     <div class="member-row member-view-row"
@@ -5125,6 +5096,8 @@ const performanceData = {
                          data-operation="${member.kpi}"
                          data-target="${targetValue}"
                          data-actual="${actualValue}"
+                         data-monthly-target="${escapeAttributeValue(monthlyTargetJson)}"
+                         data-monthly-actual="${escapeAttributeValue(monthlyActualJson)}"
                          style="cursor: pointer;">
                         <div class="member-info">
                             <div class="member-avatar">${initials}</div>
@@ -5161,7 +5134,7 @@ const performanceData = {
                 if (operationsSectionSubtitle) {
                     operationsSectionSubtitle.textContent = isMembersView
                         ? 'Select a team to view their team members'
-                        : 'Select a team to view KPIs';
+                        : '';
                 }
                 operationsContent.innerHTML = `
                     <div class="empty-state">
@@ -5183,13 +5156,20 @@ const performanceData = {
             }
 
             if (operationsSectionSubtitle) {
-                operationsSectionSubtitle.textContent = isMembersView
-                    ? `People reporting under ${selectedTeamData.name || selectedTeamData.title}`
+                if (isMembersView) {
+                    operationsSectionSubtitle.textContent = '';
+                } else {
+                    // Check switch state: 'profile' = Lead KPIs, 'operations' = Lag KPIs
+                    operationsSectionSubtitle.textContent = currentView === 'profile'
+                        ? `${selectedTeamData.title} lead KPIs`
                     : `${selectedTeamData.title} lag KPIs`;
+                }
             }
 
             if (isMembersView) {
-                updateTeamMembersSection(selectedTeam, selectedTeamData.title);
+                updateTeamMembersSection(selectedTeam, selectedTeamData.title).catch(err => {
+                    console.error('Error updating team members section:', err);
+                });
             } else {
                 updateOperationsSection(selectedTeam, selectedTeamData.title);
             }
@@ -5200,6 +5180,11 @@ const performanceData = {
         function updateLeadKpiSection(teamName, teamTitle) {
             const profileContent = document.getElementById('profileContent');
             const leadKpis = leadKpiData[teamName] || [];
+            
+            // Update subtitle when team is selected
+            if (profileSectionSubtitle && selectedTeamData) {
+                profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
+            }
             
             if (leadKpis.length === 0) {
                 profileContent.innerHTML = `
@@ -5271,7 +5256,7 @@ const performanceData = {
 
         const performanceReportCopy = {
             defaultTitle: '--',
-            defaultSubtitle: 'Click a team leader KPI to see its current actual vs target snapshot.'
+            defaultSubtitle: ''
         };
 
         const defaultTeamPerformanceSeries = {
@@ -5284,7 +5269,8 @@ const performanceData = {
             valueType: 'thousands'
         };
 
-        const teamPerformanceChartData = {
+        // Initialize chart data using dynamic design pattern from lag-lead-script.js
+        const initialChartStructure = createComparisonChartStructures({
             labels: [...defaultTeamPerformanceSeries.labels],
             datasets: [
                 {

@@ -2021,6 +2021,21 @@ const performanceData = {
         // Store quarterly data for Operations Team Operational KPIs
         const operationsOperationalKpiQuarterlyData = {};
 
+        // Unified object mapping all team names to their quarterly data objects
+        const allTeamsOperationalKpiQuarterlyData = {
+            'Technical Team': technicalOperationalKpiQuarterlyData,
+            'Accounting Team': accountingOperationalKpiQuarterlyData,
+            'LRAD Team': lradOperationalKpiQuarterlyData,
+            'Quality Team': qualityOperationalKpiQuarterlyData,
+            'DC Team': dcOperationalKpiQuarterlyData,
+            'IT Team': itOperationalKpiQuarterlyData,
+            'Opportunity Team': opportunityOperationalKpiQuarterlyData,
+            'Marcom Team': marcomOperationalKpiQuarterlyData,
+            'Audit Team': auditOperationalKpiQuarterlyData,
+            'Gathering Team': gatheringOperationalKpiQuarterlyData,
+            'Operations Team': operationsOperationalKpiQuarterlyData
+        };
+
         const technicalMonthlySeries = {
             'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': generateMonthlySeries({
                 targetRange: [120000, 135000],
@@ -2794,7 +2809,7 @@ const performanceData = {
 
         // State management
         let currentView = 'operations';
-        let currentOperationsView = 'lag';
+        let currentOperationsView = 'leaders';
         let selectedTeam = null;
         let selectedTeamData = null;
         let selectedYear = 2025;
@@ -2848,6 +2863,80 @@ const performanceData = {
 
         let scoreboardToggleButtons = [];
 
+        // Function to reset the right container (reports section) to blank state
+        function resetReportsSection(targetView = null) {
+            const reportCard = document.querySelector('.performance-report-card');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const reportTitle = reportCard?.querySelector('.report-title');
+            const reportSubtitle = reportCard?.querySelector('.report-card-subtitle');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            
+            // Determine which view we're in (use parameter or current view)
+            const view = targetView || currentOperationsView;
+            const isMembersView = view === 'members';
+            
+            // Hide quarter-filter-container and chart-wrapper when switching to critical numbers section
+            if (!isMembersView) {
+                const quarterFilter = document.querySelector('.quarter-filter-container');
+                const chartWrapper = document.querySelector('.chart-wrapper');
+                if (quarterFilter) {
+                    quarterFilter.style.display = 'none';
+                }
+                if (chartWrapper) {
+                    chartWrapper.style.display = 'none';
+                }
+            }
+            
+            // Destroy any existing Chart.js instance before clearing
+            try {
+                if (typeof teamPerformanceChart !== 'undefined' && teamPerformanceChart !== null) {
+                    teamPerformanceChart.destroy();
+                    teamPerformanceChart = null;
+                }
+            } catch (e) {
+                // Chart instance may not be initialized yet, which is fine
+                console.debug('Chart instance not available for destruction:', e);
+            }
+            
+            // Clear chart container - remove both canvas and SVG charts
+            if (chartContainer) {
+                chartContainer.innerHTML = '';
+            }
+            
+            // Reset title based on section
+            if (reportTitle) {
+                if (isMembersView) {
+                    reportTitle.innerHTML = 'Team Section';
+                } else {
+                    reportTitle.innerHTML = 'Critical Number Section';
+                }
+            }
+            
+            // Reset subtitle with graph icon based on section
+            if (reportSubtitle) {
+                if (isMembersView) {
+                    reportSubtitle.innerHTML = 'Click a team member to view a graph <span style="display: block; margin-top: 8px; font-size: 24px;"></span>';
+                } else {
+                    reportSubtitle.innerHTML = 'Click a KPI to view a graph <span style="display: block; margin-top: 8px; font-size: 24px;"></span>';
+                }
+            }
+            
+            // Hide legend and y-axis label
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
+            
+            // Clear any chart insight
+            const insightElement = document.getElementById('teamPerformanceInsight');
+            if (insightElement) {
+                insightElement.textContent = 'Loading insight…';
+            }
+        }
+
         function initScoreboardToggle() {
             scoreboardToggleButtons = Array.from(document.querySelectorAll('.scoreboard-toggle-btn'));
             if (!scoreboardToggleButtons.length) {
@@ -2860,13 +2949,13 @@ const performanceData = {
                         return;
                     }
 
-                    const target = button.dataset.target === 'members' ? 'members' : 'lag';
-
-
-                    
+                    const target = button.dataset.target === 'members' ? 'members' : 'leaders';
                     if (currentOperationsView === target) {
                         return;
                     }
+
+                    // Reset the right container (reports section) when switching between sections
+                    resetReportsSection(target);
 
                     // If switching to members view and section switch is on profile (active), switch back to operations
                     if (target === 'members' && currentView === 'profile') {
@@ -2888,7 +2977,7 @@ const performanceData = {
             }
 
             scoreboardToggleButtons.forEach(button => {
-                const target = button.dataset.target === 'members' ? 'members' : 'lag';
+                const target = button.dataset.target === 'members' ? 'members' : 'leaders';
                 const isActive = currentOperationsView === target;
                 button.classList.toggle('active', isActive);
             });
@@ -2919,27 +3008,15 @@ const performanceData = {
             sectionSwitch.classList.toggle('active');
             sectionSwitch2.classList.toggle('active');
             
-                if (currentView === 'operations') {
+            if (currentView === 'operations') {
                 operationsSection.classList.remove('hidden');
                 profileSection.classList.add('hidden');
                 if (selectedTeam) {
                     showReportCards();
-                    // Reset to instruction message when switching
-                    const reportCards = document.querySelectorAll('.report-card');
-                    const performanceCard = reportCards[0];
-                    if (performanceCard) {
-                        const chartSvg = performanceCard.querySelector('svg.line-chart');
-                        const reportTitle = performanceCard.querySelector('.report-title');
-                        if (chartSvg && reportTitle) {
-                            chartSvg.innerHTML = '';
-                            reportTitle.innerHTML = `
-                                Team Performance Report
-                                <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                                    Click an Operation KPI to show the graph
-                                </div>
-                            `;
-                        }
-                    }
+                    // Reset chart visuals when switching back to operations
+                    resetTeamPerformanceVisuals({
+                        infoMessage: 'Select a KPI to view its target vs actual details.'
+                    });
                 } else {
                     showLegendOnly();
                 }
@@ -2953,22 +3030,10 @@ const performanceData = {
                         profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
                     }
                     showReportCards();
-                    // Reset to instruction message when switching
-                    const reportCards = document.querySelectorAll('.report-card');
-                    const performanceCard = reportCards[0];
-                    if (performanceCard) {
-                        const chartSvg = performanceCard.querySelector('svg.line-chart');
-                        const reportTitle = performanceCard.querySelector('.report-title');
-                        if (chartSvg && reportTitle) {
-                            chartSvg.innerHTML = '';
-                            reportTitle.innerHTML = `
-                                Team Performance Report
-                                <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                                    Click an Operation KPI to show the graph
-                                </div>
-                            `;
-                        }
-                    }
+                    // Reset chart visuals when switching to profile
+                    resetTeamPerformanceVisuals({
+                        infoMessage: 'Select a KPI to view its target vs actual details.'
+                    });
                 } else {
                     // Clear subtitle when no team is selected
                     if (profileSectionSubtitle) {
@@ -5420,27 +5485,30 @@ const performanceData = {
             valueType: 'thousands'
         };
 
-        // Initialize chart data using dynamic design pattern from lag-lead-script.js
-        const initialChartStructure = createComparisonChartStructures({
+        // Initialize chart data
+        const teamPerformanceChartData = {
             labels: [...defaultTeamPerformanceSeries.labels],
-            yAxisTitle: '',
-            barPluginId: 'teamPerformanceBarDataLabels',
-            currentLabel: 'Year 2025',
-            previousLabel: 'Year 2024',
-            targetLabel: 'Current Year Target',
-            currentDataset: [...defaultTeamPerformanceSeries.actual],
-            previousDataset: Array(defaultTeamPerformanceSeries.labels.length).fill(0),
-            targetDataset: [...defaultTeamPerformanceSeries.target],
-            includeTarget: true,
-            includeBarLabels: false,
-            valueFormatter: formatMillionsLabel,
-            zeroLabel: 'P0.00',
-            axisBounds: {},
-            beginAtZero: true,
-            valueType: 'thousands'
-        });
-
-        const teamPerformanceChartData = initialChartStructure.data;
+            datasets: [
+                {
+                    label: 'Target',
+                    data: [...defaultTeamPerformanceSeries.target],
+                    backgroundColor: '#e5bb22',
+                    borderColor: '#e5bb22',
+                    hoverBackgroundColor: '#f0c84a',
+                    borderWidth: 0,
+                    borderRadius: 10
+                },
+                {
+                    label: 'Actual',
+                    data: [...defaultTeamPerformanceSeries.actual],
+                    backgroundColor: '#96a840',
+                    borderColor: '#96a840',
+                    hoverBackgroundColor: '#a8ba4a',
+                    borderWidth: 0,
+                    borderRadius: 10
+                }
+            ]
+        };
 
         let activeTeamPerformanceSeries = defaultTeamPerformanceSeries;
         let currentValueFormat = 'thousands'; // 'thousands' | 'percentage' | 'count'
@@ -5462,6 +5530,19 @@ const performanceData = {
             return Math.max(...values);
         }
 
+        function updateYAxisLabel() {
+            const labelElement = document.querySelector('.performance-report-card .y-axis-label');
+            if (!labelElement) {
+                return;
+            }
+            if (currentValueFormat === 'percentage') {
+                labelElement.textContent = 'KPI Value (%)';
+            } else if (currentValueFormat === 'count') {
+                labelElement.textContent = 'KPI Value (Units)';
+            } else {
+                labelElement.textContent = 'KPI Value (₱ Thousands)';
+            }
+        }
 
         function updatePerformanceCardCopy(series = defaultTeamPerformanceSeries) {
             const titleEl = document.querySelector('.performance-report-card .report-title');
@@ -5486,26 +5567,12 @@ const performanceData = {
             const actualData = (activeTeamPerformanceSeries.actual && activeTeamPerformanceSeries.actual.length)
                 ? [...activeTeamPerformanceSeries.actual]
                 : new Array(labels.length).fill(0);
-            // Get previous year data if available (from monthlySeries.previous)
-            const previousData = (activeTeamPerformanceSeries.previous && activeTeamPerformanceSeries.previous.length)
-                ? [...activeTeamPerformanceSeries.previous]
-                : new Array(labels.length).fill(0);
 
             teamPerformanceChartData.labels = labels;
 
-            // Update datasets - using dynamic design structure: [current (2025), previous (2024), target (line)]
-            const [currentDataset, previousDataset, targetDataset] = teamPerformanceChartData.datasets;
-            if (currentDataset) {
-                currentDataset.data = actualData;
-                currentDataset.valueType = series?.valueType || 'thousands';
-            }
-            if (previousDataset) {
-                previousDataset.data = previousData;
-                previousDataset.valueType = series?.valueType || 'thousands';
-            }
-            if (targetDataset) {
-                targetDataset.data = targetData;
-            }
+            const [targetDataset, actualDataset] = teamPerformanceChartData.datasets;
+            targetDataset.data = targetData;
+            actualDataset.data = actualData;
 
             if (series?.valueType === 'percentage') {
                 currentValueFormat = 'percentage';
@@ -5514,32 +5581,9 @@ const performanceData = {
             } else {
                 currentValueFormat = 'thousands';
             }
+            updateYAxisLabel();
 
             if (teamPerformanceChart) {
-                // Update value formatter based on value type
-                const valueFormatter = currentValueFormat === 'percentage' 
-                    ? formatPercentageLabel 
-                    : (currentValueFormat === 'count' 
-                        ? (v) => Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })
-                        : formatThousandsLabel);
-                
-                // Update chart options to use correct formatter
-                if (teamPerformanceChart.options?.scales?.y?.ticks) {
-                    teamPerformanceChart.options.scales.y.ticks.callback = function(value) {
-                        if (value === 0 || value === '0') {
-                            return currentValueFormat === 'percentage' ? '0%' : (currentValueFormat === 'count' ? '0' : 'P0.00');
-                        }
-                        return valueFormatter(value);
-                    };
-                }
-                
-                if (teamPerformanceChart.options?.plugins?.tooltip?.callbacks?.label) {
-                    teamPerformanceChart.options.plugins.tooltip.callbacks.label = function(context) {
-                        const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                        return `${context.dataset.label}: ${valueFormatter(value)}`;
-                    };
-                }
-
                 const yScale = teamPerformanceChart.options?.scales?.y;
                 if (yScale) {
                     const maxValue = computeDatasetMaxValue();
@@ -5557,6 +5601,7 @@ const performanceData = {
             targetDataset.data = [...defaultTeamPerformanceSeries.target];
             actualDataset.data = [...defaultTeamPerformanceSeries.actual];
             currentValueFormat = 'thousands';
+            updateYAxisLabel();
             if (teamPerformanceChart) {
                 teamPerformanceChart.update();
             }
@@ -5584,6 +5629,12 @@ const performanceData = {
                 quarterFilter.remove();
             }
             
+            // Remove doughnut chart if it exists
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
 
             setPerformanceReportCardMode('bar');
             
@@ -5594,15 +5645,15 @@ const performanceData = {
         }
 
         function setPerformanceReportCardMode(mode = 'bar') {
-            // Function kept for compatibility, but doughnut mode is no longer supported
             const reportCard = document.querySelector('.performance-report-card');
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             if (!reportCard || !chartContainer) {
                 return;
             }
-            // Remove doughnut-mode class if it exists
-            reportCard.classList.remove('doughnut-mode');
-            chartContainer.classList.remove('doughnut-mode');
+
+            const isDoughnutMode = mode === 'doughnut';
+            reportCard.classList.toggle('doughnut-mode', isDoughnutMode);
+            chartContainer.classList.toggle('doughnut-mode', isDoughnutMode);
         }
 
         function average(values) {
@@ -5710,98 +5761,143 @@ const performanceData = {
                 teamPerformanceChart.destroy();
             }
 
-            // Use dynamic chart structure from createComparisonChartStructures
-            const chartConfig = createComparisonChartStructures({
-                labels: teamPerformanceChartData.labels,
-                yAxisTitle: '',
-                barPluginId: 'teamPerformanceBarDataLabels',
-                currentLabel: 'Year 2025',
-                previousLabel: 'Year 2024',
-                targetLabel: 'Current Year Target',
-                currentDataset: teamPerformanceChartData.datasets[0]?.data || [],
-                previousDataset: teamPerformanceChartData.datasets[1]?.data || [],
-                targetDataset: teamPerformanceChartData.datasets[2]?.data || [],
-                includeTarget: true,
-                includeBarLabels: false,
-                valueFormatter: formatThousandsLabel,
-                zeroLabel: 'P0.00',
-                axisBounds: {},
-                beginAtZero: true,
-                valueType: currentValueFormat
-            });
-
-            // Merge with custom options for this specific chart
-            chartConfig.config.options = {
-                ...chartConfig.config.options,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                animation: {
-                    duration: 900,
-                    easing: 'cubicBezier(0.33, 1, 0.68, 1)',
-                    delay(context) {
-                        if (context.type === 'data' && context.mode === 'default' && context.dataIndex !== undefined) {
-                            return context.dataIndex * 40;
-                        }
-                        return 0;
-                    }
-                },
-                plugins: {
-                    ...chartConfig.config.options.plugins,
-                    legend: {
-                        ...chartConfig.config.options.plugins.legend,
-                        display: true // Show legend for dynamic design
-                    }
-                },
-                scales: {
-                    ...chartConfig.config.options.scales,
-                    y: {
-                        ...chartConfig.config.options.scales.y,
-                        grid: {
-                            color: '#e4e8d7',
-                            drawTicks: false
-                        },
-                        border: {
-                            display: false
+            teamPerformanceChart = new Chart(canvas, {
+                type: 'bar',
+                data: teamPerformanceChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    layout: {
+                        padding: {
+                            top: 24,
+                            right: 24,
+                            left: 0,
+                            bottom: 12
                         }
                     },
-                    x: {
-                        ...chartConfig.config.options.scales.x,
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                weight: 600
+                    datasets: {
+                        bar: {
+                            barThickness: 16,
+                            maxBarThickness: 20,
+                            categoryPercentage: 0.65,
+                            barPercentage: 0.8,
+                            borderSkipped: false
+                        }
+                    },
+                    animation: {
+                        duration: 900,
+                        easing: 'cubicBezier(0.33, 1, 0.68, 1)',
+                        delay(context) {
+                            if (context.type === 'data' && context.mode === 'default' && context.dataIndex !== undefined) {
+                                return context.dataIndex * 40;
+                            }
+                            return 0;
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#ffffff',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                    if (currentValueFormat === 'percentage') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        const fixed = numeric.toFixed(1);
+                                        const formatted = fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
+                                        return `${context.dataset.label}: ${formatted}%`;
+                                    }
+                                    if (currentValueFormat === 'count') {
+                                        const numeric = Number(value);
+                                        if (Number.isNaN(numeric)) {
+                                            return `${context.dataset.label}: N/A`;
+                                        }
+                                        return `${context.dataset.label}: ${numeric.toLocaleString('en-US')}`;
+                                    }
+                                    return `${context.dataset.label}: ${formatPesoIfNeeded(value, true)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    weight: 600
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                padding: 10,
+                                callback: function(value) {
+                                    const numeric = Number(value) || 0;
+                                    if (currentValueFormat === 'percentage') {
+                                        return `${numeric.toLocaleString('en-US', { maximumFractionDigits: 0 })}%`;
+                                    }
+                                    if (currentValueFormat === 'count') {
+                                        return numeric.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                                    }
+                                    const thousands = numeric / 1_000;
+                                    return `₱${thousands.toLocaleString('en-US', { maximumFractionDigits: 1 })}K`;
+                                }
+                            },
+                            grid: {
+                                color: '#e4e8d7',
+                                drawTicks: false
+                            },
+                            border: {
+                                display: false
                             }
                         }
                     }
-                }
-            };
-
-            teamPerformanceChart = new Chart(canvas, chartConfig.config);
+                },
+                plugins: []
+            });
 
             applyTeamPerformanceSeries(activeTeamPerformanceSeries);
             updateTeamPerformanceInsight();
         }
 
-        let currentLagLeadQuarter = `Q${Math.floor(new Date().getMonth() / 3) + 1}`;
-
         function updateTeamPerformanceBarChart(operationName, target, actual) {
-            console.groupCollapsed(`[Debug] Critical Numbers Graph`);
-            console.log('KPI:', operationName);
-            console.log('Target:', target);
-            console.log('Actual:', actual);
-
+            // Remove doughnut chart if it exists (when switching from Technical Team KRA to other charts)
             const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+            
+            // Show canvas and hide any SVG
             const canvas = document.getElementById('teamPerformanceChart');
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
-            
-            if (chartContainer) {
-                chartContainer.style.display = 'block';
-            }
-
             const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
             
+            // If canvas doesn't exist (was removed by donut chart), recreate it
             let canvasElement = canvas;
             let needsReinit = false;
             if (!canvasElement && chartContainer) {
@@ -5811,6 +5907,7 @@ const performanceData = {
                 chartContainer.appendChild(canvasElement);
                 needsReinit = true;
             } else if (chartContainer) {
+                // Clear any SVG from donut chart
                 const svg = chartContainer.querySelector('svg.line-chart');
                 if (svg) {
                     chartContainer.innerHTML = '';
@@ -5829,8 +5926,18 @@ const performanceData = {
                 canvasElement.style.display = 'block';
             }
             
+            // Re-initialize chart if canvas was recreated
             if (needsReinit) {
                 initTeamPerformanceChart();
+            }
+            setPerformanceReportCardMode('bar');
+            
+            // Show bar chart elements (legend and y-axis label)
+            if (reportLegend) {
+                reportLegend.style.display = 'flex';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'block';
             }
             setPerformanceReportCardMode('bar');
 
@@ -5840,11 +5947,10 @@ const performanceData = {
 
             if (!operationName) {
                 resetTeamPerformanceVisuals();
-                console.groupEnd();
                 return;
             }
 
-            // Check if this KPI has monthly series data
+            // Check if this KPI has monthly series data (both Lag and Lead KPIs)
             const monthlySeries = technicalMonthlySeries[operationName] 
                 || accountingMonthlySeries[operationName]
                 || lradMonthlySeries[operationName]
@@ -5863,37 +5969,19 @@ const performanceData = {
                 || gatheringLeadMonthlySeries[operationName]
                 || operationsLeadMonthlySeries[operationName];
 
-            // MODIFIED: If monthly series data exists, use ANNUAL/MONTHLY view (12 months)
+            // If monthly series data exists, use it
             if (monthlySeries) {
-                console.log('Monthly Series Data:', JSON.parse(JSON.stringify(monthlySeries)));
-                
-                // Remove any existing quarter filter
-                const reportCardHeader = reportCard?.querySelector('.report-card-header');
-                if (reportCardHeader) {
-                    let existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
-                    if (existingFilter) existingFilter.remove();
+                // Remove quarter filter if it exists (for when switching from quarterly to monthly)
+                const quarterFilter = reportCard?.querySelector('.quarter-filter-container');
+                if (quarterFilter) {
+                    quarterFilter.remove();
                 }
-
-                // MODIFIED: Use monthly labels (Jan-Dec) instead of quarterly
-                const monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
+                
                 applyTeamPerformanceSeries({
-                    labels: monthlyLabels,  // CHANGED: Always use 12 months
+                    labels: monthlySeries.labels,
                     target: monthlySeries.target,
                     actual: monthlySeries.actual,
-                    previous: monthlySeries.previous,
                     valueType: monthlySeries.valueType
-                });
-
-                const isPercentageSeries = monthlySeries.valueType === 'percentage';
-                updateTeamPerformanceInsight({
-                    operationName,
-                    leaderName: teamMemberName,
-                    targetValue: monthlySeries.totalTarget,
-                    actualValue: monthlySeries.totalActual,
-                    isPercentage: isPercentageSeries,
-                    valueFormat: monthlySeries.valueType
                 });
 
                 updatePerformanceCardCopy({
@@ -5901,31 +5989,161 @@ const performanceData = {
                     subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
                 });
 
-                console.groupEnd();
+                const isPercentageSeries = monthlySeries.valueType === 'percentage';
+                updateTeamPerformanceInsight({
+                    operationName,
+                    leaderName: teamMemberName,
+                    targetValue: target ?? monthlySeries.totalTarget,
+                    actualValue: actual ?? monthlySeries.totalActual,
+                    isPercentage: isPercentageSeries || /%|percent/i.test(operationName.toLowerCase()),
+                    valueFormat: monthlySeries.valueType
+                });
                 return;
             }
 
-            // Fallback for single value bar chart
+            // Check if this is a Technical Team Operational KPI (needs quarterly filtering)
+            const isTechnicalOperationalKpi = teamName === 'Technical Team' && 
+                !monthlySeries && 
+                (target !== null && target !== undefined && actual !== null && actual !== undefined);
+
+            if (isTechnicalOperationalKpi) {
+                // Generate quarterly data if it doesn't exist
+                if (!technicalOperationalKpiQuarterlyData[operationName]) {
+                    const isPercentage = /%|percent/i.test(operationName.toLowerCase());
+                    const isCount = /#|number|count/i.test(operationName.toLowerCase());
+                    
+                    let targetRange, actualRange, decimals, valueType;
+                    
+                    if (isPercentage) {
+                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                        decimals = 1;
+                        valueType = 'percentage';
+                    } else if (isCount) {
+                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                        decimals = 0;
+                        valueType = 'count';
+                    } else {
+                        // For monetary values, use thousands
+                        targetRange = [target * 0.9, target * 1.1];
+                        actualRange = [actual * 0.9, actual * 1.1];
+                        decimals = 0;
+                        valueType = 'thousands';
+                    }
+                    
+                    technicalOperationalKpiQuarterlyData[operationName] = generateQuarterlyData({
+                        targetRange,
+                        actualRange,
+                        decimals,
+                        valueType
+                    });
+                }
+
+                // Add quarter dropdown to report card header
+                const reportCardHeader = reportCard?.querySelector('.report-card-header');
+                if (reportCardHeader) {
+                    // Remove existing quarter filter if any
+                    const existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
+                    if (existingFilter) {
+                        existingFilter.remove();
+                    }
+
+                    // Create quarter filter dropdown
+                    const filterContainer = document.createElement('div');
+                    filterContainer.className = 'quarter-filter-container';
+                    filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                    
+                    const filterLabel = document.createElement('label');
+                    filterLabel.textContent = 'Quarter:';
+                    filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                    
+                    const filterSelect = document.createElement('select');
+                    filterSelect.id = 'quarterFilter';
+                    filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                    filterSelect.innerHTML = `
+                        <option value="Q1">Q1 (Jan-Mar)</option>
+                        <option value="Q2">Q2 (Apr-Jun)</option>
+                        <option value="Q3">Q3 (Jul-Sep)</option>
+                        <option value="Q4">Q4 (Oct-Dec)</option>
+                    `;
+                    
+                    // Set default to current quarter (or Q1)
+                    const currentMonth = new Date().getMonth();
+                    const currentQuarter = Math.floor(currentMonth / 3) + 1;
+                    filterSelect.value = `Q${currentQuarter}`;
+                    
+                    filterContainer.appendChild(filterLabel);
+                    filterContainer.appendChild(filterSelect);
+                    reportCardHeader.appendChild(filterContainer);
+
+                    // Function to update chart based on selected quarter
+                    const updateQuarterlyChart = (selectedQuarter) => {
+                        const quarterlyData = technicalOperationalKpiQuarterlyData[operationName][selectedQuarter];
+                        if (quarterlyData) {
+                            applyTeamPerformanceSeries({
+                                labels: quarterlyData.labels,
+                                target: quarterlyData.target,
+                                actual: quarterlyData.actual,
+                                valueType: quarterlyData.valueType
+                            });
+
+                            const isPercentageKpi = quarterlyData.valueType === 'percentage';
+                            const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
+                            const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
+                            
+                            updateTeamPerformanceInsight({
+                                operationName,
+                                leaderName: teamMemberName,
+                                targetValue: totalTarget,
+                                actualValue: totalActual,
+                                isPercentage: isPercentageKpi,
+                                valueFormat: quarterlyData.valueType
+                            });
+                        }
+                    };
+
+                    // Initial load with default quarter
+                    updateQuarterlyChart(filterSelect.value);
+
+                    // Add change event listener
+                    filterSelect.addEventListener('change', (e) => {
+                        updateQuarterlyChart(e.target.value);
+                    });
+                }
+
+                updatePerformanceCardCopy({
+                    title: operationName,
+                    subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
+                });
+
+                return;
+            }
+
+            // For other teams or KPIs without monthly series, use single value bar chart
+
             if (target === null || target === undefined || actual === null || actual === undefined) {
                 resetTeamPerformanceVisuals({
                     infoMessage: 'No actual vs target values are available for this KPI.'
                 });
-                console.groupEnd();
                 return;
             }
 
             const isPercentage = /%|percent/i.test(operationName.toLowerCase());
+
             const series = {
                 labels: ['KPI Value'],
                 target: [target],
                 actual: [actual],
                 valueType: isPercentage ? 'percentage' : 'thousands'
             };
+
             applyTeamPerformanceSeries(series);
             updatePerformanceCardCopy({
                 title: operationName,
                 subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
             });
+
             updateTeamPerformanceInsight({
                 operationName,
                 leaderName: teamMemberName,
@@ -5933,57 +6151,37 @@ const performanceData = {
                 actualValue: actual,
                 isPercentage
             });
-            console.groupEnd();
         }
 
-        // Store team member chart instance
-        let teamMemberChart = null;
-        let currentTeamMemberView = 'quarterly'; // 'monthly' or 'quarterly'
-
-        function updateMemberPerformanceChart(kpiName, target, actual, monthlyTarget = null, monthlyActual = null) {
-            console.groupCollapsed(`[Debug] Team Member Graph`);
-            console.log('KPI:', kpiName);
-            console.log('Overall Target:', target);
-            console.log('Overall Actual:', actual);
-            console.log('Monthly Target Data:', monthlyTarget);
-            console.log('Monthly Actual Data:', monthlyActual);
-
-            const quarterlyActual = convertToQuarterly(actualData);
-            const quarterlyTarget = convertToQuarterly(targetData);
+        function updateMemberPerformanceChart(kpiName, target, actual) {
+            // Remove doughnut chart if it exists (when switching from Technical Team KRA to other charts)
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const existingDonut = chartWrapper?.querySelector('.kra-weight-donut');
+            if (existingDonut) {
+                existingDonut.remove();
+            }
+            
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
-
-            if (!chartContainer) {
-                console.groupEnd();
-                return;
-            }
-
-            // Ensure canvas exists, recreate if necessary
-            let canvas = document.getElementById('teamPerformanceChart'); // Renamed from 'canvas' to avoid conflict
-            if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
-                chartContainer.innerHTML = ''; // Clear container
-                canvas = document.createElement('canvas');
-                canvas.id = 'teamPerformanceChart';
-                chartContainer.appendChild(canvas);
-            }
-
-            chartContainer.style.display = 'block';
-
             const reportTitle = document.querySelector('.performance-report-card .report-title');
             const reportCard = document.querySelector('.performance-report-card');
+            const reportLegend = reportCard?.querySelector('.report-legend');
+            const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+            if (!chartContainer) return;
 
-
-            // Show canvas and bar chart elements
+            // Hide canvas and bar chart elements (legend, y-axis) if they exist
+            const canvas = document.getElementById('teamPerformanceChart');
             if (canvas) {
-                canvas.style.display = 'block';
+                canvas.style.display = 'none';
             }
-
+            if (reportLegend) {
+                reportLegend.style.display = 'none';
+            }
+            if (yAxisLabel) {
+                yAxisLabel.style.display = 'none';
+            }
 
             // If no data, show empty state
             if (target === null || actual === null || kpiName === null) {
-                if (teamMemberChart) {
-                    teamMemberChart.destroy();
-                    teamMemberChart = null;
-                }
                 chartContainer.innerHTML = '';
                 if (reportTitle) {
                     reportTitle.innerHTML = `
@@ -5996,89 +6194,133 @@ const performanceData = {
                 return;
             }
 
-            // Prepare monthly data - use provided data or create from target/actual
-            const targetData = monthlyTarget && Array.isArray(monthlyTarget) && monthlyTarget.length === 12
-                ? monthlyTarget.map(v => v !== null && v !== undefined ? Number(v) : null)
-                : Array(12).fill(null);
-            const actualData = monthlyActual && Array.isArray(monthlyActual) && monthlyActual.length === 12
-                ? monthlyActual.map(v => v !== null && v !== undefined ? Number(v) : null)
-                : Array(12).fill(null);
-
-            // Determine value formatter based on KPI type
+            // Calculate difference
+            const difference = actual - target;
+            const diffPercent = ((difference / target) * 100).toFixed(1);
+            const isPositive = difference >= 0;
             const isPercentageKpi = kpiName && (kpiName.includes('%') || kpiName.toLowerCase().includes('percent') || 
-                                 kpiName.toLowerCase().includes('rate') || kpiName.toLowerCase().includes('uptime') ||
-                                 kpiName.toLowerCase().includes('compliance') || kpiName.toLowerCase().includes('accuracy') ||
-                                 kpiName.toLowerCase().includes('efficiency') || kpiName.toLowerCase().includes('quality'));
+                                     kpiName.toLowerCase().includes('rate') || kpiName.toLowerCase().includes('uptime') ||
+                                     kpiName.toLowerCase().includes('compliance') || kpiName.toLowerCase().includes('accuracy') ||
+                                     kpiName.toLowerCase().includes('efficiency') || kpiName.toLowerCase().includes('quality'));
+
+            // Donut chart dimensions
+            const chartWidth = 400;
+            const chartHeight = 200;
+            const centerX = chartWidth / 2;
+            const centerY = chartHeight / 2;
+            const outerRadius = 75;
+            const innerRadius = 45;
             
-            const valueFormatter = isPercentageKpi 
-                ? (value) => `${Number(value).toFixed(1)}%`
-                : formatThousandsLabel;
+            // Calculate proportions for donut segments
+            const total = target + actual;
+            const targetPercent = (target / total) * 100;
+            const actualPercent = (actual / total) * 100;
+            
+            // Convert percentages to angles
+            const targetAngle = (targetPercent / 100) * 360;
+            const actualAngle = (actualPercent / 100) * 360;
+            
+            // Helper function to create donut segment
+            const createDonutSegment = (startAngle, endAngle) => {
+                const start = (startAngle - 90) * (Math.PI / 180);
+                const end = (endAngle - 90) * (Math.PI / 180);
+                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+                
+                const x1 = centerX + outerRadius * Math.cos(start);
+                const y1 = centerY + outerRadius * Math.sin(start);
+                const x2 = centerX + outerRadius * Math.cos(end);
+                const y2 = centerY + outerRadius * Math.sin(end);
+                const x3 = centerX + innerRadius * Math.cos(end);
+                const y3 = centerY + innerRadius * Math.sin(end);
+                const x4 = centerX + innerRadius * Math.cos(start);
+                const y4 = centerY + innerRadius * Math.sin(start);
+                
+                return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} 
+                        L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+            };
+            
+            const targetSegment = createDonutSegment(0, targetAngle);
+            const actualSegment = createDonutSegment(targetAngle, targetAngle + actualAngle);
 
-            // Create chart structure with quarterly support
-            const { data: chartData, config: chartConfig } = createComparisonChartStructures({
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],  // Already quarterly
-                yAxisTitle: kpiName,
-                barPluginId: 'teamMemberBarDataLabels',
-                currentLabel: 'Actual',
-                previousLabel: 'Target',
-                targetLabel: '',
-                currentDataset: quarterlyActual,
-                previousDataset: quarterlyTarget,
-                targetDataset: [],
-                includeTarget: false,
-                includeBarLabels: true,
-                valueFormatter: valueFormatter,
-                zeroLabel: isPercentageKpi ? '0%' : '0',
-                axisBounds: {},
-                beginAtZero: true,
-                valueType: isPercentageKpi ? 'percentage' : 'thousands'
-            });
+            const defs = `
+                <defs>
+                    <filter id="donutShadow">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+            `;
 
-            // Destroy existing chart if it exists
-            if (teamMemberChart) {
-                teamMemberChart.destroy();
-            }
+            // Format value for display
+            const formatValue = (value) => {
+                if (isPercentageKpi) {
+                    return value.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + '%';
+                } else if (value >= 1000) {
+                    if (value >= 1000000) {
+                        return (value / 1000000).toFixed(1) + 'M';
+                    } else if (value >= 1000) {
+                        return (value / 1000).toFixed(1) + 'K';
+                    }
+                }
+                return value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            };
 
-            // Create new chart
-            if (canvas) {
-                teamMemberChart = new Chart(canvas, chartConfig);
-            }
+            // Build chart
+            const diffColor = isPositive ? '#4ade80' : '#f87171';
+            const diffSymbol = isPositive ? '↑' : '↓';
+            const diffDisplay = formatValue(Math.abs(difference));
+            
+            const chartHTML = `
+                <svg class="line-chart" width="${chartWidth}" height="${chartHeight}" viewBox="0 0 ${chartWidth} ${chartHeight}">
+                    ${defs}
+                    <path id="targetSegment" d="${targetSegment}" 
+                          fill="#96a840" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${target}"
+                          data-label="Target"
+                          data-percent="${targetPercent.toFixed(1)}" />
+                    <path id="actualSegment" d="${actualSegment}" 
+                          fill="#e5bb22" 
+                          filter="url(#donutShadow)"
+                          style="cursor: pointer; transition: opacity 0.2s;"
+                          data-value="${actual}"
+                          data-label="Actual"
+                          data-percent="${actualPercent.toFixed(1)}" />
+                    <text x="${centerX}" y="${centerY - 5}" 
+                          text-anchor="middle" font-size="16" fill="${diffColor}" font-weight="700">
+                        ${diffSymbol} ${diffDisplay}
+                    </text>
+                    <text x="${centerX}" y="${centerY + 12}" 
+                          text-anchor="middle" font-size="11" fill="#6b7280" font-weight="500">
+                        ${Math.abs(diffPercent)}%
+                    </text>
+                </svg>
+            `;
 
-            // Update title
+            chartContainer.innerHTML = chartHTML;
+
+            // Update title with KPI, Target, and Actual
             if (reportTitle) {
                 const shortName = kpiName.length > 50 ? kpiName.substring(0, 50) + '...' : kpiName;
+                
                 reportTitle.innerHTML = `
-                    Team Performance Report - ${shortName}`;
+                    Team Performance Report - ${shortName}
+                    <div style="font-size: 12px; margin-top: 15px; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #96a840;"></span>
+                            <span style="color: #525552;">Target: ${formatValue(target)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #e5bb22;"></span>
+                            <span style="color: #525552;">Actual: ${formatValue(actual)}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="color: ${diffColor}; font-weight: 600;">${diffSymbol} ${diffDisplay} (${Math.abs(diffPercent)}%)</span>
+                        </div>
+                    </div>
+                `;
             }
         }
-
-        // Helper function to convert monthly data to quarterly
-        function convertToQuarterly(monthlyData) {
-            if (!Array.isArray(monthlyData) || monthlyData.length !== 12) {
-                return [null, null, null, null];
-            }
-            
-            const quarters = [
-                [0, 1, 2],   // Q1: Jan, Feb, Mar
-                [3, 4, 5],   // Q2: Apr, May, Jun
-                [6, 7, 8],   // Q3: Jul, Aug, Sep
-                [9, 10, 11]  // Q4: Oct, Nov, Dec
-            ];
-
-            return quarters.map(quarterIndices => {
-                const quarterValues = quarterIndices
-                    .map(idx => monthlyData[idx])
-                    .filter(val => val !== null && val !== undefined && !isNaN(val));
-                
-                if (quarterValues.length === 0) return null;
-                
-                // Calculate sum for the quarter
-                const sum = quarterValues.reduce((acc, val) => acc + Number(val), 0);
-                return sum;
-            });
-        }
-
-        // END OF GRAPH-RELATED CODE
 
         function updateTechnicalTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
@@ -6454,6 +6696,14 @@ const performanceData = {
                     // Add active class to clicked row
                     this.classList.add('row-active');
 
+                    // Show chart-wrapper when clicking operationsContent items in critical numbers section
+                    if (currentOperationsView === 'leaders') {
+                        const chartWrapper = document.querySelector('.chart-wrapper');
+                        if (chartWrapper) {
+                            chartWrapper.style.display = '';
+                        }
+                    }
+
                     const operationName = this.getAttribute('data-operation');
                     const targetStr = this.getAttribute('data-target');
                     const actualStr = this.getAttribute('data-actual');
@@ -6497,30 +6747,13 @@ const performanceData = {
                         updateGatheringTeamKraCharts(operationName, target, actual, owner);
                     } else {
                         // Check if this is a team member row (has member-view-row class)
+                        // Team members = doughnut chart, Team leader KPIs = bar chart
                         const isTeamMember = this.classList.contains('member-view-row');
                         
                         if (isTeamMember) {
-                            // Use dynamic chart for team members with monthly/quarterly view
+                            // Use doughnut chart for team members (from teamMembersData)
                             if (target !== null && actual !== null) {
-                                // Get monthly data from data attributes
-                                const monthlyTargetStr = this.getAttribute('data-monthly-target');
-                                const monthlyActualStr = this.getAttribute('data-monthly-actual');
-                                
-                                let monthlyTarget = null;
-                                let monthlyActual = null;
-                                
-                                try {
-                                    if (monthlyTargetStr) {
-                                        monthlyTarget = JSON.parse(monthlyTargetStr);
-                                    }
-                                    if (monthlyActualStr) {
-                                        monthlyActual = JSON.parse(monthlyActualStr);
-                                    }
-                                } catch (e) {
-                                    console.warn('Error parsing monthly data:', e);
-                                }
-                                
-                                updateMemberPerformanceChart(operationName, target, actual, monthlyTarget, monthlyActual);
+                                updateMemberPerformanceChart(operationName, target, actual);
                             } else {
                                 updateMemberPerformanceChart(operationName, null, null);
                             }
@@ -6711,6 +6944,14 @@ const performanceData = {
                                     const actualStr = this.getAttribute('data-actual');
                                     const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
                                     const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                    
+                                    // Show chart-wrapper when clicking sub-operations items in critical numbers section
+                                    if (currentOperationsView === 'leaders') {
+                                        const chartWrapper = document.querySelector('.chart-wrapper');
+                                        if (chartWrapper) {
+                                            chartWrapper.style.display = '';
+                                        }
+                                    }
                                     
                                     // Always call the single, unified chart update function
                                     updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);
@@ -7091,9 +7332,26 @@ const performanceData = {
                             registerHighlight(kpiRow);
                             kpiRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+                            // Show chart-wrapper when auto-clicking in critical numbers section
+                            if (currentOperationsView === 'leaders') {
+                                const chartWrapper = document.querySelector('.chart-wrapper');
+                                if (chartWrapper) {
+                                    chartWrapper.style.display = '';
+                                }
+                            }
+
                             // Click the row to trigger the graph update
                             setTimeout(() => {
                                 kpiRow.click();
+                                // Ensure chart-wrapper is shown after click (fallback)
+                                if (currentOperationsView === 'leaders') {
+                                    setTimeout(() => {
+                                        const chartWrapper = document.querySelector('.chart-wrapper');
+                                        if (chartWrapper) {
+                                            chartWrapper.style.display = '';
+                                        }
+                                    }, 100);
+                                }
                             }, 200);
                             return;
                         } else if (attempt === 0) {
@@ -7153,8 +7411,25 @@ const performanceData = {
                                     registerHighlight(targetSubOperation);
                                     targetSubOperation.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     
+                                    // Show chart-wrapper when auto-clicking sub-operations in critical numbers section
+                                    if (currentOperationsView === 'leaders') {
+                                        const chartWrapper = document.querySelector('.chart-wrapper');
+                                        if (chartWrapper) {
+                                            chartWrapper.style.display = '';
+                                        }
+                                    }
+                                    
                                     setTimeout(() => {
                                         targetSubOperation.click();
+                                        // Ensure chart-wrapper is shown after click (fallback)
+                                        if (currentOperationsView === 'leaders') {
+                                            setTimeout(() => {
+                                                const chartWrapper = document.querySelector('.chart-wrapper');
+                                                if (chartWrapper) {
+                                                    chartWrapper.style.display = '';
+                                                }
+                                            }, 100);
+                                        }
                                     }, 200);
                                     return;
                                 }
@@ -7223,9 +7498,53 @@ const performanceData = {
             resetTeamPerformanceVisuals({
                 infoMessage: 'Select a KPI to view its target vs actual details.'
             });
+            resetReportsSection(); // Set initial title and subtitle based on current view (after resetTeamPerformanceVisuals)
             refreshOperationsContent();
             initScoreboardToggle();
             applyIncomingLeaderHighlight();
         });
 
+        // Scroll to Top Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainContent = document.querySelector('.main-content');
+            const scrollTopBtn = document.getElementById('scrollToTopBtn');
         
+            if (mainContent && scrollTopBtn) {
+                
+                // Function to get the current scroll position from either the mainContent div OR the window
+                // This handles both the mobile layout (where .main-content scrolls) and desktop (where window/body scrolls)
+                const getScrollPosition = () => {
+                    return mainContent.scrollTop || window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                };
+        
+                // Logic to Show/Hide button
+                const toggleVisibility = () => {
+                    if (getScrollPosition() > 300) {
+                        scrollTopBtn.classList.add('visible');
+                    } else {
+                        scrollTopBtn.classList.remove('visible');
+                    }
+                };
+        
+                // 1. Check immediately on page load
+                toggleVisibility();
+        
+                // 2. Check continuously while scrolling
+                // Attach listener to BOTH the container and the window to catch all scroll events
+                mainContent.addEventListener('scroll', toggleVisibility);
+                window.addEventListener('scroll', toggleVisibility);
+        
+                // 3. Scroll to Top Action
+                scrollTopBtn.addEventListener('click', () => {
+                    // Attempt to scroll both the element and the window to cover all bases
+                    mainContent.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        });

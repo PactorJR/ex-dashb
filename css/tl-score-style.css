@@ -23,6 +23,43 @@ body {
     width: 100%;
 }
 
+/* Ensure all text elements inherit uniform styling */
+*, *::before, *::after {
+    font-family: inherit;
+}
+
+button, input, select, textarea, label {
+    font-family: var(--font-body);
+    color: var(--text-color);
+}
+
+button {
+    font-size: var(--fs-base);
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea {
+    font-size: var(--fs-base);
+    font-family: var(--font-body);
+    color: var(--text-color);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-family: var(--font-body);
+}
+
+select {
+    font-size: var(--fs-base);
+    font-family: var(--font-body);
+    color: var(--text-color);
+}
+
 :root {
     --primary-color: #586740;
     --secondary-color: #e5bb22;
@@ -31,6 +68,13 @@ body {
     --light-bg: #96a840;
     --white: #ffffff;
     --overlay: rgba(88, 103, 64, 0.4);
+    
+    /* Additional text colors */
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    --text-dark: #1b2a3b;
+    --text-gray: #516072;
+    --text-placeholder: #999;
     
     /* Font families */
     --font-body: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
@@ -71,6 +115,7 @@ body {
         height: 600px;
         max-height: 600px;
     }
+    
 }
 
 /* Responsive font sizes for 1366x768 specifically */
@@ -96,6 +141,29 @@ body {
     .performance-report-card {
         height: 400px !important;
         max-height: 400px !important;
+    }
+    
+    .section-switch {
+        position: relative;
+        width: 60px !important;
+        height: 30px !important;
+        background: #e0e0e0;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-bottom: 20px;
+        overflow: hidden;
+        bottom: 10px !important;
+    }
+    
+    .section-switch::before {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .section-switch.active::before {
+        transform: translateX(30px) !important;
     }
 }
 
@@ -243,15 +311,23 @@ small {
 
 .scoreboard-toggle-btn.active {
     background: var(--primary-color);
-    color: #ffffff;
+    color: var(--white);
     box-shadow: 0 4px 10px rgba(88, 103, 64, 0.25);
+}
+
+/* Team Leader Cards - Leaders Grid Section */
+.leaders-section {
+    margin-bottom: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+    animation: fadeInDown 0.6s ease-out;
 }
 
 .leaders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
 }
 
 .leader-card {
@@ -264,6 +340,20 @@ small {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+}
+
+.leader-card.clickable-stat-card-carousel {
+    cursor: pointer;
+}
+
+.leader-card.team-card-disabled {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.leader-card.clickable-stat-card-carousel:focus-visible {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 4px;
 }
 
 .highlight-target {
@@ -297,6 +387,13 @@ small {
     border: 2px solid var(--secondary-color);
 }
 
+.leader-card.carousel-card-highlight {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(150, 168, 64, 0.4);
+    border: 2px solid #96a840;
+    z-index: 2000;
+}
+
 .leader-card::before {
     content: '';
     position: absolute;
@@ -326,7 +423,7 @@ small {
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: var(--fs-large);
+    font-size: 20px;
     font-weight: bold;
     position: relative;
     animation: pulse 2s infinite;
@@ -349,6 +446,7 @@ small {
     font-weight: 600;
     margin-bottom: 3px;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     line-height: 1.3;
 }
 
@@ -473,6 +571,7 @@ small {
     transition: background 0.3s ease;
     margin-bottom: 20px;
     overflow: hidden;
+    bottom: 10px !important;
 }
 
 .section-switch::before {
@@ -497,7 +596,6 @@ small {
 }
 
 .section-switch::after {
-    content: 'Lag';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -505,11 +603,11 @@ small {
     font-size: calc(var(--fs-small) * 0.77);
     color: var(--text-color);
     font-weight: 600;
+    font-family: var(--font-body);
     pointer-events: none;
 }
 
 .section-switch.active::after {
-    content: 'Lead';
 }
 
 .scoreboard-message-btn {
@@ -521,8 +619,10 @@ small {
     width: 100%;
     border: 1px dashed #a5b4c3;
     background: #f7f9fc;
-    color: #1b2a3b;
+    color: var(--text-dark);
     font-weight: 600;
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
     border-radius: 999px;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -535,7 +635,8 @@ small {
 }
 
 .scoreboard-message-btn .message-icon {
-    font-size: 1.5rem;
+    font-size: var(--fs-h3);
+    font-family: var(--font-body);
 }
 
 .report-empty-state {
@@ -546,16 +647,19 @@ small {
     gap: 0.75rem;
     padding: 2.5rem 1rem;
     text-align: center;
-    color: #516072;
+    color: var(--text-gray);
+    font-family: var(--font-body);
 }
 
 .report-empty-state .empty-state-icon {
-    font-size: 2.5rem;
+    font-size: var(--fs-h1);
+    font-family: var(--font-body);
 }
 
 .report-empty-state .empty-state-text {
-    font-size: 1.05rem;
+    font-size: var(--fs-large);
     font-weight: 600;
+    font-family: var(--font-body);
 }
 
 /* Team Members Section */
@@ -616,12 +720,21 @@ small {
     color: var(--primary-color);
     font-size: var(--fs-h4);
     font-weight: 700;
+    font-family: var(--font-heading);
 }
 
 .section-subtitle {
     font-size: var(--fs-small);
-    color: rgba(82, 85, 82, 0.75);
+    color: var(--subtext-color);
     font-weight: 500;
+    opacity: 0.75;
+}
+.members-section .search-box {
+    bottom: 20px !important;
+}
+
+.members-view-active .search-box {
+    top: -10px !important;
 }
 
 .section-actions {
@@ -648,6 +761,8 @@ small {
     border: 2px solid var(--light-bg);
     border-radius: 25px;
     font-size: var(--fs-base);
+    font-family: var(--font-body);
+    color: var(--text-color);
     transition: all 0.3s;
     background: #f8f9fa;
 }
@@ -675,6 +790,7 @@ small {
     font-weight: 600;
     color: var(--primary-color);
     font-size: var(--fs-base);
+    font-family: var(--font-body);
     min-width: 60px;
 }
 
@@ -684,6 +800,7 @@ small {
     border: 2px solid var(--light-bg);
     border-radius: 8px;
     font-size: var(--fs-base);
+    font-family: var(--font-body);
     background: white;
     color: var(--text-color);
     cursor: pointer;
@@ -711,11 +828,14 @@ small {
     padding: 10px;
     background: white;
     color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
 }
 
 .period-display {
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--white);
+    opacity: 0.95;
 }
 
 /* Dropdown styles */
@@ -769,6 +889,7 @@ small {
 .sub-operation-label {
     color: var(--text-color);
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     padding-left: 15px;
     position: relative;
 }
@@ -784,20 +905,22 @@ small {
     display: inline-block;
     padding: 4px 12px;
     background: linear-gradient(135deg, var(--light-bg), var(--secondary-color));
-    color: white;
+    color: var(--white);
     border-radius: 12px;
     font-size: var(--fs-small);
     font-weight: 600;
+    font-family: var(--font-body);
 }
 
 .weight-badge {
     display: inline-block;
     padding: 4px 12px;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    color: var(--white);
     border-radius: 12px;
     font-size: var(--fs-small);
     font-weight: 600;
+    font-family: var(--font-body);
 }
 
 @keyframes slideDown {
@@ -836,16 +959,17 @@ small {
 .kpi-dropdown-btn.active {
     background: var(--primary-color);
     border-color: var(--primary-color);
-    color: white;
+    color: var(--white);
 }
 
 .kpi-dropdown-btn.active .dropdown-icon {
-    color: white;
+    color: var(--white);
 }
 
 .kpi-dropdown-btn .dropdown-icon {
     font-size: calc(var(--fs-small) * 0.77);
     color: var(--text-color);
+    font-family: var(--font-body);
     transition: transform 0.2s ease;
 }
 
@@ -862,9 +986,10 @@ small {
 .correlated-members-header {
     padding: 12px 20px;
     background: linear-gradient(135deg, var(--primary-color), #6b7d4a);
-    color: white;
+    color: var(--white);
     font-weight: 600;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -903,9 +1028,10 @@ small {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white);
     font-weight: 600;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
 }
 
@@ -913,11 +1039,13 @@ small {
     font-weight: 600;
     font-size: var(--fs-base);
     color: var(--text-color);
+    font-family: var(--font-body);
 }
 
 .correlated-member-item .member-role {
     font-size: var(--fs-small);
-    color: #6b7280;
+    color: var(--text-muted);
+    font-family: var(--font-body);
     margin-top: 2px;
 }
 
@@ -956,11 +1084,12 @@ small {
     display: grid;
     grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
     background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
-    color: white;
+    color: var(--white);
     padding: 8px 12px;
     border-radius: 12px;
     font-weight: 600;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     line-height: 1.3;
 }
 
@@ -999,12 +1128,14 @@ small {
     text-align: center;
     padding-bottom: 4px;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     line-height: 1.2;
 }
 
 .header-sub {
     text-align: center;
     font-size: var(--fs-small);
+    font-family: var(--font-body);
     padding: 5px 0;
 }
 
@@ -1035,6 +1166,8 @@ small {
     transition: all 0.3s;
     animation: slideInLeft 0.5s ease-out backwards;
     font-size: var(--fs-base);
+    font-family: var(--font-body);
+    color: var(--text-color);
 }
 
 .member-row:nth-child(1) { animation-delay: 0.1s; }
@@ -1071,9 +1204,10 @@ small {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: var(--fs-medium);
+    font-family: var(--font-body);
 }
 
 .member-row:nth-child(1) .member-avatar { background: linear-gradient(135deg, #ffa07a, #ff7f50); }
@@ -1086,6 +1220,8 @@ small {
 .member-name {
     color: var(--text-color);
     font-weight: 500;
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
 }
 
 #operationsSection.members-view-active .table-header,
@@ -1134,9 +1270,10 @@ small {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white);
     font-size: calc(var(--fs-h1) * 1.2);
     font-weight: bold;
+    font-family: var(--font-body);
     flex-shrink: 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -1161,6 +1298,7 @@ small {
     font-size: var(--fs-h2);
     font-weight: 700;
     color: var(--primary-color);
+    font-family: var(--font-heading);
     margin-bottom: 8px;
 }
 
@@ -1168,6 +1306,7 @@ small {
     font-size: var(--fs-large);
     color: var(--light-bg);
     font-weight: 500;
+    font-family: var(--font-body);
     margin-bottom: 15px;
 }
 
@@ -1186,11 +1325,13 @@ small {
     font-size: var(--fs-h4);
     font-weight: 700;
     color: var(--secondary-color);
+    font-family: var(--font-body);
 }
 
 .profile-stat-label {
     font-size: var(--fs-small);
     color: var(--text-color);
+    font-family: var(--font-body);
     opacity: 0.7;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1219,6 +1360,7 @@ small {
     color: var(--primary-color);
     font-weight: 600;
     font-size: var(--fs-base);
+    font-family: var(--font-body);
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1235,13 +1377,15 @@ small {
 .profile-value {
     color: var(--text-color);
     font-size: var(--fs-base);
+    font-family: var(--font-body);
     line-height: 1.6;
 }
 
 .empty-state {
     text-align: center;
     padding: 10px 20px;
-    color: #999;
+    color: var(--text-placeholder);
+    font-family: var(--font-body);
 }
 
 .empty-state-icon {
@@ -1253,6 +1397,7 @@ small {
 .empty-state-text {
     font-size: var(--fs-medium);
     color: var(--text-color);
+    font-family: var(--font-body);
     opacity: 0.6;
 }
 
@@ -1275,7 +1420,7 @@ small {
     padding: 24px;
     background: linear-gradient(180deg, #ffffff 0%, #f9faf4 100%);
     border: 1px solid #e7ead8;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     position: relative;
     height: 600px;
@@ -1317,7 +1462,8 @@ small {
     letter-spacing: 0.12em;
     font-size: var(--fs-small);
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-light);
+    font-family: var(--font-body);
     margin-bottom: 4px;
 }
 
@@ -1326,7 +1472,8 @@ small {
     align-items: center;
     gap: 10px;
     font-size: var(--fs-small);
-    color: #6b7280;
+    color: var(--text-muted);
+    font-family: var(--font-body);
 }
 
 .report-card-pill {
@@ -1334,12 +1481,14 @@ small {
     border-radius: 999px;
     padding: 4px 14px;
     font-weight: 600;
-    color: #586740;
+    color: var(--primary-color);
+    font-family: var(--font-body);
 }
 
 .report-card-subtitle {
     font-size: var(--fs-small);
-    color: #6b7280;
+    color: var(--text-muted);
+    font-family: var(--font-body);
     margin: 12px 0 18px;
 }
 
@@ -1347,6 +1496,7 @@ small {
     color: var(--primary-color);
     font-size: var(--fs-large);
     font-weight: 700;
+    font-family: var(--font-heading);
     margin-bottom: 15px;
 }
 
@@ -1389,7 +1539,8 @@ small {
 }
 
 .chart-insight strong {
-    color: #525552;
+    color: var(--subtext-color);
+    font-family: var(--font-body);
 }
 
 .chart-insight .positive {
@@ -1414,8 +1565,9 @@ small {
     transform: rotate(180deg);
     font-size: var(--fs-small);
     letter-spacing: 0.08em;
-    color: #6b7280;
+    color: var(--text-muted);
     font-weight: 600;
+    font-family: var(--font-body);
     display: flex;
     align-items: center;
     justify-content: center;
