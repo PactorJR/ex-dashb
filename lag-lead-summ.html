@@ -6,6 +6,7 @@
     <title>Summary Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="css/lag-lead-style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="script/lag-lead-script.js" defer></script>
 </head>
 <body>
@@ -39,67 +40,67 @@
         <div class="leaders-section">
             <div class="leaders-grid" id="statsCarousel">
                 <div class="leader-card clickable-stat-card-carousel" data-team="tech" data-team-type="lag">
-                    <div class="leader-icon">⚙️</div>
+                    <div class="leader-icon"><i class="bi bi-gear-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Technical Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="accounting" data-team-type="lag">
-                    <div class="leader-icon">📡</div>
+                    <div class="leader-icon"><i class="bi bi-calculator-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Accounting Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="lrad" data-team-type="lag">
-                    <div class="leader-icon">📡</div>
+                    <div class="leader-icon"><i class="bi bi-broadcast-pin" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">LRAD Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="quality" data-team-type="lead">
-                    <div class="leader-icon">✓</div>
+                    <div class="leader-icon"><i class="bi bi-patch-check-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Quality Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="dc" data-team-type="lag">
-                    <div class="leader-icon">📊</div>
+                    <div class="leader-icon"><i class="bi bi-hdd-stack-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">DC Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="it">
-                    <div class="leader-icon">💻</div>
+                    <div class="leader-icon"><i class="bi bi-laptop" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">IT Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="opportunity" data-team-type="lead">
-                    <div class="leader-icon">🎯</div>
+                    <div class="leader-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Opportunity Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="marcom" data-team-type="lag">
-                    <div class="leader-icon">📢</div>
+                    <div class="leader-icon"><i class="bi bi-megaphone-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Marcom Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="audit" data-team-type="lead">
-                    <div class="leader-icon">📋</div>
+                    <div class="leader-icon"><i class="bi bi-clipboard-check-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Audit Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="gathering" data-team-type="lead">
-                    <div class="leader-icon">📈</div>
+                    <div class="leader-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Gathering Team</div>
                 </div>
 
                 <div class="leader-card clickable-stat-card-carousel" data-team="operations" data-team-type="lag">
-                    <div class="leader-icon">⚡</div>
+                    <div class="leader-icon"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
                     <div class="leader-title">Operations Team</div>
                 </div>
@@ -122,7 +123,7 @@
             </div>
 
             <!-- Opportunity Team Section -->
-            <div class="team-section opp" id="opportunity-team-section-lead" style="grid-column: 1 / -1;" data-team-target="opportunity" data-company-view-target="lead" role="button" aria-label="Highlight Opportunity Team card" tabindex="0">
+            <div class="team-section opp" id="opportunity-team-section-lead" style="grid-column: 1 / -1;" data-team-target="opportunity" data-company-view-target="lead">
                 <h2>Opportunity Team</h2>
             </div>
 
@@ -271,7 +272,7 @@
                 <h2 style="color: #81f31d;">Foot Traffic per Site</h2>
             </div>
 
-            <div class="team-section gath" id="gathering-team-section-lead" style="grid-column: 1 / -1; margin-top: 0;" data-team-target="gathering" data-company-view-target="lead" role="button" aria-label="Highlight Gathering Team card" tabindex="0">
+            <div class="team-section gath" id="gathering-team-section-lead" style="grid-column: 1 / -1; margin-top: 0;" data-team-target="gathering" data-company-view-target="lead">
                 <h2>Gathering Team</h2>
             </div>
 
@@ -561,7 +562,7 @@
             </div>
 
             <!-- Marcom Team Header -->
-            <div class="team-section marc" id="marcom-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="marcom" data-company-view-target="lead" role="button" aria-label="Highlight Marcom Team card" tabindex="0">
+            <div class="team-section marc" id="marcom-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="marcom" data-company-view-target="lead">
                 <h2>MARCOM Team</h2>
             </div>
 
@@ -594,7 +595,7 @@
             </div>
 
             <!-- Audit Team Header -->
-            <div class="team-section aud" id="audit-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="audit" data-company-view-target="lead" role="button" aria-label="Highlight Audit Team card" tabindex="0">
+            <div class="team-section aud" id="audit-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="audit" data-company-view-target="lead">
                 <h2>Audit Team</h2>
             </div>
 
@@ -627,7 +628,7 @@
             </div>
 
             <!-- Gathering Team Header -->
-            <div class="team-section gath" id="gathering-team-section-lead-2" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="gathering" data-company-view-target="lead" role="button" aria-label="Highlight Gathering Team card" tabindex="0">
+            <div class="team-section gath" id="gathering-team-section-lead-2" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="gathering" data-company-view-target="lead">
                 <h2>Gathering Team</h2>
             </div>
 
@@ -688,7 +689,7 @@
             </div>
 
             <!-- LRAD Team Header -->
-            <div class="team-section lrad" id="lrad-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="lrad" data-company-view-target="lead" role="button" aria-label="Highlight LRAD Team card" tabindex="0">
+            <div class="team-section lrad" id="lrad-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="lrad" data-company-view-target="lead">
                 <h2>LRAD Team</h2>
             </div>
 
@@ -749,7 +750,7 @@
             </div>
 
             <!-- Quality Team Header -->
-            <div class="team-section qual" id="quality-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="quality" data-company-view-target="lead" role="button" aria-label="Highlight Quality Team card" tabindex="0">
+            <div class="team-section qual" id="quality-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="quality" data-company-view-target="lead">
                 <h2>Quality Team</h2>
             </div>
 
@@ -782,7 +783,7 @@
             </div>
 
             <!-- Design and Construction Team Header -->
-            <div class="team-section dc" id="dc-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="dc" data-company-view-target="lead" role="button" aria-label="Highlight Design and Construction Team card" tabindex="0">
+            <div class="team-section dc" id="dc-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="dc" data-company-view-target="lead">
                 <h2>Design and Construction Team</h2>
             </div>
 
@@ -843,7 +844,7 @@
             </div>
 
             <!-- Technical Team Header -->
-            <div class="team-section tech" id="technical-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="tech" data-company-view-target="lead" role="button" aria-label="Highlight Technical Team card" tabindex="0">
+            <div class="team-section tech" id="technical-team-section-lead" style="grid-column: 1 / -1; margin-top: 40px;" data-team-target="tech" data-company-view-target="lead">
                 <h2>Technical Team</h2>
             </div>
 
@@ -883,7 +884,7 @@
             </div>
 
             <!-- Accounting Team Section -->
-            <div class="team-section acc" id="accounting-team-section" data-team-target="accounting" data-company-view-target="lag" role="button" aria-label="Scroll to Accounting Team overview" tabindex="0">
+            <div class="team-section acc" id="accounting-team-section" data-team-target="accounting" data-company-view-target="lag">
                 <h2>Accounting Team</h2>
             </div>
 
@@ -898,15 +899,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="net-profit-target">₱9,760,000</div>
+                        <div class="stat-value" data-metric="net-profit-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="net-profit-actual">₱9,720,000</div>
+                        <div class="stat-value" data-metric="net-profit-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="net-profit-variance">-0.4%</div>
+                        <div class="stat-value" data-metric="net-profit-variance">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -927,15 +928,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Total Revenue</div>
-                        <div class="stat-value">₱35.06M</div>
+                        <div class="stat-value">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Average</div>
-                        <div class="stat-value">₱34.05M</div>
+                        <div class="stat-value">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">YoY Growth</div>
-                        <div class="stat-value" style="color: #fff;">+2.97%</div>
+                        <div class="stat-value" style="color: #fff;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -956,15 +957,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target Rate</div>
-                        <div class="stat-value" data-metric="collection-target">--</div>
+                        <div class="stat-value" data-metric="collection-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual Rate</div>
-                        <div class="stat-value" data-metric="collection-actual">--</div>
+                        <div class="stat-value" data-metric="collection-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="collection-variance">--</div>
+                        <div class="stat-value" data-metric="collection-variance">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -977,7 +978,7 @@
             </div>
 
             <!-- Opportunity Team Section -->
-            <div class="team-section opp" id="opportunity-team-section" data-team-target="opportunity" data-company-view-target="lag" role="button" aria-label="Highlight Opportunity Team card" tabindex="0">
+            <div class="team-section opp" id="opportunity-team-section" data-team-target="opportunity" data-company-view-target="lag">
                 <h2>Opportunity Team</h2>
             </div>
 
@@ -990,15 +991,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="rental-income-target">₱19.55M</div>
+                        <div class="stat-value" data-metric="rental-income-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="rental-income-actual">₱19.41M</div>
+                        <div class="stat-value" data-metric="rental-income-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="rental-income-variance">-0.7%</div>
+                        <div class="stat-value" data-metric="rental-income-variance">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1011,7 +1012,7 @@
             </div>
 
             <!-- Gathering Team Section -->
-            <div class="team-section gath" id="gathering-team-section" data-team-target="gathering" data-company-view-target="lag" role="button" aria-label="Highlight Gathering Team card" tabindex="0">
+            <div class="team-section gath" id="gathering-team-section" data-team-target="gathering" data-company-view-target="lag">
                 <h2>Gathering Team</h2>
             </div>
 
@@ -1024,15 +1025,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="venue-target">₱81.6K</div>
+                        <div class="stat-value" data-metric="venue-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="venue-actual">₱0.00</div>
+                        <div class="stat-value" data-metric="venue-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="venue-variance" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-value" data-metric="venue-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1053,15 +1054,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="studio-target">₱500.00</div>
+                        <div class="stat-value" data-metric="studio-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="studio-actual">₱58,560.00</div>
+                        <div class="stat-value" data-metric="studio-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="studio-variance" style="color: #ff3146;">-99.1%</div>
+                        <div class="stat-value" data-metric="studio-variance" style="color: #ff3146;"> 0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1082,15 +1083,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="sports-arena-target">₱11,450.00</div>
+                        <div class="stat-value" data-metric="sports-arena-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="sports-arena-actual">₱401,760.00</div>
+                        <div class="stat-value" data-metric="sports-arena-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="sports-arena-variance" style="color: #ff3146;">-97.2%</div>
+                        <div class="stat-value" data-metric="sports-arena-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1103,7 +1104,7 @@
             </div>
 
             <!-- Operations Team Section -->
-            <div class="team-section oper" id="operations-team-section" data-team-target="operations" data-company-view-target="lag" role="button" aria-label="Highlight Operations Team card" tabindex="0">
+            <div class="team-section oper" id="operations-team-section" data-team-target="operations" data-company-view-target="lag">
                 <h2>Operations Team</h2>
             </div>
 
@@ -1116,15 +1117,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="parking-income-target">₱1,175,548.57</div>
+                        <div class="stat-value" data-metric="parking-income-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="parking-income-actual">₱1,374,053.26</div>
+                        <div class="stat-value" data-metric="parking-income-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="parking-income-variance" style="color: #ff3146;">-14.4%</div>
+                        <div class="stat-value" data-metric="parking-income-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1141,7 +1142,7 @@
                 <h2 style="color: #ff3146;">Expenses</h2>
             </div>
             <!-- Accounting Team Section -->
-            <div class="team-section acc" id="accounting-team-section-expenses" data-team-target="accounting" data-company-view-target="lag" role="button" aria-label="Highlight Accounting Team card" tabindex="0">
+            <div class="team-section acc" id="accounting-team-section-expenses" data-team-target="accounting" data-company-view-target="lag">
                 <h2>Accounting Team</h2>
             </div>
 
@@ -1154,15 +1155,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="total-operating-expense-target">₱22,900,266.12</div>
+                        <div class="stat-value" data-metric="total-operating-expense-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="total-operating-expense-actual">₱21,996,437.04</div>
+                        <div class="stat-value" data-metric="total-operating-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="total-operating-expense-variance" style="color: #81f31d;">+4.1%</div>
+                        <div class="stat-value" data-metric="total-operating-expense-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1175,7 +1176,7 @@
             </div>
 
             <!-- Operations Team Section (Expenses) -->
-            <div class="team-section oper" id="operations-team-section-expenses" data-team-target="operations" data-company-view-target="lag" role="button" aria-label="Highlight Operations Team card" tabindex="0">
+            <div class="team-section oper" id="operations-team-section-expenses" data-team-target="operations" data-company-view-target="lag">
                 <h2>Operations Team</h2>
             </div>
 
@@ -1188,15 +1189,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="electricity-expense-previous">₱8,289,142.67</div>
+                        <div class="stat-value" data-metric="electricity-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="electricity-expense-actual">₱8,417,857.53</div>
+                        <div class="stat-value" data-metric="electricity-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="electricity-expense-variance" style="color: #81f31d;">+1.6%</div>
+                        <div class="stat-value" data-metric="electricity-expense-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1217,15 +1218,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="water-expense-previous">₱260,600.34</div>
+                            <div class="stat-value" data-metric="water-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="water-expense-actual">₱220,091.14</div>
+                        <div class="stat-value" data-metric="water-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="water-expense-variance" style="color: #81f31d;">+18.4%</div>
+                        <div class="stat-value" data-metric="water-expense-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1246,15 +1247,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="security-expense-previous">₱3,356,811.39</div>
+                        <div class="stat-value" data-metric="security-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="security-expense-actual">₱3,581,881.95</div>
+                        <div class="stat-value" data-metric="security-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="security-expense-variance" style="color: #81f31d;">+6.7%</div>
+                        <div class="stat-value" data-metric="security-expense-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1275,15 +1276,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="agency-expense-previous">₱3,153,100.00</div>
+                        <div class="stat-value" data-metric="agency-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="agency-expense-actual">₱3,155,128.69</div>
+                        <div class="stat-value" data-metric="agency-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="agency-expense-variance" style="color: #ff3146;">-0.1%</div>
+                        <div class="stat-value" data-metric="agency-expense-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1296,7 +1297,7 @@
             </div>
 
             <!-- LRAD Team Section (Expenses) -->
-            <div class="team-section lrad" id="lrad-team-section-expenses" data-team-target="lrad" data-company-view-target="lag" role="button" aria-label="Highlight LRAD Team card" tabindex="0">
+            <div class="team-section lrad" id="lrad-team-section-expenses" data-team-target="lrad" data-company-view-target="lag">
                 <h2>LRAD Team</h2>
             </div>
 
@@ -1309,15 +1310,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="salary-expense-previous">₱3,528,055.65</div>
+                        <div class="stat-value" data-metric="salary-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="salary-expense-actual">₱3,079,566.71</div>
+                        <div class="stat-value" data-metric="salary-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="salary-expense-variance" style="color: #ff3146;">-12.7%</div>
+                        <div class="stat-value" data-metric="salary-expense-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1330,7 +1331,7 @@
             </div>
 
             <!-- MARCOM Team Section (Expenses) -->
-            <div class="team-section marc" id="marcom-team-section-expenses" data-team-target="marcom" data-company-view-target="lag" role="button" aria-label="Highlight Marcom Team card" tabindex="0">
+            <div class="team-section marc" id="marcom-team-section-expenses" data-team-target="marcom" data-company-view-target="lag">
                 <h2>Marcom Team</h2>
             </div>
 
@@ -1343,15 +1344,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="marketing-expense-previous">₱73,500.00</div>
+                        <div class="stat-value" data-metric="marketing-expense-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="marketing-expense-actual">₱209,855.85</div>
+                        <div class="stat-value" data-metric="marketing-expense-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="marketing-expense-variance" style="color: #81f31d;">+185.5%</div>
+                        <div class="stat-value" data-metric="marketing-expense-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1364,7 +1365,7 @@
             </div>
 
             <!-- Gathering Team Section (Expenses) -->
-            <div class="team-section gath" id="gathering-team-section-expenses" data-team-target="gathering" data-company-view-target="lag" role="button" aria-label="Highlight Gathering Team card" tabindex="0">
+            <div class="team-section gath" id="gathering-team-section-expenses" data-team-target="gathering" data-company-view-target="lag">
                 <h2>Gathering Team</h2>
             </div>
 
@@ -1377,15 +1378,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Previous</div>
-                        <div class="stat-value" data-metric="marketing-expense-gathering-previous">₱155,800.00</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-previous">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="marketing-expense-gathering-actual">₱592,252.25</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="marketing-expense-gathering-variance" style="color: #81f31d;">+280.1%</div>
+                        <div class="stat-value" data-metric="marketing-expense-gathering-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1398,7 +1399,7 @@
             </div>
 
             <!-- DC Team Section (Expenses) -->
-            <div class="team-section dc" id="dc-team-section-expenses" data-team-target="dc" data-company-view-target="lag" role="button" aria-label="Highlight Design and Construction Team card" tabindex="0">
+            <div class="team-section dc" id="dc-team-section-expenses" data-team-target="dc" data-company-view-target="lag">
                 <h2>Design and Construction Team</h2>
             </div>
 
@@ -1411,15 +1412,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-target">₱93,900.00</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-actual">₱0.00</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-variance" style="color: #ff3146;">-100.0%</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1440,15 +1441,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-target">₱32,079.81</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-actual">₱111,750.00</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-variance" style="color: #ff3146;">-71.3%</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1461,7 +1462,7 @@
             </div>
 
             <!-- Technical Team Section (Expenses) -->
-            <div class="team-section tech" id="technical-team-section-expenses" data-team-target="tech" data-company-view-target="lag" role="button" aria-label="Highlight Technical Team card" tabindex="0">
+            <div class="team-section tech" id="technical-team-section-expenses" data-team-target="tech" data-company-view-target="lag">
                 <h2>Technical Team</h2>
             </div>
 
@@ -1474,15 +1475,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-target">₱167,539.28</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-actual">₱156,500.00</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-variance" style="color: #81f31d;">+7.1%</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-labor-technical-variance" style="color: #81f31d;">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -1503,15 +1504,15 @@
                 <div class="summary-stats summary-stats-vertical">
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.15s">
                         <div class="stat-label">Target</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-target">₱187,750.00</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-target">₱--</div>
                     </div>
                     <div class="stat-card stat-card-horizontal" style="animation-delay: 0.3s">
                         <div class="stat-label">Actual</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-actual">₱126,539.50</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-actual">₱--</div>
                     </div>
                     <div class="highlight-variance stat-card stat-card-horizontal" style="animation-delay: 0.45s">
                         <div class="stat-label">Variance</div>
-                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-variance" style="color: #ff3146;">-32.6%</div>
+                        <div class="stat-value" data-metric="repairs-maintenance-materials-technical-variance" style="color: #ff3146;">0.0%</div>
                     </div>
                 </div>
             </div>

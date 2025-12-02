@@ -881,15 +881,63 @@
         const formatMillionsLabel = (value) => {
             const numeric = Number(value);
             if (Number.isNaN(numeric)) {
+                return 'P0';
+            }
+            // Format as shortened number with M suffix (value is already in millions)
+            return `P${Math.round(numeric).toLocaleString('en-PH')}M`;
+        };
+
+        // Format tooltip to show full decimal number (convert from millions back to full value)
+        const formatTooltipValue = (value) => {
+            // Handle null, undefined, or NaN values
+            if (value === null || value === undefined || value === '') {
                 return 'P0.00';
             }
-            // Convert millions to actual value and format as currency
-            const actualValue = numeric * 1000000;
-            return `P${actualValue.toLocaleString('en-PH', {
+            const numeric = Number(value);
+            if (Number.isNaN(numeric)) {
+                return 'P0.00';
+            }
+            // If value is 0, return P0.00 directly
+            if (numeric === 0) {
+                return 'P0.00';
+            }
+            // Convert from millions back to full value and format with decimals
+            const fullValue = numeric * 1_000_000;
+            return `P${fullValue.toLocaleString('en-PH', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             })}`;
         };
+
+        // Helper function to extract numeric value from raw data item (object or number)
+        function extractRawNumericValue(rawItem) {
+            if (typeof rawItem === 'number') {
+                return Number.isFinite(rawItem) ? rawItem : 0;
+            }
+            if (rawItem && typeof rawItem === 'object') {
+                const value = rawItem.value ?? rawItem.amount ?? rawItem.total ?? rawItem.actual ?? rawItem.result;
+                const numeric = toNumericValue(value);
+                return Number.isNaN(numeric) ? 0 : numeric;
+            }
+            const numeric = toNumericValue(rawItem);
+            return Number.isNaN(numeric) ? 0 : numeric;
+        }
+
+        // Format raw value for tooltip display (handles both currency and thousands formats)
+        function formatRawTooltipValue(rawValue, isThousandsFormat = false) {
+            if (rawValue === null || rawValue === undefined || rawValue === '') {
+                return 'P0.00';
+            }
+            const numeric = typeof rawValue === 'number' ? rawValue : extractRawNumericValue(rawValue);
+            if (Number.isNaN(numeric) || numeric === 0) {
+                return 'P0.00';
+            }
+            // Format as currency with 2 decimal places
+            return `P${numeric.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+        }
 
         const resolveDataLabelColor = (color, index) => {
             if (Array.isArray(color)) {
@@ -1114,7 +1162,27 @@
                     cornerRadius: 8,
                     callbacks: {
                         label: function(context) {
-                            const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                            const dataset = context.chart.data.datasets[context.datasetIndex];
+                            
+                            // Check if rawData array exists and has data at this index
+                            if (dataset.rawData && Array.isArray(dataset.rawData) && dataset.rawData[context.dataIndex] !== undefined) {
+                                const rawItem = dataset.rawData[context.dataIndex];
+                                const rawValue = extractRawNumericValue(rawItem);
+                                // Format raw value for tooltip display
+                                return `${context.dataset.label}: ${formatRawTooltipValue(rawValue)}`;
+                            }
+                            
+                            // Fallback to existing behavior: get the normalized dataset value
+                            const datasetValue = dataset.data[context.dataIndex];
+                            // Use the dataset value if available, otherwise fall back to parsed value
+                            const value = datasetValue !== null && datasetValue !== undefined 
+                                ? datasetValue 
+                                : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                            // Use formatTooltipValue for tooltips to show full decimal number
+                            // Only use formatTooltipValue if valueFormatter is formatMillionsLabel
+                            if (valueFormatter === formatMillionsLabel) {
+                                return `${context.dataset.label}: ${formatTooltipValue(value)}`;
+                            }
                             return `${context.dataset.label}: ${valueFormatter(value)}`;
                         }
                     }
@@ -1339,7 +1407,7 @@
             const requiresScaling = numericValues.some(value => Math.abs(value) >= 1000);
             const divisor = requiresScaling ? 1_000_000 : 1;
 
-            return numericValues.map(value => Number.isFinite(value) ? value / divisor : 0);
+            return numericValues.map(value => Number.isFinite(value) ? Math.round(value / divisor) : 0);
         }
 
         function extractNumericValues(series = [], { valueKey = 'value' } = {}) {
@@ -1839,13 +1907,16 @@
             
             if (current2025Data.length) {
             profitBarData.datasets[0].data = current2025Data;
+            profitBarData.datasets[0].rawData = netProfitCurrent;
             }
             if (previous2024Data.length) {
                 profitBarData.datasets[1].data = previous2024Data;
+                profitBarData.datasets[1].rawData = netProfit2024;
             }
             
             if (targetSeries.length && profitBarData.datasets[2]) {
                 profitBarData.datasets[2].data = targetSeries;
+                profitBarData.datasets[2].rawData = netProfitTargetRaw;
             }
             
             console.log('Updated net profit datasets:', {
@@ -1905,12 +1976,15 @@
 
             if (currentSeries.length) {
                 revenueBarData.datasets[0].data = currentSeries;
+                revenueBarData.datasets[0].rawData = currentSeriesRaw;
             }
             if (previousSeries.length) {
                 revenueBarData.datasets[1].data = previousSeries;
+                revenueBarData.datasets[1].rawData = previousSeriesRaw;
             }
             if (targetSeries.length && revenueBarData.datasets[2]) {
                 revenueBarData.datasets[2].data = targetSeries;
+                revenueBarData.datasets[2].rawData = targetSeriesRaw;
             }
 
             console.log('Updated revenue bar datasets:', {
@@ -1969,9 +2043,11 @@
 
             if (receivablesSeries.length) {
                 monthlyCollectionData.datasets[0].data = receivablesSeries;
+                monthlyCollectionData.datasets[0].rawData = receivablesRaw;
             }
             if (collectedSeries.length) {
                 monthlyCollectionData.datasets[1].data = collectedSeries;
+                monthlyCollectionData.datasets[1].rawData = collectedRaw;
             }
 
             if (monthlyCollectionData.datasets[2]) {
@@ -2093,12 +2169,15 @@
 
             if (rentalCurrentSeries.length) {
                 rentalComparisonData.datasets[0].data = rentalCurrentSeries;
+                rentalComparisonData.datasets[0].rawData = rentalCurrentRaw;
             }
             if (rental2024Series.length) {
                 rentalComparisonData.datasets[1].data = rental2024Series;
+                rentalComparisonData.datasets[1].rawData = rental2024Raw;
             }
             if (rentalTargetSeries.length && rentalComparisonData.datasets[2]) {
                 rentalComparisonData.datasets[2].data = rentalTargetSeries;
+                rentalComparisonData.datasets[2].rawData = rentalTargetRaw;
             }
 
             console.log('Updated rental income datasets:', {
@@ -2121,12 +2200,8 @@
             if (Number.isNaN(numeric)) {
                 return 'P0.00';
             }
-            // Convert thousands to actual value and format as currency
-            const actualValue = numeric * 1000;
-            return `P${actualValue.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })}`;
+            // Display as "10K" format instead of full currency value
+            return `${numeric}K`;
         };
 
         // Custom plugin for venue/thousands format chart data labels (handles K format, labels above bars)
@@ -2269,12 +2344,15 @@
 
             if (venueCurrentSeries.length) {
                 venueChartData.datasets[0].data = venueCurrentSeries;
+                venueChartData.datasets[0].rawData = venueCurrentRaw;
             }
             if (venue2024Series.length) {
                 venueChartData.datasets[1].data = venue2024Series;
+                venueChartData.datasets[1].rawData = venue2024Raw;
             }
             if (venueTargetSeries.length && venueChartData.datasets[2]) {
                 venueChartData.datasets[2].data = venueTargetSeries;
+                venueChartData.datasets[2].rawData = venueTargetRaw;
             }
 
             console.log('Updated venue P-value datasets:', {
@@ -2339,12 +2417,15 @@
 
             if (studioCurrentSeries.length) {
                 studioChartData.datasets[0].data = studioCurrentSeries;
+                studioChartData.datasets[0].rawData = studioCurrentRaw;
             }
             if (studio2024Series.length) {
                 studioChartData.datasets[1].data = studio2024Series;
+                studioChartData.datasets[1].rawData = studio2024Raw;
             }
             if (studioTargetSeries.length && studioChartData.datasets[2]) {
                 studioChartData.datasets[2].data = studioTargetSeries;
+                studioChartData.datasets[2].rawData = studioTargetRaw;
             }
 
             console.log('Updated studio P-value datasets:', {
@@ -2409,12 +2490,15 @@
 
             if (sportsArenaCurrentSeries.length) {
                 sportsArenaChartData.datasets[0].data = sportsArenaCurrentSeries;
+                sportsArenaChartData.datasets[0].rawData = sportsArenaCurrentRaw;
             }
             if (sportsArena2024Series.length) {
                 sportsArenaChartData.datasets[1].data = sportsArena2024Series;
+                sportsArenaChartData.datasets[1].rawData = sportsArena2024Raw;
             }
             if (sportsArenaTargetSeries.length && sportsArenaChartData.datasets[2]) {
                 sportsArenaChartData.datasets[2].data = sportsArenaTargetSeries;
+                sportsArenaChartData.datasets[2].rawData = sportsArenaTargetRaw;
             }
 
             console.log('Updated sports arena P-value datasets:', {
@@ -2435,16 +2519,16 @@
             data: parkingIncomeChartData,
             config: parkingIncomeChartConfig
         } = createComparisonChartStructures({
-            yAxisTitle: 'Parking Income (Thousands ₱)',
+            yAxisTitle: 'Parking Income (Millions ₱)',
             barPluginId: 'parkingIncomeBarDataLabels',
             currentLabel: 'Year 2025',
             previousLabel: 'Year 2024',
-            targetLabel: 'Current (60%) Target',
+            targetLabel: 'Current Year Target',
             currentDataset: Array(12).fill(0),
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -2473,18 +2557,21 @@
                 ?? payload?.parkingIncomeGoal
                 ?? [];
 
-            const parkingCurrentSeries = normalizeThousandsSeries(parkingCurrentRaw);
-            const parking2024Series = normalizeThousandsSeries(parking2024Raw);
-            const parkingTargetSeries = normalizeThousandsSeries(parkingTargetRaw);
+            const parkingCurrentSeries = normalizeCurrencySeries(parkingCurrentRaw);
+            const parking2024Series = normalizeCurrencySeries(parking2024Raw);
+            const parkingTargetSeries = normalizeCurrencySeries(parkingTargetRaw);
 
             if (parkingCurrentSeries.length) {
                 parkingIncomeChartData.datasets[0].data = parkingCurrentSeries;
+                parkingIncomeChartData.datasets[0].rawData = parkingCurrentRaw;
             }
             if (parking2024Series.length) {
                 parkingIncomeChartData.datasets[1].data = parking2024Series;
+                parkingIncomeChartData.datasets[1].rawData = parking2024Raw;
             }
             if (parkingTargetSeries.length && parkingIncomeChartData.datasets[2]) {
                 parkingIncomeChartData.datasets[2].data = parkingTargetSeries;
+                parkingIncomeChartData.datasets[2].rawData = parkingTargetRaw;
             }
 
             console.log('Updated parking income datasets:', {
@@ -2547,12 +2634,15 @@
 
             if (electricityCurrentSeries.length) {
                 electricityExpenseChartData.datasets[0].data = electricityCurrentSeries;
+                electricityExpenseChartData.datasets[0].rawData = electricityCurrentRaw;
             }
             if (electricity2024Series.length) {
                 electricityExpenseChartData.datasets[1].data = electricity2024Series;
+                electricityExpenseChartData.datasets[1].rawData = electricity2024Raw;
             }
             if (electricityTargetSeries.length && electricityExpenseChartData.datasets[2]) {
                 electricityExpenseChartData.datasets[2].data = electricityTargetSeries;
+                electricityExpenseChartData.datasets[2].rawData = electricityTargetRaw;
             }
 
             console.log('Updated electricity expense datasets:', {
@@ -2617,12 +2707,15 @@
 
             if (totalOperatingExpensesCurrentSeries.length) {
                 totalOperatingExpenseChartData.datasets[0].data = totalOperatingExpensesCurrentSeries;
+                totalOperatingExpenseChartData.datasets[0].rawData = totalOperatingExpensesCurrentRaw;
             }
             if (totalOperatingExpenses2024Series.length) {
                 totalOperatingExpenseChartData.datasets[1].data = totalOperatingExpenses2024Series;
+                totalOperatingExpenseChartData.datasets[1].rawData = totalOperatingExpenses2024Raw;
             }
             if (totalOperatingExpensesTargetSeries.length && totalOperatingExpenseChartData.datasets[2]) {
                 totalOperatingExpenseChartData.datasets[2].data = totalOperatingExpensesTargetSeries;
+                totalOperatingExpenseChartData.datasets[2].rawData = totalOperatingExpensesTargetRaw;
             }
 
             console.log('Updated total operating expense datasets:', {
@@ -2653,7 +2746,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -2682,18 +2775,21 @@
                 ?? payload?.waterExpenseGoal
                 ?? [];
 
-            const waterCurrentSeries = normalizeThousandsSeries(waterCurrentRaw);
-            const water2024Series = normalizeThousandsSeries(water2024Raw);
-            const waterTargetSeries = normalizeThousandsSeries(waterTargetRaw);
+            const waterCurrentSeries = normalizeCurrencySeries(waterCurrentRaw);
+            const water2024Series = normalizeCurrencySeries(water2024Raw);
+            const waterTargetSeries = normalizeCurrencySeries(waterTargetRaw);
 
             if (waterCurrentSeries.length) {
                 waterExpenseChartData.datasets[0].data = waterCurrentSeries;
+                waterExpenseChartData.datasets[0].rawData = waterCurrentRaw;
             }
             if (water2024Series.length) {
                 waterExpenseChartData.datasets[1].data = water2024Series;
+                waterExpenseChartData.datasets[1].rawData = water2024Raw;
             }
             if (waterTargetSeries.length && waterExpenseChartData.datasets[2]) {
                 waterExpenseChartData.datasets[2].data = waterTargetSeries;
+                waterExpenseChartData.datasets[2].rawData = waterTargetRaw;
             }
 
             console.log('Updated water expense datasets:', {
@@ -2756,12 +2852,15 @@
 
             if (securityCurrentSeries.length) {
                 securityExpenseChartData.datasets[0].data = securityCurrentSeries;
+                securityExpenseChartData.datasets[0].rawData = securityCurrentRaw;
             }
             if (security2024Series.length) {
                 securityExpenseChartData.datasets[1].data = security2024Series;
+                securityExpenseChartData.datasets[1].rawData = security2024Raw;
             }
             if (securityTargetSeries.length && securityExpenseChartData.datasets[2]) {
                 securityExpenseChartData.datasets[2].data = securityTargetSeries;
+                securityExpenseChartData.datasets[2].rawData = securityTargetRaw;
             }
 
             console.log('Updated security expense datasets:', {
@@ -2824,12 +2923,15 @@
 
             if (agencyCurrentSeries.length) {
                 agencyExpenseChartData.datasets[0].data = agencyCurrentSeries;
+                agencyExpenseChartData.datasets[0].rawData = agencyCurrentRaw;
             }
             if (agency2024Series.length) {
                 agencyExpenseChartData.datasets[1].data = agency2024Series;
+                agencyExpenseChartData.datasets[1].rawData = agency2024Raw;
             }
             if (agencyTargetSeries.length && agencyExpenseChartData.datasets[2]) {
                 agencyExpenseChartData.datasets[2].data = agencyTargetSeries;
+                agencyExpenseChartData.datasets[2].rawData = agencyTargetRaw;
             }
 
             console.log('Updated agency expense datasets:', {
@@ -2892,12 +2994,15 @@
 
             if (salaryCurrentSeries.length) {
                 salaryExpenseChartData.datasets[0].data = salaryCurrentSeries;
+                salaryExpenseChartData.datasets[0].rawData = salaryCurrentRaw;
             }
             if (salary2024Series.length) {
                 salaryExpenseChartData.datasets[1].data = salary2024Series;
+                salaryExpenseChartData.datasets[1].rawData = salary2024Raw;
             }
             if (salaryTargetSeries.length && salaryExpenseChartData.datasets[2]) {
                 salaryExpenseChartData.datasets[2].data = salaryTargetSeries;
+                salaryExpenseChartData.datasets[2].rawData = salaryTargetRaw;
             }
 
             console.log('Updated salary expense datasets:', {
@@ -2927,7 +3032,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: false
         });
@@ -2956,18 +3061,21 @@
                 ?? payload?.marketingExpenseGoal
                 ?? [];
 
-            const marketingCurrentSeries = normalizeThousandsSeries(marketingCurrentRaw);
-            const marketing2024Series = normalizeThousandsSeries(marketing2024Raw);
-            const marketingTargetSeries = normalizeThousandsSeries(marketingTargetRaw);
+            const marketingCurrentSeries = normalizeCurrencySeries(marketingCurrentRaw);
+            const marketing2024Series = normalizeCurrencySeries(marketing2024Raw);
+            const marketingTargetSeries = normalizeCurrencySeries(marketingTargetRaw);
 
             if (marketingCurrentSeries.length) {
                 marketingExpenseChartData.datasets[0].data = marketingCurrentSeries;
+                marketingExpenseChartData.datasets[0].rawData = marketingCurrentRaw;
             }
             if (marketing2024Series.length) {
                 marketingExpenseChartData.datasets[1].data = marketing2024Series;
+                marketingExpenseChartData.datasets[1].rawData = marketing2024Raw;
             }
             if (marketingTargetSeries.length && marketingExpenseChartData.datasets[2]) {
                 marketingExpenseChartData.datasets[2].data = marketingTargetSeries;
+                marketingExpenseChartData.datasets[2].rawData = marketingTargetRaw;
             }
 
             console.log('Updated marketing expense datasets:', {
@@ -2997,7 +3105,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -3026,18 +3134,21 @@
                 ?? payload?.marketingExpenseGatheringGoal
                 ?? [];
 
-            const gatheringCurrentSeries = normalizeThousandsSeries(gatheringCurrentRaw);
-            const gathering2024Series = normalizeThousandsSeries(gathering2024Raw);
-            const gatheringTargetSeries = normalizeThousandsSeries(gatheringTargetRaw);
+            const gatheringCurrentSeries = normalizeCurrencySeries(gatheringCurrentRaw);
+            const gathering2024Series = normalizeCurrencySeries(gathering2024Raw);
+            const gatheringTargetSeries = normalizeCurrencySeries(gatheringTargetRaw);
 
             if (gatheringCurrentSeries.length) {
                 marketingExpenseGatheringChartData.datasets[0].data = gatheringCurrentSeries;
+                marketingExpenseGatheringChartData.datasets[0].rawData = gatheringCurrentRaw;
             }
             if (gathering2024Series.length) {
                 marketingExpenseGatheringChartData.datasets[1].data = gathering2024Series;
+                marketingExpenseGatheringChartData.datasets[1].rawData = gathering2024Raw;
             }
             if (gatheringTargetSeries.length && marketingExpenseGatheringChartData.datasets[2]) {
                 marketingExpenseGatheringChartData.datasets[2].data = gatheringTargetSeries;
+                marketingExpenseGatheringChartData.datasets[2].rawData = gatheringTargetRaw;
             }
 
             console.log('Updated marketing expense gathering datasets:', {
@@ -3067,7 +3178,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -3096,18 +3207,21 @@
                 ?? payload?.repairsMaintenanceLaborGoal
                 ?? [];
 
-            const laborCurrentSeries = normalizeThousandsSeries(laborCurrentRaw);
-            const labor2024Series = normalizeThousandsSeries(labor2024Raw);
-            const laborTargetSeries = normalizeThousandsSeries(laborTargetRaw);
+            const laborCurrentSeries = normalizeCurrencySeries(laborCurrentRaw);
+            const labor2024Series = normalizeCurrencySeries(labor2024Raw);
+            const laborTargetSeries = normalizeCurrencySeries(laborTargetRaw);
 
             if (laborCurrentSeries.length) {
                 repairsMaintenanceLaborChartData.datasets[0].data = laborCurrentSeries;
+                repairsMaintenanceLaborChartData.datasets[0].rawData = laborCurrentRaw;
             }
             if (labor2024Series.length) {
                 repairsMaintenanceLaborChartData.datasets[1].data = labor2024Series;
+                repairsMaintenanceLaborChartData.datasets[1].rawData = labor2024Raw;
             }
             if (laborTargetSeries.length && repairsMaintenanceLaborChartData.datasets[2]) {
                 repairsMaintenanceLaborChartData.datasets[2].data = laborTargetSeries;
+                repairsMaintenanceLaborChartData.datasets[2].rawData = laborTargetRaw;
             }
 
             console.log('Updated repairs & maintenance labor datasets:', {
@@ -3137,7 +3251,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -3166,18 +3280,21 @@
                 ?? payload?.repairsMaintenanceMaterialsGoal
                 ?? [];
 
-            const materialsCurrentSeries = normalizeThousandsSeries(materialsCurrentRaw);
-            const materials2024Series = normalizeThousandsSeries(materials2024Raw);
-            const materialsTargetSeries = normalizeThousandsSeries(materialsTargetRaw);
+            const materialsCurrentSeries = normalizeCurrencySeries(materialsCurrentRaw);
+            const materials2024Series = normalizeCurrencySeries(materials2024Raw);
+            const materialsTargetSeries = normalizeCurrencySeries(materialsTargetRaw);
 
             if (materialsCurrentSeries.length) {
                 repairsMaintenanceMaterialsChartData.datasets[0].data = materialsCurrentSeries;
+                repairsMaintenanceMaterialsChartData.datasets[0].rawData = materialsCurrentRaw;
             }
             if (materials2024Series.length) {
                 repairsMaintenanceMaterialsChartData.datasets[1].data = materials2024Series;
+                repairsMaintenanceMaterialsChartData.datasets[1].rawData = materials2024Raw;
             }
             if (materialsTargetSeries.length && repairsMaintenanceMaterialsChartData.datasets[2]) {
                 repairsMaintenanceMaterialsChartData.datasets[2].data = materialsTargetSeries;
+                repairsMaintenanceMaterialsChartData.datasets[2].rawData = materialsTargetRaw;
             }
 
             console.log('Updated repairs & maintenance materials datasets:', {
@@ -3207,7 +3324,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -3236,18 +3353,21 @@
                 ?? payload?.repairsMaintenanceLaborTechnicalGoal
                 ?? [];
 
-            const laborTechnicalCurrentSeries = normalizeThousandsSeries(laborTechnicalCurrentRaw);
-            const laborTechnical2024Series = normalizeThousandsSeries(laborTechnical2024Raw);
-            const laborTechnicalTargetSeries = normalizeThousandsSeries(laborTechnicalTargetRaw);
+            const laborTechnicalCurrentSeries = normalizeCurrencySeries(laborTechnicalCurrentRaw);
+            const laborTechnical2024Series = normalizeCurrencySeries(laborTechnical2024Raw);
+            const laborTechnicalTargetSeries = normalizeCurrencySeries(laborTechnicalTargetRaw);
 
             if (laborTechnicalCurrentSeries.length) {
                 repairsMaintenanceLaborTechnicalChartData.datasets[0].data = laborTechnicalCurrentSeries;
+                repairsMaintenanceLaborTechnicalChartData.datasets[0].rawData = laborTechnicalCurrentRaw;
             }
             if (laborTechnical2024Series.length) {
                 repairsMaintenanceLaborTechnicalChartData.datasets[1].data = laborTechnical2024Series;
+                repairsMaintenanceLaborTechnicalChartData.datasets[1].rawData = laborTechnical2024Raw;
             }
             if (laborTechnicalTargetSeries.length && repairsMaintenanceLaborTechnicalChartData.datasets[2]) {
                 repairsMaintenanceLaborTechnicalChartData.datasets[2].data = laborTechnicalTargetSeries;
+                repairsMaintenanceLaborTechnicalChartData.datasets[2].rawData = laborTechnicalTargetRaw;
             }
 
             console.log('Updated repairs & maintenance labor technical datasets:', {
@@ -3277,7 +3397,7 @@
             previousDataset: Array(12).fill(0),
             targetDataset: Array(12).fill(0),
             includeBarLabels: false,
-            valueFormatter: formatThousandsLabel,
+            valueFormatter: formatMillionsLabel,
             axisBounds: {},
             beginAtZero: true
         });
@@ -3306,18 +3426,21 @@
                 ?? payload?.repairsMaintenanceMaterialsTechnicalGoal
                 ?? [];
 
-            const materialsTechnicalCurrentSeries = normalizeThousandsSeries(materialsTechnicalCurrentRaw);
-            const materialsTechnical2024Series = normalizeThousandsSeries(materialsTechnical2024Raw);
-            const materialsTechnicalTargetSeries = normalizeThousandsSeries(materialsTechnicalTargetRaw);
+            const materialsTechnicalCurrentSeries = normalizeCurrencySeries(materialsTechnicalCurrentRaw);
+            const materialsTechnical2024Series = normalizeCurrencySeries(materialsTechnical2024Raw);
+            const materialsTechnicalTargetSeries = normalizeCurrencySeries(materialsTechnicalTargetRaw);
 
             if (materialsTechnicalCurrentSeries.length) {
                 repairsMaintenanceMaterialsTechnicalChartData.datasets[0].data = materialsTechnicalCurrentSeries;
+                repairsMaintenanceMaterialsTechnicalChartData.datasets[0].rawData = materialsTechnicalCurrentRaw;
             }
             if (materialsTechnical2024Series.length) {
                 repairsMaintenanceMaterialsTechnicalChartData.datasets[1].data = materialsTechnical2024Series;
+                repairsMaintenanceMaterialsTechnicalChartData.datasets[1].rawData = materialsTechnical2024Raw;
             }
             if (materialsTechnicalTargetSeries.length && repairsMaintenanceMaterialsTechnicalChartData.datasets[2]) {
                 repairsMaintenanceMaterialsTechnicalChartData.datasets[2].data = materialsTechnicalTargetSeries;
+                repairsMaintenanceMaterialsTechnicalChartData.datasets[2].rawData = materialsTechnicalTargetRaw;
             }
 
             console.log('Updated repairs & maintenance materials technical datasets:', {
@@ -3440,7 +3563,16 @@
                             cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                    // Get the actual dataset value from the chart data
+                                    const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                    // Use the dataset value if available, otherwise fall back to parsed value
+                                    const value = datasetValue !== null && datasetValue !== undefined 
+                                        ? datasetValue 
+                                        : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                    // Use formatTooltipValue if formatter is formatMillionsLabel
+                                    if (formatter === formatMillionsLabel) {
+                                        return `${context.dataset.label}: ${formatTooltipValue(value)}`;
+                                    }
                                     return `${context.dataset.label}: ${formatter(value)}`;
                                 }
                             }
@@ -3531,12 +3663,15 @@
 
             if (occupancyLead2025Data.length) {
                 occupancyRateLeadChartData.datasets[0].data = occupancyLead2025Data;
+                occupancyRateLeadChartData.datasets[0].rawData = occupancyLead2025Raw;
             }
             if (occupancyLead2024Data.length) {
                 occupancyRateLeadChartData.datasets[1].data = occupancyLead2024Data;
+                occupancyRateLeadChartData.datasets[1].rawData = occupancyLead2024Raw;
             }
             if (occupancyLeadTargetData.length && occupancyRateLeadChartData.datasets[2]) {
                 occupancyRateLeadChartData.datasets[2].data = occupancyLeadTargetData;
+                occupancyRateLeadChartData.datasets[2].rawData = occupancyLeadTargetRaw;
             }
 
             console.log('Updated occupancy rate lead datasets:', {
@@ -3588,12 +3723,15 @@
 
             if (occupancyAreaLead2025Data.length) {
                 occupancyRateAreaLeadChartData.datasets[0].data = occupancyAreaLead2025Data;
+                occupancyRateAreaLeadChartData.datasets[0].rawData = occupancyAreaLead2025Raw;
             }
             if (occupancyAreaLead2024Data.length) {
                 occupancyRateAreaLeadChartData.datasets[1].data = occupancyAreaLead2024Data;
+                occupancyRateAreaLeadChartData.datasets[1].rawData = occupancyAreaLead2024Raw;
             }
             if (occupancyAreaLeadTargetData.length && occupancyRateAreaLeadChartData.datasets[2]) {
                 occupancyRateAreaLeadChartData.datasets[2].data = occupancyAreaLeadTargetData;
+                occupancyRateAreaLeadChartData.datasets[2].rawData = occupancyAreaLeadTargetRaw;
             }
 
             console.log('Updated occupancy rate area lead datasets:', {
@@ -3654,12 +3792,15 @@
 
             if (occupancyPValueLead2025Data.length) {
                 occupancyRatePValueLeadChartData.datasets[0].data = occupancyPValueLead2025Data;
+                occupancyRatePValueLeadChartData.datasets[0].rawData = occupancyPValueLead2025Raw;
             }
             if (occupancyPValueLead2024Data.length) {
                 occupancyRatePValueLeadChartData.datasets[1].data = occupancyPValueLead2024Data;
+                occupancyRatePValueLeadChartData.datasets[1].rawData = occupancyPValueLead2024Raw;
             }
             if (occupancyPValueLeadTargetData.length && occupancyRatePValueLeadChartData.datasets[2]) {
                 occupancyRatePValueLeadChartData.datasets[2].data = occupancyPValueLeadTargetData;
+                occupancyRatePValueLeadChartData.datasets[2].rawData = occupancyPValueLeadTargetRaw;
             }
 
             console.log('Updated occupancy rate p-value lead datasets:', {
@@ -3765,7 +3906,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -3920,7 +4066,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -4075,7 +4226,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -4230,7 +4386,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -4385,7 +4546,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -4540,7 +4706,12 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
                                 return `${context.dataset.label}: ${formatUnitsLabel(value)}`;
                             }
                         }
@@ -4752,8 +4923,14 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatMillionsLabel(value || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                // Use formatTooltipValue to show full decimal number
+                                return `${context.dataset.label}: ${formatTooltipValue(value)}`;
                             }
                         }
                     }
@@ -4909,8 +5086,13 @@
         );
         // Override tooltip and y-axis formatting for thousands instead of millions
         closedInquiriesLeadChartConfig.options.plugins.tooltip.callbacks.label = function(context) {
-            const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-            return `${context.dataset.label}: ${formatThousandsLabel(value || 0)}`;
+            // Get the actual dataset value from the chart data
+            const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+            // Use the dataset value if available, otherwise fall back to parsed value
+            const value = datasetValue !== null && datasetValue !== undefined 
+                ? datasetValue 
+                : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+            return `${context.dataset.label}: ${formatThousandsLabel(value !== null && value !== undefined ? value : 0)}`;
         };
         closedInquiriesLeadChartConfig.options.scales.y.ticks.callback = (value) => formatThousandsLabel(value);
         // Remove max constraint to allow auto-scaling for thousands values
@@ -5031,8 +5213,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5191,8 +5378,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5351,8 +5543,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5511,8 +5708,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5671,8 +5873,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5831,8 +6038,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -5991,8 +6203,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -6151,8 +6368,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -6311,8 +6533,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -6471,8 +6698,13 @@
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
-                                return `${context.dataset.label}: ${formatPercentage(Number(value) || 0)}`;
+                                // Get the actual dataset value from the chart data
+                                const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+                                // Use the dataset value if available, otherwise fall back to parsed value
+                                const value = datasetValue !== null && datasetValue !== undefined 
+                                    ? datasetValue 
+                                    : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
+                                return `${context.dataset.label}: ${formatPercentage(Number(value !== null && value !== undefined ? value : 0))}`;
                             }
                         }
                     }
@@ -6540,11 +6772,16 @@
         pulloutAversionLeadChartConfig.plugins = [];
         // Update tooltip to show people count (not millions) for bars, percentage for target line
         pulloutAversionLeadChartConfig.options.plugins.tooltip.callbacks.label = function(context) {
-            const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+            // Get the actual dataset value from the chart data
+            const datasetValue = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex];
+            // Use the dataset value if available, otherwise fall back to parsed value
+            const value = datasetValue !== null && datasetValue !== undefined 
+                ? datasetValue 
+                : (typeof context.parsed === 'object' ? context.parsed.y : context.parsed);
             // If it's the target line (index 2), calculate and show as percentage of 2024
             if (context.datasetIndex === 2) {
                 const dataIndex = context.dataIndex;
-                const value2024 = pulloutAversionLeadChartData.datasets[1].data[dataIndex];
+                const value2024 = context.chart.data.datasets[1].data[dataIndex];
                 if (value2024 && value2024 !== 0) {
                     const percentage = (Number(value) / value2024) * 100;
                     return `${context.dataset.label}: ${formatPercentage(percentage)}`;
@@ -6552,7 +6789,7 @@
                 return `${context.dataset.label}: ${formatPercentage(0)}`;
             }
             // Otherwise show as people count (formatted number with commas)
-            return `${context.dataset.label}: ${formatUnitsLabel(value || 0)}`;
+            return `${context.dataset.label}: ${formatUnitsLabel(value !== null && value !== undefined ? value : 0)}`;
         };
         // Update y-axis ticks to show people count (not millions)
         pulloutAversionLeadChartConfig.options.scales.y.ticks.callback = (value) => {
@@ -6636,12 +6873,15 @@
 
             if (closedInquiries2025Data.length) {
                 closedInquiriesLeadChartData.datasets[0].data = closedInquiries2025Data;
+                closedInquiriesLeadChartData.datasets[0].rawData = closedInquiries2025Raw;
             }
             if (closedInquiries2024Data.length) {
                 closedInquiriesLeadChartData.datasets[1].data = closedInquiries2024Data;
+                closedInquiriesLeadChartData.datasets[1].rawData = closedInquiries2024Raw;
             }
             if (closedInquiriesTargetData.length && closedInquiriesLeadChartData.datasets[2]) {
                 closedInquiriesLeadChartData.datasets[2].data = closedInquiriesTargetData;
+                closedInquiriesLeadChartData.datasets[2].rawData = closedInquiriesTargetRaw;
             }
 
             console.log('Updated closed inquiries datasets:', {
@@ -6673,12 +6913,15 @@
 
             if (offlineInquiries2025Data.length) {
                 offlineInquiriesLeadChartData.datasets[0].data = offlineInquiries2025Data;
+                offlineInquiriesLeadChartData.datasets[0].rawData = offlineInquiries2025Raw;
             }
             if (offlineInquiries2024Data.length) {
                 offlineInquiriesLeadChartData.datasets[1].data = offlineInquiries2024Data;
+                offlineInquiriesLeadChartData.datasets[1].rawData = offlineInquiries2024Raw;
             }
             if (offlineInquiriesTargetData.length && offlineInquiriesLeadChartData.datasets[2]) {
                 offlineInquiriesLeadChartData.datasets[2].data = offlineInquiriesTargetData;
+                offlineInquiriesLeadChartData.datasets[2].rawData = offlineInquiriesTargetRaw;
             }
 
             console.log('Updated offline inquiries datasets:', {
@@ -6747,12 +6990,15 @@
 
             if (pulloutAversion2025Data.length) {
                 pulloutAversionLeadChartData.datasets[0].data = pulloutAversion2025Data;
+                pulloutAversionLeadChartData.datasets[0].rawData = pulloutAversion2025Raw;
             }
             if (pulloutAversion2024Data.length) {
                 pulloutAversionLeadChartData.datasets[1].data = pulloutAversion2024Data;
+                pulloutAversionLeadChartData.datasets[1].rawData = pulloutAversion2024Raw;
             }
             if (targetPercentageData.length && pulloutAversionLeadChartData.datasets[2]) {
                 pulloutAversionLeadChartData.datasets[2].data = targetPercentageData;
+                pulloutAversionLeadChartData.datasets[2].rawData = pulloutAversionTargetRaw;
             }
 
             console.log('Updated pullout aversion datasets:', {
@@ -6816,12 +7062,15 @@
 
             if (data2025.length) {
                 chartData.datasets[0].data = data2025;
+                chartData.datasets[0].rawData = data2025Raw;
             }
             if (data2024.length) {
                 chartData.datasets[1].data = data2024;
+                chartData.datasets[1].rawData = data2024Raw;
             }
             if (dataTarget.length && chartData.datasets[2]) {
                 chartData.datasets[2].data = dataTarget;
+                chartData.datasets[2].rawData = dataTargetRaw;
             }
 
             // Update summary card if provided
@@ -7402,24 +7651,32 @@
                 // If this section doesn't belong to a mapped team, skip it
                 if (!teamName) return;
 
-                // 4. Find the header element to make clickable
-                // Targets the specific header container or the heading tag itself
+                // 4. Check if button already exists to avoid duplicates
+                if (section.querySelector('.team-go-to-btn')) return;
+
+                // 5. Find the header element
                 const header = section.querySelector('.section-header, h2, h3');
 
                 if (header) {
-                    // Apply visual cues for interactivity
-                    header.classList.add('team-section-linkable');
-                    header.style.cursor = 'pointer';
-                    header.setAttribute('title', `Go to ${teamName} Scoreboard`);
+                    // 6. Check if wrapper already exists, otherwise create one
+                    let headerWrapper = section.querySelector('.team-section-header-wrapper');
                     
-                    if (!header.hasAttribute('tabindex')) {
-                        header.setAttribute('tabindex', '0');
-                    }
-                    if (!header.hasAttribute('role')) {
-                        header.setAttribute('role', 'link');
+                    if (!headerWrapper) {
+                        // Create wrapper and wrap the header
+                        headerWrapper = document.createElement('div');
+                        headerWrapper.className = 'team-section-header-wrapper';
+                        header.parentNode.insertBefore(headerWrapper, header);
+                        headerWrapper.appendChild(header);
                     }
 
-                    // 5. Define the navigation logic
+                    // 7. Create the "Go to" button
+                    const goToButton = document.createElement('button');
+                    goToButton.className = 'team-go-to-btn';
+                    goToButton.textContent = 'Go to';
+                    goToButton.setAttribute('aria-label', `Go to ${teamName} Scoreboard`);
+                    goToButton.setAttribute('title', `Go to ${teamName} Scoreboard`);
+
+                    // 8. Define the navigation logic
                     const handleNavigation = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -7435,13 +7692,16 @@
                         window.location.href = `tl-scoring.html?${params.toString()}`;
                     };
 
-                    // 6. Attach Event Listeners
-                    header.addEventListener('click', handleNavigation);
-                    header.addEventListener('keydown', (event) => {
+                    // 9. Attach Event Listeners to the button
+                    goToButton.addEventListener('click', handleNavigation);
+                    goToButton.addEventListener('keydown', (event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                             handleNavigation(event);
                         }
                     });
+
+                    // 10. Append button to the header wrapper
+                    headerWrapper.appendChild(goToButton);
                 }
             });
         }

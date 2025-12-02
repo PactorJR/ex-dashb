@@ -2863,6 +2863,13 @@ const performanceData = {
 
         let scoreboardToggleButtons = [];
 
+        function ensureChartWrapperVisible() {
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            if (chartWrapper) {
+                chartWrapper.style.display = '';
+            }
+        }
+
         // Function to reset the right container (reports section) to blank state
         function resetReportsSection(targetView = null) {
             const reportCard = document.querySelector('.performance-report-card');
@@ -3117,11 +3124,11 @@ const performanceData = {
                 <div class="table-header">
                     <div>Operation KPI</div>
                     <div>KPI Owner</div>
-                    <div class="header-group">
-                        <div class="header-main">TARGET</div>
+                    <div>
+                        <div class="target">TARGET</div>
                     </div>
-                    <div class="header-group">
-                        <div class="header-main">ACTUAL</div>
+                    <div>
+                        <div>ACTUAL</div>
                     </div>
                 </div>
             `;
@@ -3254,13 +3261,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -3344,7 +3351,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -3446,13 +3453,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -3536,7 +3543,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -3637,13 +3644,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -3727,7 +3734,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -3828,13 +3835,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -3918,7 +3925,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4019,13 +4026,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4101,7 +4108,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4197,13 +4204,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4279,7 +4286,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4375,13 +4382,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4457,7 +4464,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4553,13 +4560,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4637,7 +4644,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4733,13 +4740,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4817,7 +4824,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -4913,13 +4920,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -4995,7 +5002,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -5091,13 +5098,13 @@ const performanceData = {
                             <div>Role Owner</div>
                             <div>Role Title</div>
                             <div>Operational KRA</div>
-                            <div class="header-group">
-                                <div class="header-main">TARGET</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="header-group">
-                                <div class="header-main">ACTUAL</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
-                            <div>% Operational KPI Weight</div>
+                            <div>%KPI</div>
                         </div>
                     `;
                     tableHeaderContainer.style.display = 'block';
@@ -5173,7 +5180,7 @@ const performanceData = {
                                 <div class="actual-group">
                                     <div>${actualValue}</div>
                                 </div>
-                                <div>-</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
                             </div>
                         `;
                         
@@ -5263,7 +5270,7 @@ const performanceData = {
                         <div>Emp Name</div>
                         <div>Role</div>
                         <div>KPI</div>
-                        <div>Target</div>
+                        <div class="target">TARGET</div>
                         <div>Actual</div>
                     </div>
                 `;
@@ -5414,11 +5421,11 @@ const performanceData = {
                     <div class="table-header">
                         <div>Operation KPI</div>
                         <div>KPI Owner</div>
-                        <div class="header-group">
-                            <div class="header-main">TARGET</div>
+                        <div>
+                            <div class="target">TARGET</div>
                         </div>
-                        <div class="header-group">
-                            <div class="header-main">ACTUAL</div>
+                        <div>
+                            <div>ACTUAL</div>
                         </div>
                     </div>
                 `;
@@ -6696,13 +6703,8 @@ const performanceData = {
                     // Add active class to clicked row
                     this.classList.add('row-active');
 
-                    // Show chart-wrapper when clicking operationsContent items in critical numbers section
-                    if (currentOperationsView === 'leaders') {
-                        const chartWrapper = document.querySelector('.chart-wrapper');
-                        if (chartWrapper) {
-                            chartWrapper.style.display = '';
-                        }
-                    }
+                    // Always ensure the graph container is visible when selecting a KPI
+                    ensureChartWrapperVisible();
 
                     const operationName = this.getAttribute('data-operation');
                     const targetStr = this.getAttribute('data-target');
@@ -6945,13 +6947,8 @@ const performanceData = {
                                     const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
                                     const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
                                     
-                                    // Show chart-wrapper when clicking sub-operations items in critical numbers section
-                                    if (currentOperationsView === 'leaders') {
-                                        const chartWrapper = document.querySelector('.chart-wrapper');
-                                        if (chartWrapper) {
-                                            chartWrapper.style.display = '';
-                                        }
-                                    }
+                                    // Always ensure the graph container is visible before rendering
+                                    ensureChartWrapperVisible();
                                     
                                     // Always call the single, unified chart update function
                                     updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);
@@ -7332,26 +7329,16 @@ const performanceData = {
                             registerHighlight(kpiRow);
                             kpiRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                            // Show chart-wrapper when auto-clicking in critical numbers section
-                            if (currentOperationsView === 'leaders') {
-                                const chartWrapper = document.querySelector('.chart-wrapper');
-                                if (chartWrapper) {
-                                    chartWrapper.style.display = '';
-                                }
-                            }
+                            // Keep report graph visible for auto-triggered selections
+                            ensureChartWrapperVisible();
 
                             // Click the row to trigger the graph update
                             setTimeout(() => {
                                 kpiRow.click();
-                                // Ensure chart-wrapper is shown after click (fallback)
-                                if (currentOperationsView === 'leaders') {
-                                    setTimeout(() => {
-                                        const chartWrapper = document.querySelector('.chart-wrapper');
-                                        if (chartWrapper) {
-                                            chartWrapper.style.display = '';
-                                        }
-                                    }, 100);
-                                }
+                                // Fallback visibility check
+                                setTimeout(() => {
+                                    ensureChartWrapperVisible();
+                                }, 100);
                             }, 200);
                             return;
                         } else if (attempt === 0) {
@@ -7411,25 +7398,15 @@ const performanceData = {
                                     registerHighlight(targetSubOperation);
                                     targetSubOperation.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     
-                                    // Show chart-wrapper when auto-clicking sub-operations in critical numbers section
-                                    if (currentOperationsView === 'leaders') {
-                                        const chartWrapper = document.querySelector('.chart-wrapper');
-                                        if (chartWrapper) {
-                                            chartWrapper.style.display = '';
-                                        }
-                                    }
+                                    // Ensure chart container is visible for dropdown auto-clicks
+                                    ensureChartWrapperVisible();
                                     
                                     setTimeout(() => {
                                         targetSubOperation.click();
-                                        // Ensure chart-wrapper is shown after click (fallback)
-                                        if (currentOperationsView === 'leaders') {
-                                            setTimeout(() => {
-                                                const chartWrapper = document.querySelector('.chart-wrapper');
-                                                if (chartWrapper) {
-                                                    chartWrapper.style.display = '';
-                                                }
-                                            }, 100);
-                                        }
+                                        // Fallback visibility check
+                                        setTimeout(() => {
+                                            ensureChartWrapperVisible();
+                                        }, 100);
                                     }, 200);
                                     return;
                                 }
