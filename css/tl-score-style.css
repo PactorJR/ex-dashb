@@ -169,14 +169,14 @@ select {
     
     /* Adjust members-section height for 1366px laptops */
     .members-section {
-        height: 500px !important;
-        max-height: 500px !important;
+        height: 400px !important;
+        max-height: 400px !important;
     }
     
     /* Adjust performance-report-card height for 1366px laptops */
     .performance-report-card {
-        height: 500px !important;
-        max-height: 500px !important;
+        height: 400px !important;
+        max-height: 400px !important;
     }
     
     .section-switch {
@@ -205,6 +205,10 @@ select {
     .sub-operation-item {
         margin-left: 220px !important;
     }
+    
+    .members-section.members-view-active .member-row .sub-operations .sub-operation-item .target-badge{
+        margin-left: 100px !important;
+    }
 
     .target-group,
     .actual-group {
@@ -228,13 +232,18 @@ select {
     }
 
     .members-section.members-view-active .member-row .target-group{
-        margin-left: 50px;
+        margin-left: 70px;
         margin-right: 20px;
     }
 
     .members-section.members-view-active .member-row .actual-group{
-        margin-left: 50px;
+        margin-left: 45px;
         margin-right: 20px;
+    }
+
+    .leaders-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+        gap: 10px;
     }
 }
 
@@ -1931,6 +1940,7 @@ small {
     .profile-stats {
         justify-content: center;
     }
+
 }
 
 @media (max-width: 768px) {

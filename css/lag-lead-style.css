@@ -818,54 +818,30 @@ small {
         width: 100%;
     }
 
-    /* Go to Button for Team Sections */
-    .team-go-to-btn {
-        background: var(--primary-color);
-        color: #fff;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        font-weight: 500;
+    /* Clickable Team Name Link */
+    .team-name-link {
         cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        margin-left: 16px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        padding: 2px 4px;
+        margin: -2px -4px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        outline: none;
     }
 
-    .team-go-to-btn:hover {
-        background: var(--secondary-color);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .team-go-to-btn:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .team-go-to-btn:focus {
+    .team-name-link:hover {
         outline: 2px solid var(--secondary-color);
         outline-offset: 2px;
     }
 
-    /* Ensure team section h2 works with button */
-    .team-section-header-wrapper h2 {
-        margin: 0;
-        flex: 1;
-        display: flex;
-        align-items: center;
+    .team-name-link:focus {
+        outline: 2px solid var(--secondary-color);
+        outline-offset: 2px;
     }
-    
-    /* Ensure the ::before pseudo-element still works in wrapper */
-    .team-section-header-wrapper h2::before {
-        content: '';
-        width: 4px;
-        height: 30px;
-        background: var(--secondary-color);
-        border-radius: 2px;
-        margin-right: 12px;
+
+    .team-name-link:active {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
     }
 
 
@@ -1209,7 +1185,7 @@ small {
     }
 
     .stat-label {
-        font-size: var(--fs-base) !important;
+        font-size: var(--fs-h4) !important;
         opacity: 0.9;
         margin-bottom: 4px;
         font-weight: 500;

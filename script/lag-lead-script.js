@@ -1149,7 +1149,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                     enabled: true,
@@ -3550,7 +3550,7 @@
                     },
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         },
                         tooltip: {
                             enabled: true,
@@ -3893,7 +3893,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4053,7 +4053,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4213,7 +4213,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4373,7 +4373,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4533,7 +4533,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4693,7 +4693,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -4910,7 +4910,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -5200,7 +5200,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -5365,7 +5365,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -5530,7 +5530,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -5695,7 +5695,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -5860,7 +5860,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -6025,7 +6025,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -6190,7 +6190,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -6355,7 +6355,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -6520,7 +6520,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -6685,7 +6685,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     },
                     tooltip: {
                         enabled: true,
@@ -7076,13 +7076,25 @@
             // Update summary card if provided
             if (updateSummary && summaryCardTitle) {
                 const currentMonth = new Date().getMonth();
-                const current2025 = data2025[currentMonth] || 0;
-                const currentTarget = dataTarget[currentMonth] || 0;
-                const variance = currentTarget !== 0 ? ((current2025 - currentTarget) / currentTarget) * 100 : 0;
+                const current2025Raw = data2025Raw[currentMonth];
+                const currentTargetRaw = dataTargetRaw[currentMonth];
+                
+                // Extract raw numeric values for display
+                const current2025Numeric = current2025Raw !== null && current2025Raw !== undefined 
+                    ? (typeof current2025Raw === 'number' ? current2025Raw : extractRawNumericValue(current2025Raw))
+                    : 0;
+                const currentTargetNumeric = currentTargetRaw !== null && currentTargetRaw !== undefined 
+                    ? (typeof currentTargetRaw === 'number' ? currentTargetRaw : extractRawNumericValue(currentTargetRaw))
+                    : 0;
+                
+                // Calculate variance from raw values
+                const variance = currentTargetNumeric !== 0 
+                    ? ((current2025Numeric - currentTargetNumeric) / currentTargetNumeric) * 100 
+                    : 0;
                 
                 updateSummaryCard(summaryCardTitle, {
-                    target: formatPercentage(currentTarget),
-                    actual: formatPercentage(current2025),
+                    target: formatRawValueForDisplay(currentTargetRaw),
+                    actual: formatRawValueForDisplay(current2025Raw),
                     variance: formatPercentage(variance)
                 });
             }
@@ -7651,32 +7663,14 @@
                 // If this section doesn't belong to a mapped team, skip it
                 if (!teamName) return;
 
-                // 4. Check if button already exists to avoid duplicates
-                if (section.querySelector('.team-go-to-btn')) return;
+                // 4. Check if clickable link already exists to avoid duplicates
+                if (section.querySelector('.team-name-link')) return;
 
                 // 5. Find the header element
                 const header = section.querySelector('.section-header, h2, h3');
 
                 if (header) {
-                    // 6. Check if wrapper already exists, otherwise create one
-                    let headerWrapper = section.querySelector('.team-section-header-wrapper');
-                    
-                    if (!headerWrapper) {
-                        // Create wrapper and wrap the header
-                        headerWrapper = document.createElement('div');
-                        headerWrapper.className = 'team-section-header-wrapper';
-                        header.parentNode.insertBefore(headerWrapper, header);
-                        headerWrapper.appendChild(header);
-                    }
-
-                    // 7. Create the "Go to" button
-                    const goToButton = document.createElement('button');
-                    goToButton.className = 'team-go-to-btn';
-                    goToButton.textContent = 'Go to';
-                    goToButton.setAttribute('aria-label', `Go to ${teamName} Scoreboard`);
-                    goToButton.setAttribute('title', `Go to ${teamName} Scoreboard`);
-
-                    // 8. Define the navigation logic
+                    // 6. Define the navigation logic
                     const handleNavigation = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -7692,16 +7686,29 @@
                         window.location.href = `tl-scoring.html?${params.toString()}`;
                     };
 
-                    // 9. Attach Event Listeners to the button
-                    goToButton.addEventListener('click', handleNavigation);
-                    goToButton.addEventListener('keydown', (event) => {
+                    // 7. Extract text content and wrap it in a clickable span
+                    const textContent = header.textContent.trim();
+                    header.textContent = ''; // Clear existing content
+                    
+                    // Create clickable span for team name
+                    const teamNameLink = document.createElement('span');
+                    teamNameLink.className = 'team-name-link';
+                    teamNameLink.textContent = textContent;
+                    teamNameLink.setAttribute('role', 'link');
+                    teamNameLink.setAttribute('aria-label', `Go to ${teamName} Scoreboard`);
+                    teamNameLink.setAttribute('title', `Go to ${teamName} Scoreboard`);
+                    teamNameLink.setAttribute('tabindex', '0');
+                    
+                    // Attach event listeners
+                    teamNameLink.addEventListener('click', handleNavigation);
+                    teamNameLink.addEventListener('keydown', (event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                             handleNavigation(event);
                         }
                     });
-
-                    // 10. Append button to the header wrapper
-                    headerWrapper.appendChild(goToButton);
+                    
+                    // Append the clickable team name to header
+                    header.appendChild(teamNameLink);
                 }
             });
         }
@@ -7869,6 +7876,22 @@
             colorVarianceAndYoYGrowthValues();
         }
 
+        // Helper function to format raw data for display (exact values like tooltips)
+        function formatRawValueForDisplay(rawItem, isThousandsFormat = false) {
+            if (rawItem === null || rawItem === undefined || rawItem === '') {
+                return '₱0.00';
+            }
+            const numeric = typeof rawItem === 'number' ? rawItem : extractRawNumericValue(rawItem);
+            if (Number.isNaN(numeric) || numeric === 0) {
+                return '₱0.00';
+            }
+            // Format as currency with 2 decimal places
+            return `₱${numeric.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+        }
+
         // Helper function to format currency values for display
         function formatCurrencyForDisplay(value) {
             if (!Number.isFinite(value)) {
@@ -7910,17 +7933,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = profitBarData.datasets[0]?.data || [];
-            const targetData = profitBarData.datasets[2]?.data || [];
+            const currentRawData = profitBarData.datasets[0]?.rawData || [];
+            const targetRawData = profitBarData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             // Variance is handled by colorVarianceAndYoYGrowthValues function
             colorVarianceAndYoYGrowthValues();
@@ -7937,17 +7960,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = rentalComparisonData.datasets[0]?.data || [];
-            const targetData = rentalComparisonData.datasets[2]?.data || [];
+            const currentRawData = rentalComparisonData.datasets[0]?.rawData || [];
+            const targetRawData = rentalComparisonData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -7963,17 +7986,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = venueChartData.datasets[0]?.data || [];
-            const targetData = venueChartData.datasets[2]?.data || [];
+            const currentRawData = venueChartData.datasets[0]?.rawData || [];
+            const targetRawData = venueChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -7989,17 +8012,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = studioChartData.datasets[0]?.data || [];
-            const targetData = studioChartData.datasets[2]?.data || [];
+            const currentRawData = studioChartData.datasets[0]?.rawData || [];
+            const targetRawData = studioChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8015,17 +8038,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = sportsArenaChartData.datasets[0]?.data || [];
-            const targetData = sportsArenaChartData.datasets[2]?.data || [];
+            const currentRawData = sportsArenaChartData.datasets[0]?.rawData || [];
+            const targetRawData = sportsArenaChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatThousandsForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatThousandsForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8041,17 +8064,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = parkingIncomeChartData.datasets[0]?.data || [];
-            const targetData = parkingIncomeChartData.datasets[2]?.data || [];
+            const currentRawData = parkingIncomeChartData.datasets[0]?.rawData || [];
+            const targetRawData = parkingIncomeChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8067,17 +8090,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = totalOperatingExpenseChartData.datasets[0]?.data || [];
-            const targetData = totalOperatingExpenseChartData.datasets[2]?.data || [];
+            const currentRawData = totalOperatingExpenseChartData.datasets[0]?.rawData || [];
+            const targetRawData = totalOperatingExpenseChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8093,17 +8116,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = electricityExpenseChartData.datasets[0]?.data || [];
-            const previousData = electricityExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = electricityExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = electricityExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8119,17 +8142,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = waterExpenseChartData.datasets[0]?.data || [];
-            const previousData = waterExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = waterExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = waterExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8145,17 +8168,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = securityExpenseChartData.datasets[0]?.data || [];
-            const previousData = securityExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = securityExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = securityExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8171,17 +8194,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = agencyExpenseChartData.datasets[0]?.data || [];
-            const previousData = agencyExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = agencyExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = agencyExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8197,17 +8220,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = salaryExpenseChartData.datasets[0]?.data || [];
-            const previousData = salaryExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = salaryExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = salaryExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8223,17 +8246,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = marketingExpenseChartData.datasets[0]?.data || [];
-            const previousData = marketingExpenseChartData.datasets[1]?.data || [];
+            const currentRawData = marketingExpenseChartData.datasets[0]?.rawData || [];
+            const previousRawData = marketingExpenseChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8249,17 +8272,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = marketingExpenseGatheringChartData.datasets[0]?.data || [];
-            const previousData = marketingExpenseGatheringChartData.datasets[1]?.data || [];
+            const currentRawData = marketingExpenseGatheringChartData.datasets[0]?.rawData || [];
+            const previousRawData = marketingExpenseGatheringChartData.datasets[1]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const previousValue = previousData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const previousRawValue = previousRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(previousValue)) {
-                previousEl.textContent = formatCurrencyForDisplay(previousValue);
+            if (previousRawValue !== null && previousRawValue !== undefined) {
+                previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8275,17 +8298,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = repairsMaintenanceLaborChartData.datasets[0]?.data || [];
-            const targetData = repairsMaintenanceLaborChartData.datasets[2]?.data || [];
+            const currentRawData = repairsMaintenanceLaborChartData.datasets[0]?.rawData || [];
+            const targetRawData = repairsMaintenanceLaborChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8301,17 +8324,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = repairsMaintenanceMaterialsChartData.datasets[0]?.data || [];
-            const targetData = repairsMaintenanceMaterialsChartData.datasets[2]?.data || [];
+            const currentRawData = repairsMaintenanceMaterialsChartData.datasets[0]?.rawData || [];
+            const targetRawData = repairsMaintenanceMaterialsChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8327,17 +8350,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = repairsMaintenanceLaborTechnicalChartData.datasets[0]?.data || [];
-            const targetData = repairsMaintenanceLaborTechnicalChartData.datasets[2]?.data || [];
+            const currentRawData = repairsMaintenanceLaborTechnicalChartData.datasets[0]?.rawData || [];
+            const targetRawData = repairsMaintenanceLaborTechnicalChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
@@ -8353,17 +8376,17 @@
             }
 
             const monthIndex = getCurrentMonthIndex();
-            const currentData = repairsMaintenanceMaterialsTechnicalChartData.datasets[0]?.data || [];
-            const targetData = repairsMaintenanceMaterialsTechnicalChartData.datasets[2]?.data || [];
+            const currentRawData = repairsMaintenanceMaterialsTechnicalChartData.datasets[0]?.rawData || [];
+            const targetRawData = repairsMaintenanceMaterialsTechnicalChartData.datasets[2]?.rawData || [];
 
-            const actualValue = currentData[monthIndex];
-            const targetValue = targetData[monthIndex];
+            const actualRawValue = currentRawData[monthIndex];
+            const targetRawValue = targetRawData[monthIndex];
 
-            if (Number.isFinite(actualValue)) {
-                actualEl.textContent = formatCurrencyForDisplay(actualValue);
+            if (actualRawValue !== null && actualRawValue !== undefined) {
+                actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
-            if (Number.isFinite(targetValue)) {
-                targetEl.textContent = formatCurrencyForDisplay(targetValue);
+            if (targetRawValue !== null && targetRawValue !== undefined) {
+                targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             colorVarianceAndYoYGrowthValues();
         }
