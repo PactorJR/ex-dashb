@@ -6,6 +6,25 @@
             }
         }
 
+        // Smooth scroll specifically to a chart canvas (or its parent card)
+        function scrollToChartByCanvasId(canvasId) {
+            if (!canvasId) return;
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const card = canvas.closest('.card') || canvas;
+            const cardRect = card.getBoundingClientRect();
+            const currentScrollX = window.scrollX || window.pageXOffset || 0;
+            const offsetY = 150;
+            const targetTop = cardRect.top + (window.scrollY || window.pageYOffset) - offsetY;
+
+            window.scrollTo({
+                top: targetTop,
+                left: currentScrollX,
+                behavior: 'smooth'
+            });
+        }
+
         // Smooth scroll to team section
         function scrollToTeamSection(teamName) {
             const teamSectionMap = {
@@ -7430,7 +7449,18 @@
         // ============================================
 
         const COMPANY_VIEW_STORAGE_KEY = 'companyViewPreference';
+        const LEADERS_VIEW_STORAGE_KEY = 'leadersCarouselView';
+        const KPI_CAROUSEL_VISIBLE_COUNT = 11;
         let currentCompanyView = 'lag';
+        const kpiCarouselState = {
+            cards: [],
+            filteredCards: [],
+            startIndex: 0,
+            prevButton: null,
+            nextButton: null,
+            indicatorEl: null,
+            initialized: false
+        };
 
         function persistCompanyView(viewType) {
             try {
@@ -7445,6 +7475,23 @@
                 return localStorage.getItem(COMPANY_VIEW_STORAGE_KEY);
             } catch (error) {
                 console.warn('Unable to read company view preference:', error);
+                return null;
+            }
+        }
+
+        function persistLeadersView(viewType) {
+            try {
+                localStorage.setItem(LEADERS_VIEW_STORAGE_KEY, viewType);
+            } catch (error) {
+                console.warn('Unable to persist leaders view preference:', error);
+            }
+        }
+
+        function getStoredLeadersView() {
+            try {
+                return localStorage.getItem(LEADERS_VIEW_STORAGE_KEY);
+            } catch (error) {
+                console.warn('Unable to read leaders view preference:', error);
                 return null;
             }
         }
@@ -7567,7 +7614,7 @@
         }
 
         function updateTeamCardState() {
-            const cards = document.querySelectorAll('.clickable-stat-card-carousel');
+            const cards = document.querySelectorAll('.clickable-stat-card-carousel[data-team]');
             cards.forEach(card => {
                 const teamKey = card.dataset.team;
                 const config = teamSectionConfig[teamKey];
@@ -7602,7 +7649,8 @@
         }
 
         function initializeTeamCardNavigation() {
-            const cards = document.querySelectorAll('.clickable-stat-card-carousel');
+            // Only bind team navigation to cards that actually represent teams
+            const cards = document.querySelectorAll('.clickable-stat-card-carousel[data-team]');
             cards.forEach(card => {
                 card.addEventListener('click', () => {
                     const teamKey = card.dataset.team;
@@ -7628,6 +7676,176 @@
                 });
             });
             updateTeamCardState();
+        }
+
+        // KPI card navigation (from KPI carousel at top of summary page)
+        function initializeKpiCardNavigation() {
+            const kpiCards = document.querySelectorAll('.kpi-nav-card[data-kpi-target]');
+
+            if (!kpiCards.length) return;
+
+            kpiCards.forEach((card) => {
+                card.classList.remove('team-card-disabled');
+
+                const targetId = card.getAttribute('data-kpi-target');
+                if (!targetId) return;
+
+                const handleKpiNavigate = (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    scrollToChartByCanvasId(targetId);
+                };
+
+                card.addEventListener('click', handleKpiNavigate);
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        handleKpiNavigate(event);
+                    }
+                });
+            });
+
+            kpiCarouselState.cards = Array.from(kpiCards);
+            kpiCarouselState.prevButton = document.getElementById('kpiCarouselPrev');
+            kpiCarouselState.nextButton = document.getElementById('kpiCarouselNext');
+            kpiCarouselState.indicatorEl = document.getElementById('kpiCarouselIndicator');
+            kpiCarouselState.initialized = true;
+
+            if (kpiCarouselState.prevButton) {
+                kpiCarouselState.prevButton.addEventListener('click', () => {
+                    shiftKpiCarousel(-KPI_CAROUSEL_VISIBLE_COUNT);
+                });
+            }
+
+            if (kpiCarouselState.nextButton) {
+                kpiCarouselState.nextButton.addEventListener('click', () => {
+                    shiftKpiCarousel(KPI_CAROUSEL_VISIBLE_COUNT);
+                });
+            }
+
+            updateKpiCardVisibility(currentCompanyView);
+        }
+
+        function updateKpiCarouselControlsState() {
+            const total = kpiCarouselState.filteredCards.length;
+            const start = total === 0 ? 0 : kpiCarouselState.startIndex + 1;
+            const end = total === 0 ? 0 : Math.min(total, kpiCarouselState.startIndex + KPI_CAROUSEL_VISIBLE_COUNT);
+
+            if (kpiCarouselState.indicatorEl) {
+                kpiCarouselState.indicatorEl.textContent = total === 0
+                    ? '0 of 0'
+                    : `${start}-${end} of ${total}`;
+            }
+
+            const reachedStart = kpiCarouselState.startIndex === 0;
+            const reachedEnd = kpiCarouselState.startIndex + KPI_CAROUSEL_VISIBLE_COUNT >= total;
+            const disableAll = total <= KPI_CAROUSEL_VISIBLE_COUNT || total === 0;
+
+            if (kpiCarouselState.prevButton) {
+                kpiCarouselState.prevButton.disabled = disableAll || reachedStart;
+            }
+
+            if (kpiCarouselState.nextButton) {
+                kpiCarouselState.nextButton.disabled = disableAll || reachedEnd;
+            }
+        }
+
+        function refreshKpiCarouselSlice() {
+            if (!kpiCarouselState.cards.length) {
+                kpiCarouselState.cards = Array.from(document.querySelectorAll('.kpi-nav-card'));
+            }
+
+            const allCards = kpiCarouselState.cards;
+            allCards.forEach((card) => {
+                card.style.display = 'none';
+            });
+
+            const visibleCards = kpiCarouselState.filteredCards.slice(
+                kpiCarouselState.startIndex,
+                kpiCarouselState.startIndex + KPI_CAROUSEL_VISIBLE_COUNT
+            );
+
+            visibleCards.forEach((card) => {
+                card.style.display = '';
+            });
+
+            updateKpiCarouselControlsState();
+        }
+
+        function shiftKpiCarousel(offset) {
+            if (!kpiCarouselState.filteredCards.length) {
+                return;
+            }
+
+            const total = kpiCarouselState.filteredCards.length;
+            const maxStart = Math.max(0, total - KPI_CAROUSEL_VISIBLE_COUNT);
+            const nextStart = Math.min(maxStart, Math.max(0, kpiCarouselState.startIndex + offset));
+
+            if (nextStart === kpiCarouselState.startIndex) {
+                return;
+            }
+
+            kpiCarouselState.startIndex = nextStart;
+            refreshKpiCarouselSlice();
+        }
+
+        // Show only KPI cards that belong to the active company view (lag/lead)
+        function updateKpiCardVisibility(viewType) {
+            if (!kpiCarouselState.cards.length) {
+                kpiCarouselState.cards = Array.from(document.querySelectorAll('.kpi-nav-card'));
+            }
+
+            kpiCarouselState.filteredCards = kpiCarouselState.cards.filter((card) => {
+                const companyType = card.getAttribute('data-company-type');
+                return !companyType || companyType === 'both' || companyType === viewType;
+            });
+
+            kpiCarouselState.startIndex = 0;
+            refreshKpiCarouselSlice();
+        }
+
+        // Toggle between Teams carousel and KPI carousel at the top
+        function initializeLeadersToggle() {
+            const toggleButtons = document.querySelectorAll('.leaders-toggle-section .company-toggle-btn[data-leaders-view]');
+            const leaderViews = document.querySelectorAll('.leaders-section .leaders-view[data-leaders-view]');
+
+            if (!toggleButtons.length || !leaderViews.length) return;
+
+            const showView = (viewType) => {
+                leaderViews.forEach((viewEl) => {
+                    const view = viewEl.getAttribute('data-leaders-view');
+                    viewEl.style.display = (view === viewType) ? '' : 'none';
+                });
+            };
+
+            const setActiveButton = (viewType) => {
+                toggleButtons.forEach((btn) => {
+                    const btnView = btn.getAttribute('data-leaders-view');
+                    if (btnView === viewType) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            };
+
+            toggleButtons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const viewType = btn.getAttribute('data-leaders-view');
+                    if (!viewType) return;
+
+                    setActiveButton(viewType);
+                    showView(viewType);
+                    persistLeadersView(viewType);
+                });
+            });
+
+            const storedLeadersView = getStoredLeadersView();
+            const activeBtn = document.querySelector('.leaders-toggle-section .company-toggle-btn.active[data-leaders-view]');
+            const fallbackView = activeBtn ? activeBtn.getAttribute('data-leaders-view') : 'teams';
+            const initialViewType = storedLeadersView || fallbackView;
+
+            setActiveButton(initialViewType);
+            showView(initialViewType);
         }
 
         function initializeTeamSectionHeaderLinks() {
@@ -7718,7 +7936,7 @@
         function toggleCompanyView(viewType) {
             const lagElements = document.querySelectorAll('[data-company-type="lag"]');
             const leadElements = document.querySelectorAll('[data-company-type="lead"]');
-            const toggleButtons = document.querySelectorAll('.company-toggle-btn');
+            const toggleButtons = document.querySelectorAll('.company-toggle-section:not(.leaders-toggle-section) .company-toggle-btn[data-view]');
             
             if (viewType === 'lag') {
                 // Show Company Lag (Revenue through Expenses)
@@ -7775,11 +7993,12 @@
             currentCompanyView = viewType;
             persistCompanyView(viewType);
             updateTeamCardState();
+            updateKpiCardVisibility(viewType);
         }
 
         // Initialize toggle buttons (run after DOM is ready)
         function initializeCompanyToggle() {
-            const toggleButtons = document.querySelectorAll('.company-toggle-btn');
+            const toggleButtons = document.querySelectorAll('.company-toggle-section:not(.leaders-toggle-section) .company-toggle-btn[data-view]');
             toggleButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const viewType = this.dataset.view;
@@ -7793,7 +8012,9 @@
 
         function initializeCompanyNavigationFeatures() {
             initializeCompanyToggle();
+            initializeLeadersToggle();
             initializeTeamCardNavigation();
+            initializeKpiCardNavigation();
             initializeTeamSectionHeaderLinks();
         }
 

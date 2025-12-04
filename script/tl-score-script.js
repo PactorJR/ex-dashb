@@ -1204,6 +1204,23 @@ const performanceData = {
         // Technical expenses data by period (year-month) - Lag KPIs
         const DEFAULT_PERIOD_KEY = '2025-11';
         const chartMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const chartFullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const chartMonthIndexToFullName = chartFullMonths.reduce((map, name, index) => {
+            map[index] = name;
+            return map;
+        }, {});
+
+        const quarterDefinitions = [
+            { id: 'Q1', label: 'Q1 (Jan-Mar)', months: [0, 1, 2] },
+            { id: 'Q2', label: 'Q2 (Apr-Jun)', months: [3, 4, 5] },
+            { id: 'Q3', label: 'Q3 (Jul-Sep)', months: [6, 7, 8] },
+            { id: 'Q4', label: 'Q4 (Oct-Dec)', months: [9, 10, 11] }
+        ];
+
+        const quarterDefinitionMap = quarterDefinitions.reduce((map, def) => {
+            map[def.id] = def;
+            return map;
+        }, {});
 
         function randomIntInRange(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -1948,7 +1965,8 @@ const performanceData = {
                 actual,
                 totalTarget,
                 totalActual,
-                valueType
+                valueType,
+                decimals
             };
         }
 
@@ -1986,6 +2004,52 @@ const performanceData = {
             });
 
             return quarterlyData;
+        }
+
+        function sumSeriesValues(values = []) {
+            if (!Array.isArray(values)) {
+                return 0;
+            }
+            return values.reduce((sum, value) => {
+                const numeric = Number(value);
+                return Number.isFinite(numeric) ? sum + numeric : sum;
+            }, 0);
+        }
+
+        function buildQuarterlySeriesFromMonthlySeries(monthlySeries = null) {
+            if (!monthlySeries) {
+                return null;
+            }
+
+            const { target = [], actual = [], valueType = 'thousands', decimals = 0 } = monthlySeries;
+            if (!Array.isArray(target) || !Array.isArray(actual) || target.length < 4 || actual.length < 4) {
+                return null;
+            }
+
+            const quarterGroups = [
+                { label: 'Q1', indices: [0, 1, 2] },
+                { label: 'Q2', indices: [3, 4, 5] },
+                { label: 'Q3', indices: [6, 7, 8] },
+                { label: 'Q4', indices: [9, 10, 11] }
+            ];
+
+            const aggregateSeries = (sourceArray) => quarterGroups.map(group => {
+                const values = group.indices
+                    .map(idx => Number(sourceArray[idx]))
+                    .filter(value => Number.isFinite(value));
+                if (!values.length) {
+                    return 0;
+                }
+                const aggregatedValue = values.reduce((sum, value) => sum + value, 0);
+                return Number(aggregatedValue.toFixed(decimals));
+            });
+
+            return {
+                labels: quarterGroups.map(group => group.label),
+                target: aggregateSeries(target),
+                actual: aggregateSeries(actual),
+                valueType
+            };
         }
 
         // Store quarterly data for Technical Team Operational KPIs
@@ -5562,6 +5626,99 @@ const performanceData = {
             }
         }
 
+        function removeTimeframeToggle() {
+            const reportCardHeader = document.querySelector('.performance-report-card .report-card-header');
+            if (!reportCardHeader) {
+                return;
+            }
+            const existingToggle = reportCardHeader.querySelector('.timeframe-toggle');
+            if (existingToggle) {
+                existingToggle.remove();
+            }
+        }
+
+        function createTimeframeToggle({
+            availableViews = ['annual', 'quarterly'],
+            defaultView = 'annual',
+            onChange = () => {}
+        } = {}) {
+            const reportCardHeader = document.querySelector('.performance-report-card .report-card-header');
+            if (!reportCardHeader) {
+                return null;
+            }
+
+            removeTimeframeToggle();
+
+            const container = document.createElement('div');
+            container.className = 'timeframe-toggle';
+
+            const label = document.createElement('span');
+            label.className = 'timeframe-toggle-label';
+            label.textContent = 'View:';
+
+            const buttonsWrapper = document.createElement('div');
+            buttonsWrapper.className = 'timeframe-toggle-buttons';
+
+            const viewLabels = {
+                annual: 'Annual',
+                quarterly: 'Quarterly'
+            };
+
+            const buttons = availableViews.map(viewKey => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'timeframe-toggle-btn';
+                button.dataset.view = viewKey;
+                button.textContent = viewLabels[viewKey] || viewKey;
+                buttonsWrapper.appendChild(button);
+                return button;
+            });
+
+            const toggleRow = document.createElement('div');
+            toggleRow.className = 'timeframe-toggle-row';
+            toggleRow.appendChild(label);
+            toggleRow.appendChild(buttonsWrapper);
+
+            container.appendChild(toggleRow);
+            reportCardHeader.appendChild(container);
+
+            let activeView = null;
+            const setActive = (view, fire = false) => {
+                if (activeView === view) {
+                    return;
+                }
+
+                const matchingButton = buttons.find(button => button.dataset.view === view);
+                if (!matchingButton) {
+                    return;
+                }
+
+                activeView = view;
+                buttons.forEach(button => {
+                    button.classList.toggle('active', button.dataset.view === view);
+                });
+
+                if (fire) {
+                    onChange(view);
+                }
+            };
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    setActive(button.dataset.view, true);
+                });
+            });
+
+            setActive(defaultView, false);
+
+            return {
+                setActive(view, fire = false) {
+                    setActive(view, fire);
+                },
+                element: container
+            };
+        }
+
         function applyTeamPerformanceSeries(series = defaultTeamPerformanceSeries) {
             activeTeamPerformanceSeries = series || defaultTeamPerformanceSeries;
             const labels = (activeTeamPerformanceSeries.labels && activeTeamPerformanceSeries.labels.length)
@@ -5578,6 +5735,19 @@ const performanceData = {
             teamPerformanceChartData.labels = labels;
 
             const [targetDataset, actualDataset] = teamPerformanceChartData.datasets;
+
+            // Ensure default bar configuration when applying a detailed series
+            if (targetDataset) {
+                targetDataset.type = 'bar';
+                targetDataset.borderWidth = 0;
+                targetDataset.fill = true;
+            }
+            if (actualDataset) {
+                actualDataset.type = 'bar';
+                actualDataset.borderWidth = 0;
+                actualDataset.fill = true;
+            }
+
             targetDataset.data = targetData;
             actualDataset.data = actualData;
 
@@ -5635,6 +5805,8 @@ const performanceData = {
             if (quarterFilter) {
                 quarterFilter.remove();
             }
+
+            removeTimeframeToggle();
             
             // Remove doughnut chart if it exists
             const chartWrapper = document.querySelector('.chart-wrapper');
@@ -5649,6 +5821,7 @@ const performanceData = {
             updateTeamPerformanceInsight(insightContext || {
                 infoMessage: 'Select a KPI to view its target vs actual comparison.'
             });
+            resetAverageToggleState();
         }
 
         function setPerformanceReportCardMode(mode = 'bar') {
@@ -5753,6 +5926,218 @@ const performanceData = {
         }
 
         let teamPerformanceChart = null;
+        let isAverageView = false;
+        let detailedSeriesBackup = null;
+        let selectedPerformanceYear = '2025';
+        let currentOverallChangePercent = null;
+
+        function getSubtitleRowContainer() {
+            const reportCard = document.querySelector('.performance-report-card');
+            if (!reportCard) return null;
+
+            const subtitle = reportCard.querySelector('.report-card-subtitle');
+            if (!subtitle) return reportCard.querySelector('.report-card-header');
+
+            let row = reportCard.querySelector('.report-subtitle-row');
+            if (!row) {
+                row = document.createElement('div');
+                row.className = 'report-subtitle-row';
+                row.style.cssText = 'margin-top: 8px; display: flex; align-items: center; gap: 8px;';
+
+                // Insert row before subtitle, then move subtitle into row
+                subtitle.parentElement.insertBefore(row, subtitle);
+                row.appendChild(subtitle);
+            }
+
+            // Single controls container to hold both average toggle and year filter
+            let controls = row.querySelector('.report-subtitle-controls');
+            if (!controls) {
+                controls = document.createElement('div');
+                controls.className = 'report-subtitle-controls';
+                controls.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-left: auto; flex: 1 0 auto;';
+                row.appendChild(controls);
+            }
+
+            return row;
+        }
+
+        function resetAverageToggleState() {
+            isAverageView = false;
+            detailedSeriesBackup = null;
+            currentOverallChangePercent = null;
+            const button = document.querySelector('.performance-report-card .average-toggle-btn');
+            if (button) {
+                button.textContent = 'Show Average';
+            }
+            const yearContainer = document.querySelector('.performance-report-card .year-filter-container');
+            if (yearContainer) {
+                yearContainer.style.display = 'none';
+            }
+            if (teamPerformanceChart && teamPerformanceChart.options?.scales?.x?.title) {
+                teamPerformanceChart.options.scales.x.title.display = false;
+                teamPerformanceChart.options.scales.x.title.text = '';
+                teamPerformanceChart.update();
+            }
+        }
+
+        function ensurePerformanceYearDropdown() {
+            const row = getSubtitleRowContainer();
+            if (!row) {
+                return null;
+            }
+            const containerParent = row.querySelector('.report-subtitle-controls') || row;
+
+            let container = containerParent.querySelector('.year-filter-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'year-filter-container';
+                container.style.cssText = 'display: flex; align-items: center; gap: 6px;';
+
+                const label = document.createElement('span');
+                label.textContent = 'Year:';
+                label.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+
+                const select = document.createElement('select');
+                select.className = 'year-filter-select';
+                select.style.cssText = 'padding: 4px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                const years = ['2023', '2024', '2025', '2026'];
+                select.innerHTML = years.map(year => `<option value="${year}">${year}</option>`).join('');
+                select.value = selectedPerformanceYear;
+
+                select.addEventListener('change', () => {
+                    selectedPerformanceYear = select.value;
+                    if (teamPerformanceChart) {
+                        const xScale = teamPerformanceChart.options?.scales?.x;
+                        if (isAverageView && xScale && xScale.title) {
+                            xScale.title.display = true;
+                            xScale.title.text = `Year ${selectedPerformanceYear}`;
+                        }
+                        teamPerformanceChart.update();
+                    }
+                });
+
+                container.appendChild(label);
+                container.appendChild(select);
+                containerParent.appendChild(container);
+            } else {
+                const select = container.querySelector('.year-filter-select');
+                if (select) {
+                    select.value = selectedPerformanceYear;
+                }
+            }
+
+            container.style.display = 'flex';
+            return container;
+        }
+
+        function ensureAverageToggleButton() {
+            const row = getSubtitleRowContainer();
+            if (!row) {
+                return null;
+            }
+            const controls = row.querySelector('.report-subtitle-controls') || row;
+
+            let button = controls.querySelector('.average-toggle-btn');
+            if (button) {
+                return button;
+            }
+
+            button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'average-toggle-btn';
+            button.textContent = 'Show Average';
+            button.style.cssText = 'padding: 6px 12px; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 12px; cursor: pointer;';
+
+            button.addEventListener('click', () => {
+                if (!teamPerformanceChartData || !teamPerformanceChart) {
+                    return;
+                }
+
+                // Toggle back to detailed view if currently showing average
+                if (isAverageView) {
+                    // Restore original bar-series data and style, then reset UI state
+                    if (detailedSeriesBackup) {
+                        applyTeamPerformanceSeries(detailedSeriesBackup);
+                    }
+                    isAverageView = false;
+                    currentOverallChangePercent = null;
+
+                    const yearContainer = document.querySelector('.performance-report-card .year-filter-container');
+                    if (yearContainer) {
+                        yearContainer.style.display = 'none';
+                    }
+
+                    if (teamPerformanceChart && teamPerformanceChart.options?.scales?.x?.title) {
+                        teamPerformanceChart.options.scales.x.title.display = false;
+                        teamPerformanceChart.options.scales.x.title.text = '';
+                        teamPerformanceChart.update();
+                    }
+
+                    button.textContent = 'Show Average';
+                    return;
+                }
+
+                const sourceSeries = activeTeamPerformanceSeries || defaultTeamPerformanceSeries;
+                if (!sourceSeries || !Array.isArray(sourceSeries.target) || !Array.isArray(sourceSeries.actual)) {
+                    return;
+                }
+
+                // Backup current detailed series so we can restore later
+                detailedSeriesBackup = {
+                    labels: Array.isArray(sourceSeries.labels) ? [...sourceSeries.labels] : [],
+                    target: [...sourceSeries.target],
+                    actual: [...sourceSeries.actual],
+                    valueType: sourceSeries.valueType
+                };
+
+                const totalTarget = sourceSeries.target.reduce((sum, value) => sum + (Number.isFinite(value) ? value : 0), 0);
+                const totalActual = sourceSeries.actual.reduce((sum, value) => sum + (Number.isFinite(value) ? value : 0), 0);
+                const avgTarget = average(sourceSeries.target);
+                const avgActual = average(sourceSeries.actual);
+
+                const valueType = sourceSeries.valueType || currentValueFormat || 'thousands';
+
+                if (totalTarget !== 0) {
+                    currentOverallChangePercent = ((totalActual - totalTarget) / Math.abs(totalTarget)) * 100;
+                } else {
+                    currentOverallChangePercent = null;
+                }
+
+                // Switch visual style to line chart using existing per-period data
+                if (teamPerformanceChart && Array.isArray(teamPerformanceChartData.datasets)) {
+                    teamPerformanceChartData.datasets.forEach((dataset) => {
+                        dataset.type = 'line';
+                        dataset.borderWidth = 2;
+                        dataset.fill = false;
+                        dataset.tension = 0.3;
+                        dataset.pointRadius = 3;
+                        dataset.pointHoverRadius = 4;
+                    });
+                    const xScale = teamPerformanceChart.options?.scales?.x;
+                    if (xScale && xScale.title) {
+                        xScale.title.display = true;
+                        xScale.title.text = `Year ${selectedPerformanceYear}`;
+                    }
+                    teamPerformanceChart.update();
+                }
+
+                // Show year dropdown only while in average view
+                ensurePerformanceYearDropdown();
+
+                updateTeamPerformanceInsight({
+                    targetValue: avgTarget,
+                    actualValue: avgActual,
+                    valueFormat: valueType,
+                    additionalNarrative: 'Showing the line trend of the currently selected timeframe with overall performance vs target.'
+                });
+
+                button.textContent = 'Show Details';
+                isAverageView = true;
+            });
+
+            controls.appendChild(button);
+            return button;
+        }
 
         function initTeamPerformanceChart() {
             if (typeof Chart === 'undefined') {
@@ -5821,6 +6206,18 @@ const performanceData = {
                             usePointStyle: true,
                             callbacks: {
                                 label: function(context) {
+                                    // In average (line) view, show only overall percentage change once
+                                    if (isAverageView && currentOverallChangePercent !== null) {
+                                        if (context.datasetIndex !== 0) {
+                                            return '';
+                                        }
+                                        const absPercent = Math.abs(currentOverallChangePercent);
+                                        const fixed = absPercent.toFixed(1);
+                                        const formatted = fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
+                                        const direction = currentOverallChangePercent >= 0 ? 'up' : 'down';
+                                        return `Overall ${direction} ${formatted}% vs target (${selectedPerformanceYear})`;
+                                    }
+
                                     const value = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
                                     if (currentValueFormat === 'percentage') {
                                         const numeric = Number(value);
@@ -5852,6 +6249,26 @@ const performanceData = {
                                 color: '#6b7280',
                                 font: {
                                     weight: 600
+                                },
+                                callback: function(value, index) {
+                                    if (isAverageView) {
+                                        // Hide tick labels in average view; use axis title instead
+                                        return '';
+                                    }
+                                    // Default: show underlying label (months/quarters)
+                                    const label = this.getLabelForValue(value);
+                                    return label;
+                                },
+                                maxRotation: 0,
+                                minRotation: 0
+                            },
+                            title: {
+                                display: false,
+                                text: '',
+                                color: '#6b7280',
+                                font: {
+                                    weight: '600',
+                                    size: 12
                                 }
                             }
                         },
@@ -5903,7 +6320,11 @@ const performanceData = {
             const reportCard = document.querySelector('.performance-report-card');
             const reportLegend = reportCard?.querySelector('.report-legend');
             const yAxisLabel = reportCard?.querySelector('.y-axis-label');
+
+            resetAverageToggleState();
             
+            removeTimeframeToggle();
+
             // If canvas doesn't exist (was removed by donut chart), recreate it
             let canvasElement = canvas;
             let needsReinit = false;
@@ -5983,28 +6404,160 @@ const performanceData = {
                 if (quarterFilter) {
                     quarterFilter.remove();
                 }
-                
-                applyTeamPerformanceSeries({
-                    labels: monthlySeries.labels,
-                    target: monthlySeries.target,
-                    actual: monthlySeries.actual,
+
+                const monthlySeriesPayload = {
+                    labels: [...monthlySeries.labels],
+                    target: [...monthlySeries.target],
+                    actual: [...monthlySeries.actual],
                     valueType: monthlySeries.valueType
-                });
+                };
 
-                updatePerformanceCardCopy({
-                    title: operationName,
-                    subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
-                });
+                const shouldEnableTimeframeToggle = Array.isArray(monthlySeriesPayload.labels) &&
+                    monthlySeriesPayload.labels.length === 12;
+                const defaultInsightTarget = target ?? monthlySeries.totalTarget;
+                const defaultInsightActual = actual ?? monthlySeries.totalActual;
+                const currentMonthIndex = new Date().getMonth();
+                let activeQuarterId = `Q${Math.min(4, Math.max(1, Math.floor(currentMonthIndex / 3) + 1))}`;
 
-                const isPercentageSeries = monthlySeries.valueType === 'percentage';
-                updateTeamPerformanceInsight({
-                    operationName,
-                    leaderName: teamMemberName,
-                    targetValue: target ?? monthlySeries.totalTarget,
-                    actualValue: actual ?? monthlySeries.totalActual,
-                    isPercentage: isPercentageSeries || /%|percent/i.test(operationName.toLowerCase()),
-                    valueFormat: monthlySeries.valueType
-                });
+                const removeQuarterDropdown = () => {
+                    const existing = document.querySelector('.timeframe-toggle .quarter-filter-container')
+                        || reportCard?.querySelector('.quarter-filter-container');
+                    if (existing) {
+                        existing.remove();
+                    }
+                };
+
+                const createQuarterDropdown = () => {
+                    const timeframeContainer = document.querySelector('.performance-report-card .timeframe-toggle');
+                    const parent = timeframeContainer || reportCard?.querySelector('.report-card-header');
+                    if (!parent) {
+                        return null;
+                    }
+
+                    removeQuarterDropdown();
+
+                    const container = document.createElement('div');
+                    container.className = 'quarter-filter-container';
+                    if (timeframeContainer) {
+                        container.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-top: 8px;';
+                    } else {
+                        container.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                    }
+
+                    const label = document.createElement('label');
+                    label.textContent = 'Quarter:';
+                    label.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+
+                    const selectEl = document.createElement('select');
+                    selectEl.id = 'technicalQuarterFilter';
+                    selectEl.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                    selectEl.innerHTML = quarterDefinitions.map(def => `<option value="${def.id}">${def.label}</option>`).join('');
+
+                    container.appendChild(label);
+                    container.appendChild(selectEl);
+                    parent.appendChild(container);
+
+                    return selectEl;
+                };
+
+                const applyQuarterSeries = (quarterId = activeQuarterId) => {
+                    const definition = quarterDefinitionMap[quarterId] || quarterDefinitions[0];
+                    activeQuarterId = definition.id;
+                    const monthIndices = definition.months;
+                    const labels = monthIndices.map(index => chartMonthIndexToFullName[index]);
+                    const targetData = monthIndices.map(index => {
+                        const value = monthlySeries.target[index];
+                        return Number.isFinite(value) ? value : 0;
+                    });
+                    const actualData = monthIndices.map(index => {
+                        const value = monthlySeries.actual[index];
+                        return Number.isFinite(value) ? value : 0;
+                    });
+
+                    const quarterSeriesPayload = {
+                        labels,
+                        target: targetData,
+                        actual: actualData,
+                        valueType: monthlySeries.valueType
+                    };
+                    applyTeamPerformanceSeries(quarterSeriesPayload);
+
+                    updatePerformanceCardCopy({
+                        title: `${operationName} • ${definition.label}`,
+                        subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
+                    });
+
+                    const decimals = monthlySeries.decimals ?? 0;
+                    const quarterTargetTotal = Number(sumSeriesValues(targetData).toFixed(decimals));
+                    const quarterActualTotal = Number(sumSeriesValues(actualData).toFixed(decimals));
+                    const isPercentageSeries = quarterSeriesPayload.valueType === 'percentage'
+                        || /%|percent/i.test(operationName.toLowerCase());
+
+                    updateTeamPerformanceInsight({
+                        operationName,
+                        leaderName: teamMemberName,
+                        targetValue: quarterTargetTotal,
+                        actualValue: quarterActualTotal,
+                        isPercentage: isPercentageSeries,
+                        valueFormat: quarterSeriesPayload.valueType,
+                        additionalNarrative: `Showing ${definition.label} monthly performance.`
+                    });
+                };
+
+                const applyAnnualSeries = () => {
+                    removeQuarterDropdown();
+                    applyTeamPerformanceSeries(monthlySeriesPayload);
+                    updatePerformanceCardCopy({
+                        title: operationName,
+                        subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
+                    });
+
+                    const isPercentageSeries = monthlySeries.valueType === 'percentage'
+                        || /%|percent/i.test(operationName.toLowerCase());
+
+                    updateTeamPerformanceInsight({
+                        operationName,
+                        leaderName: teamMemberName,
+                        targetValue: defaultInsightTarget,
+                        actualValue: defaultInsightActual,
+                        isPercentage: isPercentageSeries,
+                        valueFormat: monthlySeries.valueType,
+                        additionalNarrative: 'Viewing all 12 monthly data points.'
+                    });
+                };
+
+                const applyTimeframeView = (viewKey = 'annual') => {
+                    resetAverageToggleState();
+                    if (viewKey === 'quarterly' && shouldEnableTimeframeToggle) {
+                        const selectEl = createQuarterDropdown();
+                        if (selectEl) {
+                            selectEl.value = activeQuarterId;
+                            selectEl.addEventListener('change', (event) => {
+                                resetAverageToggleState();
+                                activeQuarterId = event.target.value;
+                                applyQuarterSeries(activeQuarterId);
+                            });
+                        }
+                        applyQuarterSeries(activeQuarterId);
+                    } else {
+                        applyAnnualSeries();
+                    }
+                };
+
+                if (shouldEnableTimeframeToggle) {
+                    applyTimeframeView('annual');
+                    const toggleControls = createTimeframeToggle({
+                        availableViews: ['annual', 'quarterly'],
+                        defaultView: 'annual',
+                        onChange: applyTimeframeView
+                    });
+                    toggleControls?.setActive('annual', false);
+                } else {
+                    applyTimeframeView('annual');
+                }
+
+                ensureAverageToggleButton();
+
                 return;
             }
 
@@ -6115,9 +6668,12 @@ const performanceData = {
 
                     // Add change event listener
                     filterSelect.addEventListener('change', (e) => {
+                        resetAverageToggleState();
                         updateQuarterlyChart(e.target.value);
                     });
                 }
+
+                ensureAverageToggleButton();
 
                 updatePerformanceCardCopy({
                     title: operationName,
@@ -6146,6 +6702,7 @@ const performanceData = {
             };
 
             applyTeamPerformanceSeries(series);
+            ensureAverageToggleButton();
             updatePerformanceCardCopy({
                 title: operationName,
                 subtitle: teamMemberName ? `${teamMemberName} • ${teamTitle}` : teamTitle
@@ -6167,6 +6724,8 @@ const performanceData = {
             if (existingDonut) {
                 existingDonut.remove();
             }
+
+            removeTimeframeToggle();
             
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
@@ -6539,6 +7098,8 @@ const performanceData = {
 
             const reportCard = document.querySelector('.performance-report-card');
 
+            removeTimeframeToggle();
+
             
             let canvas = document.getElementById('teamPerformanceChart');
             let needsReinit = false;
@@ -6580,112 +7141,187 @@ const performanceData = {
                 return;
             }
 
-            const teamQuarterlyData = allTeamsOperationalKpiQuarterlyData[teamName];
-            if (!teamQuarterlyData) {
-                console.error(`No quarterly data cache for team: ${teamName}`);
-                return;
-            }
+            // Build a synthetic monthly series from the provided target/actual
+            const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
+            const isCount = /#|number|count/i.test(kpiName.toLowerCase());
+            let targetRange, actualRange, decimals, valueType;
 
-            if (!teamQuarterlyData[kpiName]) {
-                const isPercentage = /%|percent/i.test(kpiName.toLowerCase());
-                const isCount = /#|number|count/i.test(kpiName.toLowerCase());
-                let targetRange, actualRange, decimals, valueType;
-
-                if (target !== null && actual !== null) {
-                    if (isPercentage) {
-                        targetRange = [Math.max(0, target * 0.85), target * 1.15];
-                        actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
-                        decimals = 1;
-                        valueType = 'percentage';
-                    } else if (isCount) {
-                        targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
-                        actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
-                        decimals = 0;
-                        valueType = 'count';
-                    } else {
-                        targetRange = [target * 0.9, target * 1.1];
-                        actualRange = [actual * 0.9, actual * 1.1];
-                        decimals = 0;
-                        valueType = 'thousands';
-                    }
+            if (target !== null && actual !== null) {
+                if (isPercentage) {
+                    targetRange = [Math.max(0, target * 0.85), target * 1.15];
+                    actualRange = [Math.max(0, actual * 0.85), actual * 1.15];
+                    decimals = 1;
+                    valueType = 'percentage';
+                } else if (isCount) {
+                    targetRange = [Math.max(0, Math.floor(target * 0.8)), Math.ceil(target * 1.2)];
+                    actualRange = [Math.max(0, Math.floor(actual * 0.8)), Math.ceil(actual * 1.2)];
+                    decimals = 0;
+                    valueType = 'count';
                 } else {
-                    if (isPercentage) {
-                        targetRange = [80, 100]; actualRange = [75, 95]; decimals = 1; valueType = 'percentage';
-                    } else if (isCount) {
-                        targetRange = [10, 50]; actualRange = [8, 45]; decimals = 0; valueType = 'count';
-                    } else {
-                        targetRange = [10000, 50000]; actualRange = [9000, 48000]; decimals = 0; valueType = 'thousands';
-                    }
+                    targetRange = [target * 0.9, target * 1.1];
+                    actualRange = [actual * 0.9, actual * 1.1];
+                    decimals = 0;
+                    valueType = 'thousands';
                 }
-                teamQuarterlyData[kpiName] = generateQuarterlyData({ targetRange, actualRange, decimals, valueType });
+            } else {
+                if (isPercentage) {
+                    targetRange = [80, 100]; actualRange = [75, 95]; decimals = 1; valueType = 'percentage';
+                } else if (isCount) {
+                    targetRange = [10, 50]; actualRange = [8, 45]; decimals = 0; valueType = 'count';
+                } else {
+                    targetRange = [10000, 50000]; actualRange = [9000, 48000]; decimals = 0; valueType = 'thousands';
+                }
             }
 
-            const reportCardHeader = reportCard?.querySelector('.report-card-header');
-            if (reportCardHeader) {
-                let existingFilter = reportCardHeader.querySelector('.quarter-filter-container');
-                if (existingFilter) existingFilter.remove();
+            const monthlySeries = generateMonthlySeries({ targetRange, actualRange, decimals, valueType });
+            const monthlySeriesPayload = {
+                labels: [...monthlySeries.labels],
+                target: [...monthlySeries.target],
+                actual: [...monthlySeries.actual],
+                valueType: monthlySeries.valueType
+            };
 
-                const filterContainer = document.createElement('div');
-                filterContainer.className = 'quarter-filter-container';
-                filterContainer.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
-                
-                const filterLabel = document.createElement('label');
-                filterLabel.textContent = 'Quarter:';
-                filterLabel.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
-                
-                const filterSelect = document.createElement('select');
-                filterSelect.id = 'quarterFilter';
-                filterSelect.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
-                filterSelect.innerHTML = `
-                    <option value="Q1">Q1 (Jan-Mar)</option>
-                    <option value="Q2">Q2 (Apr-Jun)</option>
-                    <option value="Q3">Q3 (Jul-Sep)</option>
-                    <option value="Q4">Q4 (Oct-Dec)</option>
-                `;
-                
-                const currentMonth = new Date().getMonth();
-                const currentQuarter = Math.floor(currentMonth / 3) + 1;
-                filterSelect.value = `Q${currentQuarter}`;
-                
-                filterContainer.appendChild(filterLabel);
-                filterContainer.appendChild(filterSelect);
-                reportCardHeader.appendChild(filterContainer);
+            const shouldEnableTimeframeToggle = Array.isArray(monthlySeriesPayload.labels) &&
+                monthlySeriesPayload.labels.length === 12;
+            const defaultInsightTarget = target ?? monthlySeries.totalTarget;
+            const defaultInsightActual = actual ?? monthlySeries.totalActual;
+            const currentMonthIndex = new Date().getMonth();
+            let activeQuarterId = `Q${Math.min(4, Math.max(1, Math.floor(currentMonthIndex / 3) + 1))}`;
 
-                const updateQuarterlyChart = (selectedQuarter) => {
-                    const quarterlyData = teamQuarterlyData[kpiName]?.[selectedQuarter];
-                    if (quarterlyData) {
-                        applyTeamPerformanceSeries({
-                            labels: quarterlyData.labels,
-                            target: quarterlyData.target,
-                            actual: quarterlyData.actual,
-                            valueType: quarterlyData.valueType
-                        });
+            const removeQuarterDropdown = () => {
+                const existing = document.querySelector('.timeframe-toggle .quarter-filter-container')
+                    || reportCard?.querySelector('.quarter-filter-container');
+                if (existing) {
+                    existing.remove();
+                }
+            };
 
-                        const totalTarget = quarterlyData.target.reduce((sum, val) => sum + val, 0);
-                        const totalActual = quarterlyData.actual.reduce((sum, val) => sum + val, 0);
-                        
-                        updateTeamPerformanceInsight({
-                            operationName: kpiName,
-                            leaderName: '',
-                            targetValue: totalTarget,
-                            actualValue: totalActual,
-                            isPercentage: quarterlyData.valueType === 'percentage',
-                            valueFormat: quarterlyData.valueType
+            const createQuarterDropdown = () => {
+                const timeframeContainer = document.querySelector('.performance-report-card .timeframe-toggle');
+                const parent = timeframeContainer || reportCard?.querySelector('.report-card-header');
+                if (!parent) {
+                    return null;
+                }
+
+                removeQuarterDropdown();
+
+                const container = document.createElement('div');
+                container.className = 'quarter-filter-container';
+                if (timeframeContainer) {
+                    container.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-top: 8px;';
+                } else {
+                    container.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-left: auto;';
+                }
+
+                const labelEl = document.createElement('label');
+                labelEl.textContent = 'Quarter:';
+                labelEl.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+
+                const selectEl = document.createElement('select');
+                selectEl.id = 'operationalQuarterFilter';
+                selectEl.style.cssText = 'padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                selectEl.innerHTML = quarterDefinitions.map(def => `<option value="${def.id}">${def.label}</option>`).join('');
+
+                container.appendChild(labelEl);
+                container.appendChild(selectEl);
+                parent.appendChild(container);
+
+                return selectEl;
+            };
+
+            const applyQuarterSeries = (quarterId = activeQuarterId) => {
+                const definition = quarterDefinitionMap[quarterId] || quarterDefinitions[0];
+                activeQuarterId = definition.id;
+                const monthIndices = definition.months;
+                const labels = monthIndices.map(index => chartMonthIndexToFullName[index]);
+                const targetData = monthIndices.map(index => {
+                    const value = monthlySeries.target[index];
+                    return Number.isFinite(value) ? value : 0;
+                });
+                const actualData = monthIndices.map(index => {
+                    const value = monthlySeries.actual[index];
+                    return Number.isFinite(value) ? value : 0;
+                });
+
+                const quarterSeriesPayload = {
+                    labels,
+                    target: targetData,
+                    actual: actualData,
+                    valueType: monthlySeries.valueType
+                };
+                applyTeamPerformanceSeries(quarterSeriesPayload);
+
+                updatePerformanceCardCopy({
+                    title: `${kpiName} • ${definition.label}`,
+                    subtitle: `${teamName} • Operational KPI`
+                });
+
+                const qDecimals = monthlySeries.decimals ?? 0;
+                const quarterTargetTotal = Number(sumSeriesValues(targetData).toFixed(qDecimals));
+                const quarterActualTotal = Number(sumSeriesValues(actualData).toFixed(qDecimals));
+                const isPercentageSeries = quarterSeriesPayload.valueType === 'percentage'
+                    || /%|percent/i.test(kpiName.toLowerCase());
+
+                updateTeamPerformanceInsight({
+                    operationName: kpiName,
+                    leaderName: '',
+                    targetValue: quarterTargetTotal,
+                    actualValue: quarterActualTotal,
+                    isPercentage: isPercentageSeries,
+                    valueFormat: quarterSeriesPayload.valueType,
+                    additionalNarrative: `Showing ${definition.label} monthly performance.`
+                });
+            };
+
+            const applyAnnualSeries = () => {
+                removeQuarterDropdown();
+                applyTeamPerformanceSeries(monthlySeriesPayload);
+                updatePerformanceCardCopy({
+                    title: kpiName,
+                    subtitle: `${teamName} • Operational KPI`
+                });
+
+                const isPercentageSeries = monthlySeries.valueType === 'percentage'
+                    || /%|percent/i.test(kpiName.toLowerCase());
+
+                updateTeamPerformanceInsight({
+                    operationName: kpiName,
+                    leaderName: '',
+                    targetValue: defaultInsightTarget,
+                    actualValue: defaultInsightActual,
+                    isPercentage: isPercentageSeries,
+                    valueFormat: monthlySeries.valueType,
+                    additionalNarrative: 'Viewing all 12 monthly data points.'
+                });
+            };
+
+            const applyTimeframeView = (viewKey = 'annual') => {
+                if (viewKey === 'quarterly' && shouldEnableTimeframeToggle) {
+                    const selectEl = createQuarterDropdown();
+                    if (selectEl) {
+                        selectEl.value = activeQuarterId;
+                        selectEl.addEventListener('change', (event) => {
+                            activeQuarterId = event.target.value;
+                            applyQuarterSeries(activeQuarterId);
                         });
                     }
-                };
+                    applyQuarterSeries(activeQuarterId);
+                } else {
+                    applyAnnualSeries();
+                }
+            };
 
-                updateQuarterlyChart(filterSelect.value);
-
-                filterSelect.addEventListener('change', (e) => {
-                    updateQuarterlyChart(e.target.value);
+            if (shouldEnableTimeframeToggle) {
+                applyTimeframeView('annual');
+                const toggleControls = createTimeframeToggle({
+                    availableViews: ['annual', 'quarterly'],
+                    defaultView: 'annual',
+                    onChange: applyTimeframeView
                 });
+                toggleControls?.setActive('annual', false);
+            } else {
+                applyTimeframeView('annual');
             }
-
-            updatePerformanceCardCopy({
-                title: kpiName,
-                subtitle: `${teamName} • Operational KPI`
-            });
         }
 
         function attachMemberRowClickHandlers() {

@@ -38,7 +38,16 @@
         
         <!-- Top Stats Carousel -->
         <div class="leaders-section">
-            <div class="leaders-grid" id="statsCarousel">
+            <!-- Leaders / KPI Toggle -->
+            <div class="company-toggle-section leaders-toggle-section">
+                <div class="company-toggle-container">
+                    <button class="company-toggle-btn active" data-leaders-view="teams">Teams</button>
+                    <button class="company-toggle-btn" data-leaders-view="kpis">KPIs</button>
+                </div>
+            </div>
+
+            <!-- Teams Carousel -->
+            <div class="leaders-grid leaders-view" id="statsCarousel" data-leaders-view="teams">
                 <div class="leader-card clickable-stat-card-carousel" data-team="tech" data-team-type="lag">
                     <div class="leader-icon"><i class="bi bi-gear-fill" aria-hidden="true"></i></div>
                     <div class="leader-name"></div>
@@ -105,6 +114,261 @@
                     <div class="leader-title">Operations Team</div>
                 </div>
             </div>
+
+            <!-- KPI Carousel (navigates directly to graphs below) -->
+            <div class="leaders-grid leaders-view" id="kpiCarousel" data-leaders-view="kpis" style="display: none;">
+                <!-- ======================= -->
+                <!-- Company Lag KPIs (Lag)  -->
+                <!-- ======================= -->
+
+                <!-- Revenue KPIs -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="profitBarChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-cash-coin" aria-hidden="true"></i></div>
+                    <div class="leader-title">Net Profit</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="revenueBarChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Gross Revenue</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="monthlyCollectionChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-clipboard-data-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Collection</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="rentalComparisonChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-building" aria-hidden="true"></i></div>
+                    <div class="leader-title">Rental Income</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="venueChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-easel2-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Venue (P-Value)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="studioChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-camera-reels-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Studio (P-Value)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="sportsArenaChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-trophy-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Sports Arena (P-Value)</div>
+                </div>
+
+                <!-- Operations KPIs -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="parkingIncomeChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-car-front-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Parking Income</div>
+                </div>
+
+                <!-- Expense KPIs -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="totalOperatingExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-pie-chart-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Total Operating Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="electricityExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-lightning-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Electricity Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="waterExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-droplet-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Water Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="securityExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Security Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="agencyExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-briefcase-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Agency Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="salaryExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-people-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Salary Expense</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="marketingExpenseChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-megaphone-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Marketing Expense (Marcom)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="marketingExpenseGatheringChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></div>
+                    <div class="leader-title">Marketing Expense (Gathering)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="repairsMaintenanceLaborChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-hammer" aria-hidden="true"></i></div>
+                    <div class="leader-title">Repairs &amp; Maintenance (Labor) – DCD</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="repairsMaintenanceMaterialsChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-box-seam-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Repairs &amp; Maintenance (Materials) – DCD</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="repairsMaintenanceLaborTechnicalChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-tools" aria-hidden="true"></i></div>
+                    <div class="leader-title">Repairs &amp; Maintenance (Labor) – Technical</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="repairsMaintenanceMaterialsTechnicalChart" data-company-type="lag">
+                    <div class="leader-icon"><i class="bi bi-nut-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Repairs &amp; Maintenance (Materials) – Technical</div>
+                </div>
+
+                <!-- ========================= -->
+                <!-- Company Lead KPIs (Lead) -->
+                <!-- ========================= -->
+
+                <!-- Occupancy Rate -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="occupancyRateLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-house-door-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Occupancy Rate (Unit)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="occupancyRateAreaLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-aspect-ratio-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Occupancy Rate (Area)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="occupancyRatePValueLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div>
+                    <div class="leader-title">Occupancy Rate (P-Value)</div>
+                </div>
+
+                <!-- Closed Inquiries & Pullout Aversion -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="closedInquiriesLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Closed Inquiries (P-Value)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="pulloutAversionLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-arrow-repeat" aria-hidden="true"></i></div>
+                    <div class="leader-title">Pullout Aversion (P-Value)</div>
+                </div>
+
+                <!-- Foot Traffic per Site -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="lotusFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-shop-window" aria-hidden="true"></i></div>
+                    <div class="leader-title">Lotus Mall Foot Traffic</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="portalFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-shop" aria-hidden="true"></i></div>
+                    <div class="leader-title">Portal Mall Foot Traffic</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="stadiumFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-signpost-2-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Stadium Shopping Strip Foot Traffic</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="yspacioFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-tree-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">ySpacio Carbag Foot Traffic</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="yspacioAlapanFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-tree" aria-hidden="true"></i></div>
+                    <div class="leader-title">ySpacio Alapan Foot Traffic</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="luminaFootTrafficChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-brightness-high-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Lumina Foot Traffic</div>
+                </div>
+
+                <!-- PAX per Event -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="lotusPaxChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-people-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Lotus Mall – PAX per Event</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="portalPaxChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-people-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Portal Mall – PAX per Event</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="stadiumPaxChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-people-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Stadium Strip – PAX per Event</div>
+                </div>
+
+                <!-- MARCOM / Audit / Gathering / LRAD / Quality / DC / Technical -->
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="offlineInquiriesLeadChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Offline Inquiries (Conversion)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="fbFollowersChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-facebook" aria-hidden="true"></i></div>
+                    <div class="leader-title">FB Page Followers</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="icareChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-heart-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">I.C.A.R.E. (All Teams)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="siteQualityChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Site Quality Monitoring</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="insuranceClaimChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-file-earmark-medical-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Insurance Claim Monitoring</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="regularEventsChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-calendar-event-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Regular Events Plan</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="cultureDevChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-people" aria-hidden="true"></i></div>
+                    <div class="leader-title">Culture Dev't Activities</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="smdProjectsChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-diagram-3-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">SMD Projects</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="budgetProjectsChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-cash-stack" aria-hidden="true"></i></div>
+                    <div class="leader-title">Budget: Projects (E&amp;D)</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="teamTargetsChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-list-check" aria-hidden="true"></i></div>
+                    <div class="leader-title">Team/Section Targets</div>
+                </div>
+
+                <div class="leader-card clickable-stat-card-carousel kpi-nav-card" data-kpi-target="breakdownsChart" data-company-type="lead">
+                    <div class="leader-icon"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i></div>
+                    <div class="leader-title">Number of Breakdowns</div>
+                </div>
+            </div>
+
+            <!-- KPI Carousel Controls -->
+            <div class="carousel-controls kpi-carousel-controls leaders-view" data-leaders-view="kpis" style="display: none;">
+                <button class="carousel-btn" id="kpiCarouselPrev" aria-label="View previous KPI cards">
+                    &lsaquo;
+                </button>
+                <span class="carousel-indicator" id="kpiCarouselIndicator">0 of 0</span>
+                <button class="carousel-btn" id="kpiCarouselNext" aria-label="View next KPI cards">
+                    &rsaquo;
+                </button>
+            </div>
         </div>
 
         <!-- Company Lag/Lead Toggle Section -->
@@ -129,7 +393,7 @@
 
             <!-- Critical Numbers Summary Card - Company Lead -->
             <div class="summary-card-title-outside">
-                <h3>Occupancy Rate (Unit) Summary</h3>
+                <h3>Occupancy Rate (Unit)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -157,7 +421,7 @@
 
             <!-- Occupancy Rate (Area) Summary Card - Company Lead -->
             <div class="summary-card-title-outside">
-                <h3>Occupancy Rate (Area) Summary</h3>
+                <h3>Occupancy Rate (Area)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -185,7 +449,7 @@
 
             <!-- Occupancy Rate (P-Value) Summary Card - Company Lead -->
             <div class="summary-card-title-outside">
-                <h3>Occupancy Rate (P-Value) Summary</h3>
+                <h3>Occupancy Rate (P-Value)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -891,7 +1155,7 @@
             <!-- Row 1: Net Profit -->
             <!-- Net Profit Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Net Profit Summary</h3>
+                <h3>Net Profit</h3>
             </div>
             <div class="card summary-card-compact summary-card-external-title slide-in-left" style="animation-delay: 0.3s">
                 
@@ -922,7 +1186,7 @@
             <!-- Row 2: Gross Revenue -->
             <!-- Revenue Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Gross Revenue Summary</h3>
+                <h3>Gross Revenue</h3>
             </div>
             <div class="card slide-in-left summary-card-compact" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -951,7 +1215,7 @@
             <!-- Row 3: Collection Performance -->
             <!-- Collection Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Collection Summary</h3>
+                <h3>Collection</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -985,7 +1249,7 @@
             <!-- Row 5: Rental Income -->
             <!-- Rental Income Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Rental Income Summary</h3>
+                <h3>Rental Income</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1019,7 +1283,7 @@
             <!-- Row 5: Venue (P-Value) -->
             <!-- Venue Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Venue (P-Value) Summary</h3>
+                <h3>Venue (P-Value)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1048,7 +1312,7 @@
             <!-- Row 6: Studio (P-Value) -->
             <!-- Studio Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Studio (P-Value) Summary</h3>
+                <h3>Studio (P-Value)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1077,7 +1341,7 @@
             <!-- Row 7: Sports Arena (P-Value) -->
             <!-- Sports Arena Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Sports Arena (P-Value) Summary</h3>
+                <h3>Sports Arena (P-Value)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1111,7 +1375,7 @@
             <!-- Row 8: Parking Income -->
             <!-- Parking Income Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Parking Income Summary</h3>
+                <h3>Parking Income</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1149,7 +1413,7 @@
             <!-- Row 4: Total Operating Expense -->
             <!-- Total Operating Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Total Operating Expense Summary</h3>
+                <h3>Total Operating Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1183,7 +1447,7 @@
             <!-- Row 10: Electricity Expense -->
             <!-- Electricity Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Electricity Expense Summary</h3>
+                <h3>Electricity Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1212,7 +1476,7 @@
             <!-- Row 11: Water Expense -->
             <!-- Water Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Water Expense Summary</h3>
+                <h3>Water Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1241,7 +1505,7 @@
             <!-- Row 12: Security Expense -->
             <!-- Security Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Security Expense Summary</h3>
+                <h3>Security Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1270,7 +1534,7 @@
             <!-- Row 13: Agency Expense -->
             <!-- Agency Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Agency Expense Summary</h3>
+                <h3>Agency Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1304,7 +1568,7 @@
             <!-- Row 14: Salary Expense -->
             <!-- Salary Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Salary Expense Summary</h3>
+                <h3>Salary Expense</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1338,7 +1602,7 @@
             <!-- Row 15: Marketing Expense -->
             <!-- Marketing Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Marketing Expense (+Gifts & Decor) Summary</h3>
+                <h3>Marketing Expense (+Gifts & Decor)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1372,7 +1636,7 @@
             <!-- Row 16: Marketing Expense (Gathering) -->
             <!-- Marketing Expense Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Marketing Expense (+Gifts & Decor) Summary</h3>
+                <h3>Marketing Expense (+Gifts & Decor)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1406,7 +1670,7 @@
             <!-- Row 17: Repairs & Maintenance (Labor) -->
             <!-- Repairs & Maintenance (Labor) Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Repairs & Maintenance (Labor) Summary</h3>
+                <h3>Repairs & Maintenance (Labor)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1435,7 +1699,7 @@
             <!-- Row 18: Repairs & Maintenance (Materials) -->
             <!-- Repairs & Maintenance (Materials) Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Repairs & Maintenance (Materials) Summary</h3>
+                <h3>Repairs & Maintenance (Materials)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1469,7 +1733,7 @@
             <!-- Row 19: Repairs & Maintenance (Labor) - Technical -->
             <!-- Repairs & Maintenance (Labor) Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Repairs & Maintenance (Labor) Summary</h3>
+                <h3>Repairs & Maintenance (Labor)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
@@ -1498,7 +1762,7 @@
             <!-- Row 20: Repairs & Maintenance (Materials) - Technical -->
             <!-- Repairs & Maintenance (Materials) Summary Card -->
             <div class="summary-card-title-outside">
-                <h3>Repairs & Maintenance (Materials) Summary</h3>
+                <h3>Repairs & Maintenance (Materials)</h3>
             </div>
             <div class="card summary-card-compact slide-in-left" style="animation-delay: 0.3s">
                 <div class="summary-stats summary-stats-vertical">
