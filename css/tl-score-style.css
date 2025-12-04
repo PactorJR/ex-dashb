@@ -131,31 +131,65 @@ select {
         text-align: center !important;
     }
 
-    .members-section .table-header .target{
+    .members-section .table-header .target {
         align-items: center;
         text-align: center;
     } 
 
-    /* When section is NOT active */
     .members-section:not(.members-view-active) .member-row .target-group {
-        margin-left: 85px;
+        margin-left: 85px !important;
     }
 
-    .members-section.members-view-active .member-row .target-group{
-        margin-left: 40px;
-        margin-right: 20px;
-    }
-
-    .members-section.members-view-active .member-row .actual-group{
-        margin-left: 40px;
-        margin-right: 20px;
+    .members-section:not(.members-view-active) .member-row .actual-group {
+        margin-left: 85px !important;
     }
     
+    /* Members-view-active table optimization for 1920px+ */
+    #operationsSection.members-view-active .table-header,
+    #operationsSection.members-view-active .member-row {
+        grid-template-columns: 1.3fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
+    }
+    
+    #operationsSection.members-view-active .sub-operation-item {
+        grid-template-columns: 1.3fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 1501px) and (max-width: 1919px) {
+    .sub-operation-item {
+        margin-left: 240px !important;
+    }
+
+    .target-group,
+    .actual-group {
+        align-items: center !important;
+        justify-items: center !important;
+    }
+
+    .target-group > div,
+    .actual-group > div {
+        text-align: center !important;
+    }
+
+    .members-section .table-header .target {
+        align-items: center;
+        text-align: center;
+    } 
+
+    .members-section:not(.members-view-active) .member-row .target-group {
+        margin-left: 50px !important;
+    }
+
+    .members-section:not(.members-view-active) .member-row .actual-group {
+        margin-left: 50px !important;
+    }
+
     
 }
 
 /* Responsive font sizes for 1366x768 specifically */
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (min-width: 1024px) and (max-width: 1500px) {
     :root {
         --fs-small: 0.8125rem;      /* 13px */
         --fs-base: 0.9375rem;       /* 15px */
@@ -206,14 +240,11 @@ select {
         margin-left: 220px !important;
     }
     
-    .members-section.members-view-active .member-row .sub-operations .sub-operation-item .target-badge{
-        margin-left: 100px !important;
-    }
 
     .target-group,
     .actual-group {
-        align-items: center !important;
-        justify-items: center !important;
+        align-items: left !important;
+        justify-items: left !important;
     }
 
     .target-group > div,
@@ -221,24 +252,18 @@ select {
         text-align: center !important;
     }
 
-    .members-section .table-header .target{
-        align-items: center;
-        text-align: center;
+    .members-section .table-header .target {
+        align-items: left;
+        text-align: left;
     } 
 
     /* When section is NOT active */
     .members-section:not(.members-view-active) .member-row .target-group {
-        margin-left: 65px !important;
+        margin-left: 50px !important;
     }
 
-    .members-section.members-view-active .member-row .target-group{
-        margin-left: 70px;
-        margin-right: 20px;
-    }
-
-    .members-section.members-view-active .member-row .actual-group{
-        margin-left: 45px;
-        margin-right: 20px;
+    .members-section:not(.members-view-active) .member-row .actual-group {
+        margin-left: 50px !important;
     }
 
     .leaders-grid {
@@ -643,8 +668,6 @@ small {
     pointer-events: none;
 }
 
-.section-switch.active::after {
-}
 
 .scoreboard-message-btn {
     display: flex;
@@ -884,7 +907,7 @@ small {
 }
 
 .dropdown-arrow {
-    margin-left: 100px;
+    left: 610px;
     transition: transform 0.3s ease;
     display: block;
 }
@@ -1127,7 +1150,7 @@ small {
 
 .table-header {
     display: grid;
-    grid-template-columns: 2.4fr 1.5fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr;
     background: linear-gradient(135deg, var(--primary-color), var(--light-bg));
     color: var(--white);
     padding: 8px 12px;
@@ -1136,6 +1159,22 @@ small {
     font-size: var(--fs-medium);
     font-family: var(--font-body);
     line-height: 1.3;
+    align-items: center;
+}
+
+/* Center align target and actual columns in header */
+.table-header > div:nth-child(3),
+.table-header > div:nth-child(4) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-header .header-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    justify-items: center;
 }
 
 /* Technical Team 6-column layout (for Team Members view) */
@@ -1267,20 +1306,178 @@ small {
     font-size: var(--fs-base);
 }
 
+/* ============================================
+   MEMBERS-VIEW-ACTIVE TABLE OPTIMIZATION
+   ============================================ */
+
 #operationsSection.members-view-active .table-header,
 #operationsSection.members-view-active .member-row {
     grid-template-columns: 1.3fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
+    align-items: center;
 }
 
-#operationsSection.members-view-active .table-header > div,
-#operationsSection.members-view-active .member-row > div {
+/* Ensure header and rows have matching padding for perfect alignment */
+#operationsSection.members-view-active .table-header {
+    padding: 10px 15px;
+}
+
+#operationsSection.members-view-active .member-row {
+    padding: 10px 15px;
+}
+
+/* Column 1: Role Owner - Left aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(1),
+#operationsSection.members-view-active .member-row > div:nth-child(1) {
     text-align: left;
+    display: flex;
+    align-items: center;
 }
 
+/* Column 2: Role Title - Left aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(2),
+#operationsSection.members-view-active .member-row > div:nth-child(2) {
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+/* Column 3: Operational KRA - Left aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(3),
+#operationsSection.members-view-active .member-row > div:nth-child(3) {
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+/* Column 4: TARGET - Center aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(4),
+#operationsSection.members-view-active .member-row > div:nth-child(4) {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+}
+
+/* Ensure the target-group container fills and centers in column 4 */
+#operationsSection.members-view-active .member-row > div:nth-child(4) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Column 5: ACTUAL - Center aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(5),
+#operationsSection.members-view-active .member-row > div:nth-child(5) {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Column 6: %KPI - Center aligned */
+#operationsSection.members-view-active .table-header > div:nth-child(6),
+#operationsSection.members-view-active .member-row > div:nth-child(6) {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure TARGET header group is centered and matches data structure */
+#operationsSection.members-view-active .table-header > div:nth-child(4) {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+#operationsSection.members-view-active .table-header > div:nth-child(4) .target,
+#operationsSection.members-view-active .table-header > div:nth-child(4) > div {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure ACTUAL header is centered */
+#operationsSection.members-view-active .table-header > div:nth-child(5) > div {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Member info alignment */
 #operationsSection.members-view-active .member-row .member-info {
     gap: 12px;
+    display: flex;
+    align-items: center;
 }
 
+/* Remove any margin adjustments that conflict and ensure proper alignment */
+#operationsSection.members-view-active .member-row .target-group,
+#operationsSection.members-view-active .member-row .actual-group {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100%;
+    /* Override the grid structure and use flexbox for centering */
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    /* Ensure it takes full width of parent column */
+    min-width: 0;
+}
+
+/* Center the content inside target-group and actual-group */
+#operationsSection.members-view-active .member-row .target-group > div,
+#operationsSection.members-view-active .member-row .actual-group > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    padding: 0;
+    flex: 1;
+}
+
+/* Sub-operations alignment in members-view-active */
+#operationsSection.members-view-active .sub-operation-item {
+    grid-template-columns: 1.3fr 1.2fr 1.3fr 1.4fr 0.9fr 0.9fr;
+    padding: 10px 15px;
+    margin-left: 0;
+    padding-left: 15px;
+    align-items: center;
+}
+
+/* Align sub-operation columns to match parent row */
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(1),
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(2),
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(3) {
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(4),
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(5),
+#operationsSection.members-view-active .sub-operation-item > div:nth-child(6) {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Section actions */
 #operationsSection.members-view-active .section-actions {
     display: flex;
 }
@@ -1878,6 +2075,11 @@ small {
     /* Adjust members-view-active grid columns for better fit */
     #operationsSection.members-view-active .table-header,
     #operationsSection.members-view-active .member-row {
+        grid-template-columns: 1.2fr 1fr 1.2fr 1.2fr 0.8fr 0.8fr;
+    }
+    
+    /* Ensure sub-operations match the grid in responsive view */
+    #operationsSection.members-view-active .sub-operation-item {
         grid-template-columns: 1.2fr 1fr 1.2fr 1.2fr 0.8fr 0.8fr;
     }
     

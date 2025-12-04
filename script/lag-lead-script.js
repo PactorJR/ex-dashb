@@ -1994,6 +1994,7 @@
             });
 
             revenueBarChart.update();
+            updateRevenueSummary();
         }
 
         async function initCollectionCharts() {
@@ -7946,6 +7947,59 @@
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
             // Variance is handled by colorVarianceAndYoYGrowthValues function
+            colorVarianceAndYoYGrowthValues();
+        }
+
+        // Update Revenue Summary Card
+        function updateRevenueSummary() {
+            const totalEl = document.querySelector('[data-metric="gross-revenue-total"]');
+            const averageEl = document.querySelector('[data-metric="gross-revenue-average"]');
+            const yoyGrowthEl = document.querySelector('[data-metric="gross-revenue-yoy-growth"]');
+
+            if (!totalEl || !averageEl || !yoyGrowthEl || !revenueBarData) {
+                return;
+            }
+
+            const currentRawData = revenueBarData.datasets[0]?.rawData || [];
+            const previousRawData = revenueBarData.datasets[1]?.rawData || [];
+
+            // Calculate total revenue (sum of all current year values)
+            const currentTotal = currentRawData.reduce((sum, value) => {
+                const numValue = extractRawNumericValue(value);
+                return sum + (Number.isFinite(numValue) ? numValue : 0);
+            }, 0);
+
+            // Calculate average revenue
+            const currentNumericValues = currentRawData
+                .map(value => extractRawNumericValue(value))
+                .filter(value => Number.isFinite(value));
+            const average = currentNumericValues.length > 0
+                ? currentNumericValues.reduce((sum, val) => sum + val, 0) / currentNumericValues.length
+                : 0;
+
+            // Calculate YoY Growth
+            const previousTotal = previousRawData.reduce((sum, value) => {
+                const numValue = extractRawNumericValue(value);
+                return sum + (Number.isFinite(numValue) ? numValue : 0);
+            }, 0);
+
+            let yoyGrowth = 0;
+            if (Number.isFinite(previousTotal) && previousTotal !== 0 && Number.isFinite(currentTotal)) {
+                yoyGrowth = ((currentTotal - previousTotal) / previousTotal) * 100;
+            }
+
+            // Update the DOM elements
+            if (Number.isFinite(currentTotal)) {
+                totalEl.textContent = formatRawValueForDisplay(currentTotal);
+            }
+            if (Number.isFinite(average)) {
+                averageEl.textContent = formatRawValueForDisplay(average);
+            }
+            if (Number.isFinite(yoyGrowth)) {
+                yoyGrowthEl.textContent = formatPercentage(yoyGrowth);
+            }
+
+            // Color the YoY Growth value
             colorVarianceAndYoYGrowthValues();
         }
 
