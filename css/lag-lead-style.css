@@ -125,6 +125,11 @@ body {
     .section-switch.active::before {
         transform: translateX(30px) !important;
     }
+
+    .leaders-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+        gap: 10px;
+    }
 }
 
 /* Responsive font sizes for 1024px to 1680px range */
