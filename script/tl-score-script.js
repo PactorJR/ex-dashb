@@ -3669,6 +3669,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('accounting-team-view');
                 
                 attachSearchFunctionality();
@@ -3860,6 +3861,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('lrad-team-view');
                 
                 attachSearchFunctionality();
@@ -4051,6 +4053,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('quality-team-view');
                 
                 attachSearchFunctionality();
@@ -4229,6 +4232,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('dc-team-view');
                 
                 attachSearchFunctionality();
@@ -4407,6 +4411,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('opportunity-team-view');
                 
                 attachSearchFunctionality();
@@ -4585,6 +4590,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('it-team-view');
                 
                 attachSearchFunctionality();
@@ -4765,6 +4771,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('marcom-team-view');
                 
                 attachSearchFunctionality();
@@ -4945,6 +4952,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('operations-team-view');
                 
                 attachSearchFunctionality();
@@ -5123,6 +5131,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('audit-team-view');
                 
                 attachSearchFunctionality();
@@ -5301,6 +5310,7 @@ const performanceData = {
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
+                operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('gathering-team-view');
                 
                 attachSearchFunctionality();
@@ -5995,11 +6005,32 @@ const performanceData = {
 
                 const label = document.createElement('span');
                 label.textContent = 'Year:';
-                label.style.cssText = 'font-size: 12px; color: #525552; font-weight: 500;';
+                label.style.cssText = 'font-size: var(--fs-base, 0.9375rem); color: var(--primary-color, #586740); font-weight: 600; font-family: var(--font-body, "Trebuchet MS", sans-serif);';
 
                 const select = document.createElement('select');
                 select.className = 'year-filter-select';
-                select.style.cssText = 'padding: 4px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; background: white; color: #525552; cursor: pointer;';
+                select.style.cssText = 'padding: 10px 16px; border: 2px solid var(--light-bg, #96a840); border-radius: 8px; font-size: var(--fs-base, 0.9375rem); font-family: var(--font-body, "Trebuchet MS", sans-serif); background: white; color: var(--text-color, #000); cursor: pointer; transition: all 0.3s ease; font-weight: 500; min-width: 100px;';
+                
+                // Add hover and focus effects
+                select.addEventListener('mouseenter', function() {
+                    this.style.borderColor = 'var(--secondary-color, #e5bb22)';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(229, 187, 34, 0.2)';
+                });
+                select.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'var(--light-bg, #96a840)';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+                select.addEventListener('focus', function() {
+                    this.style.outline = 'none';
+                    this.style.borderColor = 'var(--secondary-color, #e5bb22)';
+                    this.style.boxShadow = '0 0 0 3px rgba(229, 187, 34, 0.2)';
+                });
+                select.addEventListener('blur', function() {
+                    this.style.borderColor = 'var(--light-bg, #96a840)';
+                    this.style.boxShadow = 'none';
+                });
                 const years = ['2023', '2024', '2025', '2026'];
                 select.innerHTML = years.map(year => `<option value="${year}">${year}</option>`).join('');
                 select.value = selectedPerformanceYear;
@@ -6046,7 +6077,21 @@ const performanceData = {
             button.type = 'button';
             button.className = 'average-toggle-btn';
             button.textContent = 'Show Average';
-            button.style.cssText = 'padding: 6px 12px; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 12px; cursor: pointer;';
+            button.style.cssText = 'padding: 10px 16px; border-radius: 8px; border: 2px solid var(--primary-color, #586740); background: transparent; color: var(--primary-color, #586740); font-size: var(--fs-base, 0.9375rem); font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: var(--font-body, "Trebuchet MS", sans-serif);';
+            
+            // Add hover effect
+            button.addEventListener('mouseenter', function() {
+                this.style.background = 'var(--primary-color, #586740)';
+                this.style.color = 'var(--white, #ffffff)';
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(88, 103, 64, 0.2)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.background = 'transparent';
+                this.style.color = 'var(--primary-color, #586740)';
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
 
             button.addEventListener('click', () => {
                 if (!teamPerformanceChartData || !teamPerformanceChart) {
@@ -6299,7 +6344,54 @@ const performanceData = {
                         }
                     }
                 },
-                plugins: []
+                plugins: [{
+                    id: 'overallTextPlugin',
+                    afterDraw: (chart) => {
+                        if (isAverageView && currentOverallChangePercent !== null) {
+                            const ctx = chart.ctx;
+                            const chartArea = chart.chartArea;
+                            const absPercent = Math.abs(currentOverallChangePercent);
+                            const fixed = absPercent.toFixed(1);
+                            const formatted = fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
+                            const direction = currentOverallChangePercent >= 0 ? 'up' : 'down';
+                            const overallText = `Overall ${direction} ${formatted}% vs target (${selectedPerformanceYear})`;
+                            
+                            // Get CSS variable values from computed styles
+                            const canvas = chart.canvas;
+                            const rootStyle = window.getComputedStyle(document.documentElement);
+                            const primaryColor = rootStyle.getPropertyValue('--primary-color')?.trim() || '#586740';
+                            const fontFamily = rootStyle.getPropertyValue('--font-body')?.trim() || '"Trebuchet MS", sans-serif';
+                            
+                            // Position text in top-right corner of chart area
+                            const x = chartArea.right - 20;
+                            const y = chartArea.top + 20;
+                            
+                            ctx.save();
+                            ctx.font = `600 12px ${fontFamily}`;
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'top';
+                            
+                            // Draw background rectangle for better visibility
+                            const textMetrics = ctx.measureText(overallText);
+                            const padding = 8;
+                            const bgWidth = textMetrics.width + (padding * 2);
+                            const bgHeight = 20;
+                            
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                            ctx.fillRect(x - bgWidth, y - 2, bgWidth, bgHeight);
+                            
+                            // Draw border
+                            ctx.strokeStyle = primaryColor;
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(x - bgWidth, y - 2, bgWidth, bgHeight);
+                            
+                            // Draw text
+                            ctx.fillStyle = primaryColor;
+                            ctx.fillText(overallText, x - padding, y);
+                            ctx.restore();
+                        }
+                    }
+                }]
             });
 
             applyTeamPerformanceSeries(activeTeamPerformanceSeries);
