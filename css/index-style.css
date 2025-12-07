@@ -87,6 +87,18 @@ select {
         --fs-h2: 2.25rem;          /* 36px */
         --fs-h1: 3rem;             /* 48px */
     }
+
+    .hero-buttons {
+        margin-left: 25px !important;
+    }
+
+    .hero-subtitle-new {
+        margin-left: 90px !important;
+    }
+
+    .hero-title-new {
+        margin-left: 90px !important;
+    }
 }
 
 /* Responsive font sizes for 1366x768 specifically */
@@ -3456,6 +3468,7 @@ small {
     visibility: visible;
     transform: translateY(0) scale(1); /* Reset position and size */
     pointer-events: auto; /* Clickable */
+    z-index: 1000;
 }
 
 .scroll-top-btn:hover {
@@ -4481,7 +4494,7 @@ small {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-    margin-top: 40px;
+    margin-left: 7px;
     position: relative;
     z-index: 3;
 }
