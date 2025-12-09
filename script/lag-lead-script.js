@@ -91,7 +91,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             ensureSummaryCardTitleContainers();
             applyIncomingHighlight();
-            setupVarianceCardNavigation();
+            // Use a small delay to ensure all DOM elements are fully rendered
+            setTimeout(() => {
+                setupVarianceCardNavigation();
+            }, 100);
             setupYoYGrowthNavigation();
             setupTeamCarouselNavigation();
         });
@@ -717,12 +720,13 @@
 
         function setupVarianceCardNavigation() {
             // Process variance cards in both Company Lag and Company Lead sections
-            const lagSection = document.querySelector('[data-company-type="lag"]');
-            const leadSection = document.querySelector('[data-company-type="lead"]');
+            // Use querySelectorAll to find ALL sections, not just the first one
+            const lagSections = document.querySelectorAll('[data-company-type="lag"]');
+            const leadSections = document.querySelectorAll('[data-company-type="lead"]');
             
             const sections = [];
-            if (lagSection) sections.push(lagSection);
-            if (leadSection) sections.push(leadSection);
+            lagSections.forEach(section => sections.push(section));
+            leadSections.forEach(section => sections.push(section));
             
             if (sections.length === 0) {
                 return;
@@ -1839,6 +1843,8 @@
                 }
 
                 await Promise.all(initializationTasks);
+                // Update KPI navigation cards after all charts are initialized
+                updateKpiNavCards();
             } catch (err) {
                 console.error('Failed to initialize revenue dashboards:', err);
             }
@@ -7439,6 +7445,8 @@
             try {
                 await Promise.all(leadInitializationTasks);
                 console.log('All LEAD charts initialized successfully');
+                // Update KPI navigation cards after all lead charts are initialized
+                updateKpiNavCards();
             } catch (error) {
                 console.error('Error initializing LEAD charts:', error);
             }
@@ -7450,7 +7458,7 @@
 
         const COMPANY_VIEW_STORAGE_KEY = 'companyViewPreference';
         const LEADERS_VIEW_STORAGE_KEY = 'leadersCarouselView';
-        const KPI_CAROUSEL_VISIBLE_COUNT = 11;
+        const KPI_CAROUSEL_VISIBLE_COUNT = 5;
         let currentCompanyView = 'lag';
         const kpiCarouselState = {
             cards: [],
@@ -8139,9 +8147,57 @@
             })}`;
         }
 
+        // Format value in shortened format (e.g., ₱14.3M for millions, ₱400K for thousands)
+        function formatShortenedMillions(rawItem) {
+            if (rawItem === null || rawItem === undefined || rawItem === '') {
+                return '₱0';
+            }
+            const numeric = typeof rawItem === 'number' ? rawItem : extractRawNumericValue(rawItem);
+            if (Number.isNaN(numeric) || numeric === 0) {
+                return '₱0';
+            }
+            
+            const absNumeric = Math.abs(numeric);
+            
+            // If value is >= 1,000,000, display in millions with one decimal
+            if (absNumeric >= 1000000) {
+                const millions = numeric / 1000000;
+                return `₱${millions.toFixed(1)}M`;
+            }
+            // If value is >= 1,000, display in thousands without decimals
+            else if (absNumeric >= 1000) {
+                const thousands = numeric / 1000;
+                return `₱${Math.round(thousands)}K`;
+            }
+            // If value is < 1,000, display as is with 2 decimals
+            else {
+                return `₱${numeric.toFixed(2)}`;
+            }
+        }
+
         // Get current month index (0-11, November = 10)
         function getCurrentMonthIndex() {
             return new Date().getMonth();
+        }
+
+        // Helper function to calculate and update variance (same logic as KPI nav cards)
+        function updateVarianceValue(varianceEl, actualNumeric, targetNumeric) {
+            if (!varianceEl) return;
+            
+            if (actualNumeric !== null && targetNumeric !== null && targetNumeric !== 0) {
+                const variance = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
+                varianceEl.textContent = formatPercentage(variance);
+                
+                // Color variance based on positive/negative
+                const numValue = parseFloat(variance);
+                if (numValue >= 0) {
+                    varianceEl.style.color = '#81f31d';
+                } else {
+                    varianceEl.style.color = '#ff3146';
+                }
+            } else {
+                varianceEl.textContent = '-';
+            }
         }
 
         // Update Net Profit Summary Card
@@ -8161,14 +8217,36 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            // Variance is handled by colorVarianceAndYoYGrowthValues function
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (same logic as KPI nav cards)
+            if (varianceEl && actualNumeric !== null && targetNumeric !== null && targetNumeric !== 0) {
+                const variance = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
+                varianceEl.textContent = formatPercentage(variance);
+                
+                // Color variance based on positive/negative
+                const numValue = parseFloat(variance);
+                if (numValue >= 0) {
+                    varianceEl.style.color = '#81f31d';
+                } else {
+                    varianceEl.style.color = '#ff3146';
+                }
+            } else if (varianceEl) {
+                varianceEl.textContent = '-';
+            }
         }
 
         // Update Revenue Summary Card
@@ -8241,13 +8319,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Venue Summary Card
@@ -8267,13 +8355,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Studio Summary Card
@@ -8293,13 +8391,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Sports Arena Summary Card
@@ -8319,13 +8427,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Parking Income Summary Card
@@ -8345,13 +8463,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Total Operating Expense Summary Card
@@ -8371,13 +8499,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Electricity Expense Summary Card
@@ -8397,13 +8535,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Water Expense Summary Card
@@ -8423,13 +8571,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Security Expense Summary Card
@@ -8449,13 +8607,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Agency Expense Summary Card
@@ -8475,13 +8643,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Salary Expense Summary Card
@@ -8501,13 +8679,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Marketing Expense (Marcom) Summary Card
@@ -8527,13 +8715,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Marketing Expense (Gathering) Summary Card
@@ -8553,13 +8751,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const previousRawValue = previousRawData[monthIndex];
 
+            // Extract numeric values (using previous as target for variance calculation)
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const previousNumeric = previousRawValue !== null && previousRawValue !== undefined
+                ? (typeof previousRawValue === 'number' ? previousRawValue : extractRawNumericValue(previousRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (previousRawValue !== null && previousRawValue !== undefined) {
                 previousEl.textContent = formatRawValueForDisplay(previousRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance (using previous as target)
+            updateVarianceValue(varianceEl, actualNumeric, previousNumeric);
         }
 
         // Update Repairs & Maintenance (Labor) Summary Card
@@ -8579,13 +8787,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Repairs & Maintenance (Materials) Summary Card
@@ -8605,13 +8823,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Repairs & Maintenance (Labor) Technical Summary Card
@@ -8631,13 +8859,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Repairs & Maintenance (Materials) Technical Summary Card
@@ -8657,13 +8895,23 @@
             const actualRawValue = currentRawData[monthIndex];
             const targetRawValue = targetRawData[monthIndex];
 
+            // Extract numeric values
+            const actualNumeric = actualRawValue !== null && actualRawValue !== undefined
+                ? (typeof actualRawValue === 'number' ? actualRawValue : extractRawNumericValue(actualRawValue))
+                : null;
+            const targetNumeric = targetRawValue !== null && targetRawValue !== undefined
+                ? (typeof targetRawValue === 'number' ? targetRawValue : extractRawNumericValue(targetRawValue))
+                : null;
+
             if (actualRawValue !== null && actualRawValue !== undefined) {
                 actualEl.textContent = formatRawValueForDisplay(actualRawValue);
             }
             if (targetRawValue !== null && targetRawValue !== undefined) {
                 targetEl.textContent = formatRawValueForDisplay(targetRawValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // ============================================
@@ -8712,7 +8960,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatUnitsForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Occupancy Rate (Area) Summary Card
@@ -8738,7 +8990,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatUnitsForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Occupancy Rate (P-Value) Summary Card
@@ -8764,7 +9020,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatCurrencyForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Closed Inquiries Summary Card
@@ -8790,7 +9050,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatThousandsForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Pullout Aversion Summary Card
@@ -8816,7 +9080,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatThousandsForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Generic update function for foot traffic charts
@@ -8842,7 +9110,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatUnitsForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Generic update function for percentage-based charts
@@ -8868,7 +9140,11 @@
             if (Number.isFinite(targetValue)) {
                 targetEl.textContent = formatPercentageForDisplay(targetValue);
             }
-            colorVarianceAndYoYGrowthValues();
+
+            // Calculate and update variance
+            const actualNumeric = Number.isFinite(actualValue) ? actualValue : null;
+            const targetNumeric = Number.isFinite(targetValue) ? targetValue : null;
+            updateVarianceValue(varianceEl, actualNumeric, targetNumeric);
         }
 
         // Update Lotus Foot Traffic Summary Card
@@ -8969,6 +9245,203 @@
         // Update Breakdowns Summary Card
         function updateBreakdownsSummary() {
             updatePercentageSummary('breakdowns', breakdownsChartData);
+        }
+
+        // ============================================
+        // UPDATE KPI NAVIGATION CARDS
+        // ============================================
+        
+        // Mapping from chart target IDs to their chart data variables
+        const KPI_CHART_DATA_MAP = {
+            'profitBarChart': () => profitBarData,
+            'revenueBarChart': () => revenueBarData,
+            'monthlyCollectionChart': () => monthlyCollectionData,
+            'rentalComparisonChart': () => rentalComparisonData,
+            'venueChart': () => venueChartData,
+            'studioChart': () => studioChartData,
+            'sportsArenaChart': () => sportsArenaChartData,
+            'parkingIncomeChart': () => parkingIncomeChartData,
+            'totalOperatingExpenseChart': () => totalOperatingExpenseChartData,
+            'electricityExpenseChart': () => electricityExpenseChartData,
+            'waterExpenseChart': () => waterExpenseChartData,
+            'securityExpenseChart': () => securityExpenseChartData,
+            'agencyExpenseChart': () => agencyExpenseChartData,
+            'salaryExpenseChart': () => salaryExpenseChartData,
+            'marketingExpenseChart': () => marketingExpenseChartData,
+            'marketingExpenseGatheringChart': () => marketingExpenseGatheringChartData,
+            'repairsMaintenanceLaborChart': () => repairsMaintenanceLaborChartData,
+            'repairsMaintenanceMaterialsChart': () => repairsMaintenanceMaterialsChartData,
+            'repairsMaintenanceLaborTechnicalChart': () => repairsMaintenanceLaborTechnicalChartData,
+            'repairsMaintenanceMaterialsTechnicalChart': () => repairsMaintenanceMaterialsTechnicalChartData,
+            'occupancyRateLeadChart': () => occupancyRateLeadChartData,
+            'occupancyRateAreaLeadChart': () => occupancyRateAreaLeadChartData,
+            'occupancyRatePValueLeadChart': () => occupancyRatePValueLeadChartData,
+            'closedInquiriesLeadChart': () => closedInquiriesLeadChartData,
+            'pulloutAversionLeadChart': () => pulloutAversionLeadChartData,
+            'lotusFootTrafficChart': () => lotusFootTrafficChartData,
+            'portalFootTrafficChart': () => portalFootTrafficChartData,
+            'stadiumFootTrafficChart': () => stadiumFootTrafficChartData,
+            'yspacioFootTrafficChart': () => yspacioFootTrafficChartData,
+            'yspacioAlapanFootTrafficChart': () => yspacioAlapanFootTrafficChartData,
+            'luminaFootTrafficChart': () => luminaFootTrafficChartData,
+            'lotusPaxChart': () => lotusPaxChartData,
+            'portalPaxChart': () => portalPaxChartData,
+            'stadiumPaxChart': () => stadiumPaxChartData,
+            'offlineInquiriesLeadChart': () => offlineInquiriesLeadChartData,
+            'fbFollowersChart': () => fbFollowersChartData,
+            'icareChart': () => icareChartData,
+            'siteQualityChart': () => siteQualityChartData,
+            'insuranceClaimChart': () => insuranceClaimChartData,
+            'regularEventsChart': () => regularEventsChartData,
+            'cultureDevChart': () => cultureDevChartData,
+            'smdProjectsChart': () => smdProjectsChartData,
+            'budgetProjectsChart': () => budgetProjectsChartData,
+            'teamTargetsChart': () => teamTargetsChartData,
+            'breakdownsChart': () => breakdownsChartData
+        };
+
+        // KPIs where variance should be displayed as Peso difference
+        const CURRENCY_VARIANCE_KPI_TARGETS = new Set([
+            'revenueBarChart',
+            'profitBarChart',
+            'totalOperatingExpenseChart',
+            'electricityExpenseChart',
+            'waterExpenseChart',
+            'securityExpenseChart',
+            'agencyExpenseChart',
+            'salaryExpenseChart',
+            'marketingExpenseChart',
+            'marketingExpenseGatheringChart',
+            'repairsMaintenanceLaborChart',
+            'repairsMaintenanceMaterialsChart',
+            'repairsMaintenanceLaborTechnicalChart',
+            'repairsMaintenanceMaterialsTechnicalChart',
+            'monthlyCollectionChart',
+            'rentalComparisonChart',
+            'venueChart',
+            'studioChart',
+            'sportsArenaChart',
+            'parkingIncomeChart'
+        ]);
+
+        // KPIs where variance should be displayed as raw numeric difference (counts/units)
+        const COUNT_VARIANCE_KPI_TARGETS = new Set([
+            'occupancyRateLeadChart',
+            'occupancyRateAreaLeadChart',
+            'occupancyRatePValueLeadChart',
+            'closedInquiriesLeadChart',
+            'pulloutAversionLeadChart',
+            'lotusFootTrafficChart',
+            'portalFootTrafficChart',
+            'stadiumFootTrafficChart',
+            'yspacioFootTrafficChart',
+            'yspacioAlapanFootTrafficChart',
+            'luminaFootTrafficChart',
+            'lotusPaxChart',
+            'portalPaxChart',
+            'stadiumPaxChart',
+            'offlineInquiriesLeadChart',
+            'fbFollowersChart',
+            'icareChart',
+            'siteQualityChart',
+            'insuranceClaimChart',
+            'regularEventsChart',
+            'cultureDevChart',
+            'smdProjectsChart',
+            'budgetProjectsChart',
+            'teamTargetsChart',
+            'breakdownsChart'
+        ]);
+
+        const formatCountVariance = (value) => {
+            if (!Number.isFinite(value)) {
+                return '0';
+            }
+            return value.toLocaleString('en-PH', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+        };
+
+        function updateKpiNavCards() {
+            const kpiCards = document.querySelectorAll('.kpi-nav-card');
+            const currentMonth = getCurrentMonthIndex();
+
+            kpiCards.forEach(card => {
+                const kpiTarget = card.getAttribute('data-kpi-target');
+                if (!kpiTarget) return;
+
+                const getChartData = KPI_CHART_DATA_MAP[kpiTarget];
+                if (!getChartData) {
+                    console.warn(`No chart data mapping found for: ${kpiTarget}`);
+                    return;
+                }
+
+                const chartData = getChartData();
+                if (!chartData || !chartData.datasets) {
+                    return;
+                }
+
+                // Get actual and target values from current month
+                const actualRaw = chartData.datasets[0]?.rawData?.[currentMonth];
+                const targetRaw = chartData.datasets[2]?.rawData?.[currentMonth];
+
+                // Extract numeric values
+                const actualNumeric = actualRaw !== null && actualRaw !== undefined
+                    ? (typeof actualRaw === 'number' ? actualRaw : extractRawNumericValue(actualRaw))
+                    : null;
+                const targetNumeric = targetRaw !== null && targetRaw !== undefined
+                    ? (typeof targetRaw === 'number' ? targetRaw : extractRawNumericValue(targetRaw))
+                    : null;
+
+                // Update target value
+                const targetEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-target"]`);
+                if (targetEl) {
+                    if (targetRaw !== null && targetRaw !== undefined) {
+                        targetEl.textContent = formatShortenedMillions(targetRaw);
+                    } else {
+                        targetEl.textContent = '-';
+                    }
+                }
+
+                // Update actual value
+                const actualEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-actual"]`);
+                if (actualEl) {
+                    if (actualRaw !== null && actualRaw !== undefined) {
+                        actualEl.textContent = formatShortenedMillions(actualRaw);
+                    } else {
+                        actualEl.textContent = '-';
+                    }
+                }
+
+                // Calculate and update variance
+                const varianceEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-variance"]`);
+                if (varianceEl && actualNumeric !== null && targetNumeric !== null) {
+                    const isCurrencyVariance = CURRENCY_VARIANCE_KPI_TARGETS.has(kpiTarget);
+                    const isCountVariance = COUNT_VARIANCE_KPI_TARGETS.has(kpiTarget);
+                    const hasValidNumbers = Number.isFinite(actualNumeric) && Number.isFinite(targetNumeric);
+
+                    if (isCurrencyVariance && hasValidNumbers) {
+                        const varianceAmount = actualNumeric - targetNumeric;
+                        varianceEl.textContent = formatShortenedMillions(varianceAmount);
+                        varianceEl.style.color = varianceAmount >= 0 ? '#81f31d' : '#ff3146';
+                    } else if (isCountVariance && hasValidNumbers) {
+                        const varianceAmount = actualNumeric - targetNumeric;
+                        varianceEl.textContent = formatCountVariance(varianceAmount);
+                        varianceEl.style.color = varianceAmount >= 0 ? '#81f31d' : '#ff3146';
+                    } else if (hasValidNumbers && targetNumeric !== 0) {
+                        // Fallback to percentage when currency display is not applicable
+                        const variance = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
+                        varianceEl.textContent = formatPercentage(variance);
+                        const numValue = parseFloat(variance);
+                        varianceEl.style.color = numValue >= 0 ? '#81f31d' : '#ff3146';
+                    } else {
+                        varianceEl.textContent = '-';
+                    }
+                } else if (varianceEl) {
+                    varianceEl.textContent = '-';
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', colorVarianceAndYoYGrowthValues);

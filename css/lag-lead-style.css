@@ -155,6 +155,19 @@ select {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
         gap: 10px;
     }
+
+    /* Team carousel responsive (statsCarousel): keep many columns */
+    #statsCarousel.leaders-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    /* KPI carousel responsive: keep 3 wide cards when possible */
+    #kpiCarousel.leaders-grid {
+        grid-template-columns: repeat(5, minmax(100px, 1fr)) !important;
+        gap: 14px;
+    }
+
 }
 
 /* Responsive font sizes for 1024px to 1680px range */
@@ -609,6 +622,20 @@ small {
         margin-top: 10px;
     }
 
+/* KPI carousel controls sit below the cards, centered */
+.kpi-carousel-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    column-gap: 14px;
+    padding: 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 14px auto 0 auto;
+}
+
     .carousel-btn {
         width: 36px;
         height: 36px;
@@ -655,9 +682,21 @@ small {
 
 .leaders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 30px;
+}
+
+/* Team carousel (statsCarousel) - show many cards (up to ~11 depending on width) */
+#statsCarousel.leaders-grid {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 10px;
+}
+
+/* KPI carousel: wider cards, 3 visible */
+#kpiCarousel.leaders-grid {
+    grid-template-columns: repeat(5, minmax(10px, 1fr));
+    gap: 16px;
 }
 
 .leader-card {
@@ -683,7 +722,58 @@ small {
 
 .leader-card.clickable-stat-card-carousel:focus-visible {
     outline: 3px solid var(--secondary-color);
-    outline-offset: 4px;
+}
+
+/* KPI Card Stats Styling */
+.kpi-card-stats {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.kpi-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.kpi-stat-label {
+    font-size: 11px;
+    color: var(--subtext-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-stat-value {
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Variance styling - make it stand out more */
+.kpi-stat-variance {
+    background: rgba(88, 103, 64, 0.05);
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-top: 4px;
+    border: 1px solid rgba(88, 103, 64, 0.15);
+}
+
+.kpi-stat-variance .kpi-stat-label {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--primary-color);
+}
+
+.kpi-stat-value-variance {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
 .highlight-target {
@@ -709,6 +799,27 @@ small {
 .leader-card:hover {
     transform: translateY(-10px) scale(1.03);
     box-shadow: 0 15px 30px rgba(88, 103, 64, 0.2);
+}
+
+#kpiCarousel .leader-card {
+    padding-bottom: 5px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+
+#kpiCarousel .leader-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 10px;
+    margin-top: 20px;
+    height: 30px;
+    width: 30px;
+}
+
+#kpiCarousel .leader-card .leader-title .leader-icon .i {
+    font-size: 10px !important;
 }
 
 .leader-icon {
@@ -737,11 +848,13 @@ small {
 
 .leader-title {
     color: var(--primary-color);
-    font-size: var(--fs-small);
+    font-size: var(--fs-medium);
     font-weight: 700;
     opacity: 1;
     line-height: 1.2;
     letter-spacing: 0.3px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(88, 103, 64, 0.1);
 }
 
     @keyframes fadeInDown {

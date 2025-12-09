@@ -3036,6 +3036,7 @@ const performanceData = {
                     currentOperationsView = target;
                     refreshOperationsContent();
                     updateScoreboardToggleState();
+                    updateTeamMembersMiniContainer();
                 });
             });
 
@@ -3118,39 +3119,234 @@ const performanceData = {
         sectionSwitch.addEventListener('click', toggleSections);
         sectionSwitch2.addEventListener('click', toggleSections);
 
-        // Team Leader selection functionality
-        const leaderCards = document.querySelectorAll('.leader-card');
-        
-        leaderCards.forEach(card => {
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('role', 'button');
+        // Function to attach team leader selection functionality
+        function attachLeaderCardHandlers() {
+            const leaderCards = document.querySelectorAll('.leader-card:not([data-handlers-attached])');
+            
+            leaderCards.forEach(card => {
+                card.setAttribute('data-handlers-attached', 'true');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
 
-            card.addEventListener('click', function() {
-                leaderCards.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                
-                selectedTeam = normalizeTeamName(this.getAttribute('data-team'));
-                selectedTeamData = {
-                    name: this.getAttribute('data-name'),
-                    title: this.getAttribute('data-title'),
-                    roles: this.getAttribute('data-roles'),
-                    contributions: this.getAttribute('data-contributions'),
-                    icon: this.getAttribute('data-icon')
-                };
+                card.addEventListener('click', function() {
+                    const allCards = document.querySelectorAll('.leader-card');
+                    allCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    selectedTeam = normalizeTeamName(this.getAttribute('data-team'));
+                    selectedTeamData = {
+                        name: this.getAttribute('data-name'),
+                        title: this.getAttribute('data-title'),
+                        roles: this.getAttribute('data-roles'),
+                        contributions: this.getAttribute('data-contributions'),
+                        icon: this.getAttribute('data-icon')
+                    };
 
+                    refreshOperationsContent();
+                    updateLeadKpiSection(selectedTeam, selectedTeamData.title);
+                    updateTeamMembersMiniContainer();
+                });
 
-                
-                refreshOperationsContent();
-                updateLeadKpiSection(selectedTeam, selectedTeamData.title);
+                card.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        this.click();
+                    }
+                });
             });
+        }
 
-            card.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    this.click();
+        // Initial attachment (will be called again after rendering cards)
+        attachLeaderCardHandlers();
+
+        // Helper function to calculate performance for a team member based on their KRAs
+        function calculateMemberPerformance(teamName, roleTitle, kras, roleOwners, periodKey) {
+            const memberName = roleOwners[roleTitle] || roleTitle;
+            
+            // Calculate overall performance across all KRAs
+            let totalWeightedPerformance = 0;
+            let totalWeight = 0;
+            const defaultPeriodKey = '2025-11';
+            
+            kras.forEach(kraData => {
+                if (kraData.kpis && kraData.kpis.length > 0) {
+                    kraData.kpis.forEach(kpiItem => {
+                        // Parse weight
+                        let weight = 0;
+                        if (kpiItem.weight && kpiItem.weight !== '-') {
+                            const weightStr = String(kpiItem.weight).replace(/%/g, '').replace(/,/g, '').trim();
+                            weight = parseFloat(weightStr) || 0;
+                        }
+                        
+                        if (weight > 0) {
+                            // Get actual and target from period data
+                            // Try current period first, then default period as fallback
+                            const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey] || 
+                                              technicalExpensesData[teamName]?.[kpiItem.kpi]?.[defaultPeriodKey] ||
+                                              leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey] ||
+                                              leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[defaultPeriodKey];
+                            
+                            const actualNumeric = periodData ? periodData.actual : null;
+                            
+                            // Parse target
+                            let targetNumeric = null;
+                            if (kpiItem.target && kpiItem.target !== '-') {
+                                targetNumeric = parseNumericValue(kpiItem.target);
+                            }
+                            
+                            // Calculate performance for this KPI
+                            if (targetNumeric !== null && !isNaN(targetNumeric) && targetNumeric > 0 && 
+                                actualNumeric !== null && !isNaN(actualNumeric)) {
+                                // Calculate performance: (actual / target) * 100
+                                const kpiPerformance = (actualNumeric / targetNumeric) * 100;
+                                // Cap at 100% for display
+                                const cappedPerformance = Math.min(100, Math.max(0, kpiPerformance));
+                                
+                                // Add weighted performance
+                                totalWeightedPerformance += cappedPerformance * weight;
+                                totalWeight += weight;
+                            } else if (actualNumeric !== null && !isNaN(actualNumeric)) {
+                                // If no target but have actual, use actual directly (capped at 100)
+                                const cappedPerformance = Math.min(100, Math.max(0, actualNumeric));
+                                totalWeightedPerformance += cappedPerformance * weight;
+                                totalWeight += weight;
+                            } else if (targetNumeric !== null && !isNaN(targetNumeric) && targetNumeric > 0) {
+                                // If we have a target but no actual, assume 0% performance for this KPI
+                                // This ensures we still count the weight but with 0 performance
+                                totalWeight += weight;
+                            }
+                        }
+                    });
                 }
             });
-        });
+            
+            // Calculate overall percentage
+            let progressPercentage = 45; // Default fallback
+            if (totalWeight > 0) {
+                progressPercentage = totalWeightedPerformance / totalWeight;
+                // Ensure it's between 0 and 100
+                progressPercentage = Math.min(100, Math.max(0, progressPercentage));
+            }
+            
+            return {
+                name: memberName,
+                role: roleTitle,
+                progressPercentage: progressPercentage
+            };
+        }
+
+        // Function to update team members mini container
+        function updateTeamMembersMiniContainer() {
+            const container = document.getElementById('teamMembersMiniContainer');
+            if (!container) {
+                return;
+            }
+
+            // Only show if "Team Members" view is active and a team is selected
+            if (currentOperationsView === 'members' && selectedTeam) {
+                let members = [];
+                const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+                
+                // Map of teams to their data structures
+                const teamDataMap = {
+                    'Technical Team': { data: technicalTeamByOwner, roleOwners: technicalTeamRoleOwners },
+                    'Accounting Team': { data: accountingTeamByOwner, roleOwners: accountingTeamRoleOwners },
+                    'LRAD Team': { data: lradTeamByOwner, roleOwners: lradTeamRoleOwners },
+                    'Quality Team': { data: qualityTeamByOwner, roleOwners: qualityTeamRoleOwners },
+                    'DC Team': { data: dcTeamByOwner, roleOwners: dcTeamRoleOwners },
+                    'Opportunity Team': { data: opportunityTeamByOwner, roleOwners: opportunityTeamRoleOwners },
+                    'IT Team': { data: itTeamByOwner, roleOwners: itTeamRoleOwners },
+                    'Marcom Team': { data: marcomTeamByOwner, roleOwners: marcomTeamRoleOwners },
+                    'Operations Team': { data: operationsTeamByOwner, roleOwners: operationsTeamRoleOwners },
+                    'Audit Team': { data: auditTeamByOwner, roleOwners: auditTeamRoleOwners },
+                    'Gathering Team': { data: gatheringTeamByOwner, roleOwners: gatheringTeamRoleOwners }
+                };
+                
+                // Check if this team has a ByOwner structure
+                const teamConfig = teamDataMap[selectedTeam];
+                if (teamConfig && teamConfig.data[selectedTeam]) {
+                    const teamData = teamConfig.data[selectedTeam];
+                    const roleOwners = teamConfig.roleOwners[selectedTeam] || {};
+                    const owners = Object.keys(teamData);
+                    
+                    owners.forEach(roleTitle => {
+                        const kras = teamData[roleTitle] || [];
+                        const member = calculateMemberPerformance(selectedTeam, roleTitle, kras, roleOwners, periodKey);
+                        members.push(member);
+                    });
+                } else {
+                    // For other teams, use teamMembersData
+                    const teamMembers = teamMembersData[selectedTeam] || [];
+                    
+                    teamMembers.forEach(member => {
+                        // Calculate progress percentage based on actual vs target
+                        let progressPercentage = 45; // Default fallback
+                        
+                        if (member.targetValue !== undefined && member.actualValue !== undefined) {
+                            const target = typeof member.targetValue === 'number' ? member.targetValue : parseFloat(member.targetValue);
+                            const actual = typeof member.actualValue === 'number' ? member.actualValue : parseFloat(member.actualValue);
+                            
+                            if (!isNaN(target) && !isNaN(actual) && target > 0) {
+                                // Calculate percentage: (actual / target) * 100
+                                // Cap at 100% for display purposes
+                                progressPercentage = Math.min(100, Math.max(0, (actual / target) * 100));
+                            } else if (!isNaN(actual) && isNaN(target)) {
+                                // If only actual is available, use it directly (capped at 100)
+                                progressPercentage = Math.min(100, Math.max(0, actual));
+                            }
+                        }
+                        
+                        members.push({
+                            name: member.name,
+                            role: member.role,
+                            progressPercentage: progressPercentage
+                        });
+                    });
+                }
+                
+                if (members.length === 0) {
+                    container.classList.remove('show');
+                    return;
+                }
+
+                // Add class based on member count for centering
+                const memberCount = members.length;
+                let listClass = 'team-members-mini-list';
+                if (memberCount === 1) {
+                    listClass += ' centered-single';
+                } else if (memberCount === 2) {
+                    listClass += ' centered-double';
+                }
+                
+                let html = `<div class="${listClass}">`;
+                
+                members.forEach(member => {
+                    // Generate initials for icon placeholder
+                    const initials = generateInitials(member.name);
+                    const progressPercentage = member.progressPercentage !== undefined ? member.progressPercentage : 45;
+                    const roundedPercentage = Math.round(progressPercentage);
+
+                    html += `
+                        <div class="team-member-mini-item">
+                            <div class="team-member-mini-icon">${initials}</div>
+                            <div class="team-member-mini-name">${member.name}</div>
+                            <div class="team-member-mini-progress-wrapper">
+                                <div class="team-member-mini-progress-bar">
+                                    <div class="team-member-mini-progress-fill" style="width: ${progressPercentage}%"></div>
+                                </div>
+                                <div class="team-member-mini-percentage">${roundedPercentage}%</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+                container.classList.add('show');
+            } else {
+                container.classList.remove('show');
+            }
+        }
 
         const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
                            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
@@ -5396,6 +5592,7 @@ const performanceData = {
 
             attachSearchFunctionality();
             attachMemberRowClickHandlers();
+            updateTeamMembersMiniContainer();
         }
 
         function refreshOperationsContent() {
@@ -5426,6 +5623,7 @@ const performanceData = {
                 `;
                 
                 updateScoreboardToggleState();
+                updateTeamMembersMiniContainer();
                 return;
             }
 
@@ -5450,8 +5648,10 @@ const performanceData = {
                 updateTeamMembersSection(selectedTeam, selectedTeamData.title).catch(err => {
                     console.error('Error updating team members section:', err);
                 });
+                updateTeamMembersMiniContainer();
             } else {
                 updateOperationsSection(selectedTeam, selectedTeamData.title);
+                updateTeamMembersMiniContainer();
             }
 
             updateScoreboardToggleState();
@@ -7785,6 +7985,7 @@ const performanceData = {
                 toggleSections();
             }
 
+            const leaderCards = document.querySelectorAll('.leader-card');
             const targetCard = Array.from(leaderCards).find(card =>
                 normalizeTeamName(card.getAttribute('data-team')) === teamName
             );
@@ -8197,7 +8398,182 @@ const performanceData = {
             setTimeout(highlightCard, 400);
         }
 
+        // Function to calculate team overall score as percentage for current month
+        // Based on sum of all Lag and Lead KPI targets and actuals
+        function calculateTeamAverage(teamName) {
+            const currentMonthIndex = new Date().getMonth();
+            
+            // Get all Lag KPIs for this team
+            const lagKpis = teamOperationsData[teamName] || [];
+            
+            // Get all Lead KPIs for this team
+            const leadKpis = leadKpiData[teamName] || [];
+            
+            let totalTarget = 0;
+            let totalActual = 0;
+            let validCount = 0;
+            
+            // Helper function to get KPI value for current month
+            const getKpiValue = (kpiName, monthlySeries, periodData) => {
+                // Try monthly series first
+                if (monthlySeries && monthlySeries.target && monthlySeries.actual &&
+                    Array.isArray(monthlySeries.target) && Array.isArray(monthlySeries.actual) &&
+                    monthlySeries.target.length > currentMonthIndex && monthlySeries.actual.length > currentMonthIndex) {
+                    const targetValue = monthlySeries.target[currentMonthIndex];
+                    const actualValue = monthlySeries.actual[currentMonthIndex];
+                    
+                    if (typeof targetValue === 'number' && typeof actualValue === 'number' && 
+                        !Number.isNaN(targetValue) && !Number.isNaN(actualValue) && targetValue !== 0) {
+                        return { target: targetValue, actual: actualValue };
+                    }
+                }
+                
+                // Fallback to period data
+                if (periodData && typeof periodData.target === 'number' && typeof periodData.actual === 'number' &&
+                    !Number.isNaN(periodData.target) && !Number.isNaN(periodData.actual) && periodData.target !== 0) {
+                    return { target: periodData.target, actual: periodData.actual };
+                }
+                
+                return null;
+            };
+            
+            // Process Lag KPIs - sum all targets and actuals
+            lagKpis.forEach(kpi => {
+                const kpiName = kpi.role;
+                
+                // Try to get monthly series data first
+                const monthlySeries = technicalMonthlySeries[kpiName] 
+                    || accountingMonthlySeries[kpiName]
+                    || lradMonthlySeries[kpiName]
+                    || dcMonthlySeries[kpiName]
+                    || opportunityMonthlySeries[kpiName]
+                    || marcomMonthlySeries[kpiName]
+                    || gatheringMonthlySeries[kpiName]
+                    || operationsMonthlySeries[kpiName];
+                
+                // Get period data as fallback
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth() + 1; // 1-12
+                const periodKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+                const periodData = technicalExpensesData[teamName]?.[kpiName]?.[periodKey];
+                
+                const kpiValues = getKpiValue(kpiName, monthlySeries, periodData);
+                if (kpiValues) {
+                    totalTarget += kpiValues.target;
+                    totalActual += kpiValues.actual;
+                    validCount++;
+                }
+            });
+            
+            // Process Lead KPIs - sum all targets and actuals
+            leadKpis.forEach(kpi => {
+                const kpiName = kpi.role;
+                
+                // Try to get monthly series data first
+                const monthlySeries = lradLeadMonthlySeries[kpiName]
+                    || qualityLeadMonthlySeries[kpiName]
+                    || dcLeadMonthlySeries[kpiName]
+                    || itLeadMonthlySeries[kpiName]
+                    || opportunityLeadMonthlySeries[kpiName]
+                    || marcomLeadMonthlySeries[kpiName]
+                    || auditLeadMonthlySeries[kpiName]
+                    || gatheringLeadMonthlySeries[kpiName]
+                    || operationsLeadMonthlySeries[kpiName];
+                
+                // Get period data as fallback
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth() + 1; // 1-12
+                const periodKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+                const periodData = leadKpiExpensesData[teamName]?.[kpiName]?.[periodKey];
+                
+                const kpiValues = getKpiValue(kpiName, monthlySeries, periodData);
+                if (kpiValues) {
+                    totalTarget += kpiValues.target;
+                    totalActual += kpiValues.actual;
+                    validCount++;
+                }
+            });
+            
+            if (validCount === 0 || totalTarget === 0) return null;
+            
+            // Calculate overall score as percentage: (Total Actual / Total Target) * 100
+            // This gives us the performance percentage based on sum of all targets and actuals
+            const overallScore = (totalActual / totalTarget) * 100;
+            
+            return {
+                overallScore: overallScore,
+                totalTarget: totalTarget,
+                totalActual: totalActual,
+                kpiCount: validCount
+            };
+        }
+        
+        // Function to render team average cards
+        function renderTeamAverageCards() {
+            const container = document.getElementById('teamAverageCards');
+            if (!container) return;
+            
+            const teams = [
+                { name: 'Technical Team', icon: 'bi-gear-fill' },
+                { name: 'Accounting Team', icon: 'bi-calculator-fill' },
+                { name: 'LRAD Team', icon: 'bi-broadcast-pin' },
+                { name: 'Quality Team', icon: 'bi-patch-check-fill' },
+                { name: 'DC Team', icon: 'bi-hdd-stack-fill' },
+                { name: 'IT Team', icon: 'bi-laptop' },
+                { name: 'Opportunity Team', icon: 'bi-bullseye' },
+                { name: 'Marcom Team', icon: 'bi-megaphone-fill' },
+                { name: 'Audit Team', icon: 'bi-clipboard-check-fill' },
+                { name: 'Gathering Team', icon: 'bi-graph-up-arrow' },
+                { name: 'Operations Team', icon: 'bi-lightning-charge-fill' }
+            ];
+            
+            container.innerHTML = '';
+            
+            teams.forEach(team => {
+                const average = calculateTeamAverage(team.name);
+                const card = document.createElement('div');
+                card.className = 'leader-card clickable-stat-card-carousel';
+                card.setAttribute('data-team', team.name);
+                card.setAttribute('data-name', '');
+                card.setAttribute('data-title', team.name);
+                card.setAttribute('data-roles', '');
+                card.setAttribute('data-contributions', '');
+                card.setAttribute('data-icon', `bi ${team.icon}`);
+                
+                let scorePercentage = 0;
+                const currentDate = new Date();
+                const currentMonthName = chartFullMonths[currentDate.getMonth()];
+                
+                if (average) {
+                    scorePercentage = Math.max(0, Math.min(100, average.overallScore)); // Clamp between 0-100
+                }
+                
+                card.innerHTML = `
+                    <div class="leader-icon"><i class="bi ${team.icon}" aria-hidden="true"></i></div>
+                    <div class="leader-name"></div>
+                    <div class="leader-title">${team.name}</div>
+                    <div class="team-progress-container">
+                        <div class="team-progress-header">
+                            <span class="team-progress-percentage">${scorePercentage.toFixed(0)}%</span>
+                            <span class="team-progress-label">as of ${currentMonthName}</span>
+                        </div>
+                        <div class="team-progress-bar">
+                            <div class="team-progress-fill" style="width: ${scorePercentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            // Re-attach click handlers after rendering
+            attachLeaderCardHandlers();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            renderTeamAverageCards(); // Render team average cards first
             initializeReports();
             initTeamPerformanceChart();
             resetTeamPerformanceVisuals({
