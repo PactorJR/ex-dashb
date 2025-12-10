@@ -733,6 +733,43 @@ small {
     padding-top: 8px;
 }
 
+.kpi-card-trend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 4px;
+}
+
+.kpi-trend-indicator {
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+}
+
+.kpi-trend-indicator.trend-up {
+    border-bottom: 18px solid #5cb85c;
+    border-top: 0;
+}
+
+.kpi-trend-indicator.trend-down {
+    border-top: 18px solid #ff3146;
+    border-bottom: 0;
+}
+
+.kpi-trend-indicator.trend-neutral {
+    border-top: 18px solid #c9c9c9;
+    border-bottom: 0;
+}
+
+.kpi-trend-value {
+    font-size: 20px;
+    font-weight: 800;
+    text-align: left;
+}
+
 .kpi-stat-item {
     display: flex;
     justify-content: space-between;

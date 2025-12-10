@@ -3781,6 +3781,7 @@ const performanceData = {
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
+                setupSubOperationsHeaderPinning();
                 attachMemberRowClickHandlers();
                 return;
             }
@@ -4036,6 +4037,7 @@ const performanceData = {
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
+                setupSubOperationsHeaderPinning();
                 attachMemberRowClickHandlers();
                 return;
             }
@@ -8626,6 +8628,20 @@ const performanceData = {
 
         // Update the dropdown functionality to trigger graph update
         function attachDropdownFunctionality(teamName) {
+            const autoExpandClasses = [
+                'technical-team-kra-row',
+                'accounting-team-kra-row',
+                'lrad-team-kra-row',
+                'quality-team-kra-row',
+                'dc-team-kra-row',
+                'opportunity-team-kra-row',
+                'it-team-kra-row',
+                'marcom-team-kra-row',
+                'operations-team-kra-row',
+                'audit-team-kra-row',
+                'gathering-team-kra-row'
+            ];
+
             const memberRows = document.querySelectorAll('.member-row.has-dropdown');
             
             memberRows.forEach(row => {
@@ -8699,6 +8715,24 @@ const performanceData = {
                         if (!isExpanded) {
                             this.classList.add('expanded');
                             dropdown.classList.add('show');
+
+                            // Auto-expand all KRAs and show KPIs for selected teams
+                            const isAutoExpand = autoExpandClasses.some(cls => this.classList.contains(cls));
+                            if (isAutoExpand) {
+                                console.log('[sticky-subheader] kra-row expanded, auto-expanding KRAs', { autoExpand: isAutoExpand });
+                                dropdown.querySelectorAll('.kra-row-item').forEach(kraRow => {
+                                    kraRow.classList.add('expanded', 'active');
+                                    const kraIndex = kraRow.getAttribute('data-index');
+                                    const kpiDropdown = document.getElementById(`dropdown-${kraIndex}`);
+                                    if (kpiDropdown) {
+                                        kpiDropdown.classList.add('show');
+                                    }
+                                });
+                            }
+                            
+                            // Update sticky header state when expanding
+                            console.log('[sticky-subheader] member-row expanded, updating pin state');
+                            updateSubOperationsHeaderPinning();
                             
                             // Handle KRA rows (first level) - these have nested dropdowns for KPIs
                             const kraRows = dropdown.querySelectorAll('.kra-row-item.has-dropdown');
@@ -8739,15 +8773,23 @@ const performanceData = {
                                             this.classList.add('expanded', 'active');
                                             kpiDropdown.classList.add('show');
                                         } else {
-                                            this.classList.remove('expanded', 'active');
-                                            kpiDropdown.classList.remove('show');
-                                            // Remove highlight from all sub-operation-items when nested dropdown is closed
-                                            kpiDropdown.querySelectorAll('.sub-operation-item').forEach(item => {
-                                                item.classList.remove('active');
-                                                item.style.background = '';
-                                            });
+                                            const parentRow = this.closest('.member-row');
+                                            const isParentAutoExpand = parentRow ? autoExpandClasses.some(cls => parentRow.classList.contains(cls)) : false;
+                                            if (!isParentAutoExpand) {
+                                                this.classList.remove('expanded', 'active');
+                                                kpiDropdown.classList.remove('show');
+                                                // Remove highlight from all sub-operation-items when nested dropdown is closed
+                                                kpiDropdown.querySelectorAll('.sub-operation-item').forEach(item => {
+                                                    item.classList.remove('active');
+                                                    item.style.background = '';
+                                                });
+                                            }
                                         }
                                     }
+                                    
+                                    // Refresh sticky header state when toggling KRAs
+                                    console.log('[sticky-subheader] KRA toggled, updating pin state');
+                                    updateSubOperationsHeaderPinning();
                                 };
                                 
                                 kraRow.addEventListener('click', clickHandler);
@@ -8847,9 +8889,116 @@ const performanceData = {
                             // Don't clear the graph when closing dropdown - just remove highlights
                             // The graph will be updated when a new item is selected
                         }
+                        
+                        // Update sticky header when collapsing
+                        console.log('[sticky-subheader] member-row collapsed, updating pin state');
+                        updateSubOperationsHeaderPinning();
                     }
                 });
             });
+        }
+
+        function clearPinnedSubOperationsHeader() {
+            const tableHeaderContainer = document.getElementById('operationsTableHeader');
+            if (tableHeaderContainer) {
+                tableHeaderContainer.style.visibility = 'visible';
+            }
+            console.log('[sticky-subheader] clearing pinned header');
+            
+            if (window.__lastPinnedSubHeader) {
+                const hdr = window.__lastPinnedSubHeader;
+                hdr.classList.remove('sub-operations-header-pinned');
+                hdr.style.position = '';
+                hdr.style.top = '';
+                hdr.style.left = '';
+                hdr.style.width = '';
+                hdr.style.zIndex = '';
+                window.__lastPinnedSubHeader = null;
+            }
+        }
+
+        function updateSubOperationsHeaderPinning() {
+            const operationsContent = document.getElementById('operationsContent');
+            const tableHeaderContainer = document.getElementById('operationsTableHeader');
+            
+            if (!operationsContent || !tableHeaderContainer) {
+                console.log('[sticky-subheader] missing operationsContent or tableHeaderContainer');
+                return;
+            }
+            
+            const tableHeader = tableHeaderContainer.querySelector('.table-header');
+            if (!tableHeader) {
+                console.log('[sticky-subheader] no table-header found');
+                return;
+            }
+            
+            const activeSubHeader = operationsContent.querySelector('.sub-operations.show .sub-operations-header');
+            const pinnedClass = 'sub-operations-header-pinned';
+            
+            if (!activeSubHeader) {
+                console.log('[sticky-subheader] no active sub-operations header to pin');
+                clearPinnedSubOperationsHeader();
+                return;
+            }
+            
+            const tableRect = tableHeaderContainer.getBoundingClientRect();
+            const subRect = activeSubHeader.getBoundingClientRect();
+            const shouldPin = subRect.top <= tableRect.bottom;
+            
+            if (shouldPin) {
+                console.log('[sticky-subheader] pinning sub-operations header', {
+                    tableTop: tableRect.top,
+                    subTop: subRect.top,
+                    width: tableRect.width
+                });
+                if (window.__lastPinnedSubHeader && window.__lastPinnedSubHeader !== activeSubHeader) {
+                    window.__lastPinnedSubHeader.classList.remove(pinnedClass);
+                    window.__lastPinnedSubHeader.style.position = '';
+                    window.__lastPinnedSubHeader.style.top = '';
+                    window.__lastPinnedSubHeader.style.left = '';
+                    window.__lastPinnedSubHeader.style.width = '';
+                    window.__lastPinnedSubHeader.style.zIndex = '';
+                }
+                
+                tableHeaderContainer.style.visibility = 'hidden';
+                activeSubHeader.classList.add(pinnedClass);
+                activeSubHeader.style.position = 'fixed';
+                activeSubHeader.style.top = `${tableRect.top}px`;
+                activeSubHeader.style.left = `${tableRect.left}px`;
+                activeSubHeader.style.width = `${tableRect.width}px`;
+                activeSubHeader.style.zIndex = '20';
+                
+                window.__lastPinnedSubHeader = activeSubHeader;
+            } else {
+                console.log('[sticky-subheader] unpinning; sub header below table header', {
+                    tableBottom: tableRect.bottom,
+                    subTop: subRect.top
+                });
+                clearPinnedSubOperationsHeader();
+            }
+        }
+
+        function setupSubOperationsHeaderPinning() {
+            const operationsContent = document.getElementById('operationsContent');
+            if (!operationsContent) {
+                console.log('[sticky-subheader] operationsContent not found; cannot attach scroll handler');
+                return;
+            }
+
+            // Remove previous listener if any (from window or content)
+            if (window.__subOpsHeaderHandler) {
+                console.log('[sticky-subheader] removing previous scroll handler');
+                window.removeEventListener('scroll', window.__subOpsHeaderHandler);
+                operationsContent.removeEventListener('scroll', window.__subOpsHeaderHandler);
+            }
+            
+            const handler = () => updateSubOperationsHeaderPinning();
+            window.__subOpsHeaderHandler = handler;
+            operationsContent.addEventListener('scroll', handler, { passive: true });
+            
+            // Run once to initialize state
+            console.log('[sticky-subheader] initializing pinning (operationsContent scroll)');
+            updateSubOperationsHeaderPinning();
         }
 
 
@@ -9506,15 +9655,15 @@ const performanceData = {
                 }
                 
                 const scoreColor = getTeamScoreColor(scorePercentage);
+                const trendValue = `${scorePercentage.toFixed(0)}%`;
+                const trendDataKey = team.name;
 
                 card.innerHTML = `
                     <div class="leader-title leader-title-inline">
                         <div class="team-score-subtext">as of ${currentMonthName}</div>
-                        <div
-                            class="leader-icon team-score-icon"
-                            style="--score-color:${scoreColor};--score-pct:${scorePercentage}; background: conic-gradient(${scoreColor} 0% ${scorePercentage}%, rgba(0,0,0,0.08) ${scorePercentage}%, rgba(0,0,0,0.08) 100%);"
-                        >
-                            <span class="team-score-text">${scorePercentage.toFixed(0)}%</span>
+                        <div class="kpi-card-trend">
+                            <div class="kpi-trend-indicator trend-neutral" data-team-trend-icon="${trendDataKey}" aria-hidden="true"></div>
+                            <div class="kpi-trend-value" data-team-trend-value="${trendDataKey}">${trendValue}</div>
                         </div>
                         <div class="leader-title-text">
                             <div class="leader-icon1">
@@ -9527,6 +9676,23 @@ const performanceData = {
                 `;
                 
                 container.appendChild(card);
+
+                // Apply trend direction based on 50% threshold
+                const trendIconEl = card.querySelector(`[data-team-trend-icon="${trendDataKey}"]`);
+                const trendValueEl = card.querySelector(`[data-team-trend-value="${trendDataKey}"]`);
+                if (trendIconEl) {
+                    trendIconEl.classList.remove('trend-up', 'trend-down', 'trend-neutral');
+                    if (scorePercentage > 50) {
+                        trendIconEl.classList.add('trend-up');
+                        if (trendValueEl) trendValueEl.style.color = '#81f31d';
+                    } else if (scorePercentage < 50) {
+                        trendIconEl.classList.add('trend-down');
+                        if (trendValueEl) trendValueEl.style.color = '#ff3146';
+                    } else {
+                        trendIconEl.classList.add('trend-neutral');
+                        if (trendValueEl) trendValueEl.style.color = '#c9c9c9';
+                    }
+                }
             });
             
             // Re-attach click handlers after rendering

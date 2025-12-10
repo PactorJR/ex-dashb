@@ -126,8 +126,11 @@ select {
         gap:10px;
         text-align: left;
     }
-
-
+    
+    #operationsContent.technical-team-view .sub-operations .sub-operations-header.sub-operations-header-pinned {
+        grid-template-columns: 230px 395px 95px 95px 10px !important;
+        padding-left: 60px !important;
+    }
 }
 
 @media (min-width: 1501px) and (max-width: 1919px) {
@@ -283,6 +286,10 @@ select {
         grid-template-columns: 170px 150px 100px 120px 20px 50px !important;
     }
     
+    #operationsContent.technical-team-view .sub-operations .sub-operations-header.sub-operations-header-pinned {
+        grid-template-columns: 160px 180px 100px 80px 60px 10px !important;
+        padding-left: 60px !important;
+    }
     
     /* Technical Team sub-operation items (5 columns: KRA, KPI, Target, Actual, Weight) */
     #operationsContent.technical-team-view .sub-operations .sub-operations-header {
@@ -290,7 +297,7 @@ select {
     }
     
     #operationsContent.technical-team-view .sub-operations .sub-operation-item {
-        grid-template-columns: 150px 180px 80px 80px 60px 10px !important;
+        grid-template-columns: 150px 185px 80px 80px 60px 10px !important;
     }
 
     /* Target nested KPI dropdown when shown */
@@ -673,6 +680,43 @@ small {
     box-shadow: 0 15px 30px rgba(88, 103, 64, 0.2);
 }
 
+.kpi-card-trend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 4px;
+}
+
+.kpi-trend-indicator {
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+}
+
+.kpi-trend-indicator.trend-up {
+    border-bottom: 18px solid #5cb85c;
+    border-top: 0;
+}
+
+.kpi-trend-indicator.trend-down {
+    border-top: 18px solid #ff3146;
+    border-bottom: 0;
+}
+
+.kpi-trend-indicator.trend-neutral {
+    border-top: 18px solid #c9c9c9;
+    border-bottom: 0;
+}
+
+.kpi-trend-value {
+    font-size: 20px;
+    font-weight: 800;
+    text-align: left;
+}
+
 .leader-icon1 {
     width: 28px;
     height: 28px;
@@ -685,6 +729,15 @@ small {
     font-weight: 700;
     position: relative;
     background: var(--primary-color) !important;
+}
+
+.leader-title-text {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
 }
 
 .leader-icon {
@@ -1491,7 +1544,7 @@ small {
 #operationsTableHeader,
 #profileTableHeader {
     flex-shrink: 0;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     padding: 0 15px;
     margin-top: -15px;
     padding-top: 15px;
@@ -1560,6 +1613,13 @@ small {
     line-height: 1.2;
     align-items: center;
     margin: 4px 0 6px;
+}
+
+.sub-operations-header.sub-operations-header-pinned {
+    max-width: 100%;
+    width: 100%;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
 }
 
 

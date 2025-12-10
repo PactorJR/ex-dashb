@@ -9393,6 +9393,9 @@
                 const targetNumeric = targetRaw !== null && targetRaw !== undefined
                     ? (typeof targetRaw === 'number' ? targetRaw : extractRawNumericValue(targetRaw))
                     : null;
+                const varianceDelta = (Number.isFinite(actualNumeric) && Number.isFinite(targetNumeric))
+                    ? actualNumeric - targetNumeric
+                    : null;
 
                 // Update target value
                 const targetEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-target"]`);
@@ -9440,6 +9443,24 @@
                     }
                 } else if (varianceEl) {
                     varianceEl.textContent = '-';
+                }
+
+                // Update trend arrow (used on KPI cards that show direction)
+                const trendIconEl = card.querySelector(`[data-kpi-trend-icon="${kpiTarget}"]`);
+                if (trendIconEl) {
+                    const trendValueEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-actual"]`);
+                    trendIconEl.classList.remove('trend-up', 'trend-down', 'trend-neutral');
+
+                    if (varianceDelta === null || Number.isNaN(varianceDelta)) {
+                        trendIconEl.classList.add('trend-neutral');
+                        if (trendValueEl) trendValueEl.style.color = '#c9c9c9';
+                    } else if (varianceDelta >= 0) {
+                        trendIconEl.classList.add('trend-up');
+                        if (trendValueEl) trendValueEl.style.color = '#81f31d';
+                    } else {
+                        trendIconEl.classList.add('trend-down');
+                        if (trendValueEl) trendValueEl.style.color = '#ff3146';
+                    }
                 }
             });
         }
