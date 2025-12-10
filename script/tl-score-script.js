@@ -3331,9 +3331,6 @@ const performanceData = {
                             <div class="team-member-mini-icon">${initials}</div>
                             <div class="team-member-mini-name">${member.name}</div>
                             <div class="team-member-mini-progress-wrapper">
-                                <div class="team-member-mini-progress-bar">
-                                    <div class="team-member-mini-progress-fill" style="width: ${progressPercentage}%"></div>
-                                </div>
                                 <div class="team-member-mini-percentage">${roundedPercentage}%</div>
                             </div>
                         </div>
@@ -3483,6 +3480,47 @@ const performanceData = {
                 .join('') || 'TM';
         }
 
+        // Function to update KRA row data and replace loading indicators
+        function updateKraRowData(teamName, periodKey) {
+            const kraRows = document.querySelectorAll('.kra-row-item[data-loading="true"]');
+            
+            kraRows.forEach(kraRow => {
+                const loadingWrapper = kraRow.querySelector('.loading-indicator-wrapper');
+                
+                if (!loadingWrapper) return;
+                
+                // Get data attributes
+                const targetStr = kraRow.getAttribute('data-target');
+                const actualStr = kraRow.getAttribute('data-actual');
+                const target = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                const actual = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                
+                // Step 1: Show loading spinner for 1.5 seconds
+                // (Already showing, so we wait)
+                
+                // Step 2: After 1.5 seconds, show check icon
+                setTimeout(() => {
+                    loadingWrapper.innerHTML = `
+                        <span class="check-icon">✓</span>
+                        <span class="check-text">Data loaded</span>
+                    `;
+                    loadingWrapper.classList.add('check-visible');
+                    
+                    // Step 3: After check icon shows (0.5s), hide it and show "--"
+                    setTimeout(() => {
+                        loadingWrapper.style.display = 'none';
+                        const parentDiv = loadingWrapper.parentElement;
+                        if (parentDiv) {
+                            parentDiv.innerHTML = '--';
+                        }
+                        
+                        // Remove loading attribute
+                        kraRow.removeAttribute('data-loading');
+                    }, 500); // Show check icon for 0.5 seconds
+                }, 1500); // Show loading for 1.5 seconds
+            });
+        }
+
         async function updateTeamMembersSection(teamName, teamTitle) {
             const operationsContent = document.getElementById('operationsContent');
             if (!operationsContent) {
@@ -3516,16 +3554,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -3543,137 +3581,199 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = technicalData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
+                    
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
+                    const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                    
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
                     
                     kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
-                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-                        
-                        // Generate random target and actual values for the KRA
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').trim();
-                                weightValue = parseFloat(weightStr) || 0;
-                            }
-                            return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            // Parse weight value, handling percentage signs
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                // Remove % sign and any whitespace, then parse
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                // If parseFloat returns NaN, default to 0
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '--') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
                                 }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100; // Base value
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        // Properly escape JSON for HTML attribute (escape quotes and HTML entities)
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        // Escape double quotes for HTML attribute (since we're using double quotes for the attribute)
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
-                        html += `
-                            <div class="member-row technical-team-kra-row ${dropdownClass}" 
-                                 data-name="${owner.toLowerCase()}" 
-                                 data-team="${teamName.toLowerCase()}" 
-                                 data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
-                                 data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
-                                 style="cursor: pointer;">
-                                <div>${roleOwner}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${owner}</div>
-                                </div>
-                                <div>${kraData.kra}</div>
-                                <div class="target-group">
-                                    <div>${targetValue}</div>
-                                </div>
-                                <div class="actual-group">
-                                    <div>${actualValue}</div>
-                                </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                                return sum + weightValue;
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
+                    html += `
+                        <div class="member-row technical-team-kra-row ${dropdownClass}" 
+                             data-name="${owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${globalIndex}"
+                             data-owner="${escapeAttributeValue(owner)}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
+                             style="cursor: pointer;">
+                            <div>${roleOwner}</div>
+                            <div class="member-info">
+                                <div class="member-name">${owner}</div>
                             </div>
+                            <div class="target-group">
+                                <div>${totalTarget}</div>
+                            </div>
+                            <div class="actual-group">
+                                <div>${totalActual}</div>
+                            </div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                        </div>
+                    `;
+                    
+                    // Add first-level dropdown content with Operational KRAs
+                    if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
+                        html += `
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
                         `;
                         
-                        // Add dropdown content with Operational KPIs
-                        if (hasDropdown) {
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
-                                // Get actual value from period data if available
-                                const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
-                                const actualNumeric = periodData ? periodData.actual : null;
-                                const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
-                                
-                                // Parse target for data attribute first (before formatting)
-                                let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
-                                    targetNumericForData = parseNumericValue(kpiItem.target);
-                                }
-                                
-                                // Format target value for display
-                                let targetDisplay = kpiItem.target || '-';
-                                if (targetNumericForData !== null) {
-                                    if (targetNumericForData >= 1000) {
-                                        targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
-                                    } else if (isPercentageKpi) {
-                                        targetDisplay = `${targetNumericForData}%`;
-                                    } else {
-                                        targetDisplay = targetNumericForData.toString();
-                                    }
-                                }
-                                
-                                // Format actual value
-                                let actualDisplay = '-';
-                                if (actualNumeric !== null) {
-                                    actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
-                                }
-                                
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
                                 html += `
-                                    <div class="sub-operation-item" 
-                                         data-kpi="${kpiItem.kpi}"
-                                         data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
-                                         data-actual="${actualNumeric !== null ? actualNumeric : ''}">
-                                        <div class="sub-operation-label">${kpiItem.kpi}</div>
-                                        <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
-                                    </div>
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
-                            });
-                            
-                            html += `</div>`;
-                        }
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
+                                    const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
+                                    const actualNumeric = periodData ? periodData.actual : null;
+                                    const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
+                                    
+                                    // Parse target for data attribute first (before formatting)
+                                    let targetNumericForData = null;
+                                    if (kpiItem.target && kpiItem.target !== '--') {
+                                        targetNumericForData = parseNumericValue(kpiItem.target);
+                                    }
+                                    
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
+                                    if (targetNumericForData !== null) {
+                                        if (targetNumericForData >= 1000) {
+                                            targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
+                                        } else if (isPercentageKpi) {
+                                            targetDisplay = `${targetNumericForData}%`;
+                                        } else {
+                                            targetDisplay = targetNumericForData.toString();
+                                        }
+                                    }
+                                    
+                                    // Format actual value
+                                    let actualDisplay = '--';
+                                    if (actualNumeric !== null) {
+                                        actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
+                                    }
+                                    
+                                    html += `
+                                        <div class="sub-operation-item kpi-item" 
+                                             data-kpi="${kpiItem.kpi}"
+                                             data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
+                                             data-actual="${actualNumeric !== null ? actualNumeric : ''}">
+                                            <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
+                                                <div><span class="target-badge">${targetDisplay}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
+                                        </div>
+                                    `;
+                                });
+                                
+                                html += `</div>`;
+                            }
+                        });
                         
-                        globalIndex++;
-                    });
+                        html += `</div>`;
+                    }
+                    
+                    globalIndex++;
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -3708,16 +3808,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -3735,85 +3835,137 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = accountingData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        // Generate random target and actual values for the KRA
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            // Parse weight value, handling percentage signs
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                // Remove % sign and any whitespace, then parse
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                // If parseFloat returns NaN, default to 0
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100; // Base value
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        // Properly escape JSON for HTML attribute (escape quotes and HTML entities)
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        // Escape double quotes for HTML attribute (since we're using double quotes for the attribute)
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row accounting-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
-                        // Add dropdown content with Operational KPIs
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -3821,12 +3973,12 @@ const performanceData = {
                                 
                                 // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
                                 // Format target value for display
-                                let targetDisplay = kpiItem.target || '-';
+                                let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -3838,35 +3990,45 @@ const performanceData = {
                                 }
                                 
                                 // Format actual value
-                                let actualDisplay = '-';
+                                let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                        <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('accounting-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -3900,16 +4062,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -3927,85 +4089,137 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = lradData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        // Generate random target and actual values for the KRA
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            // Parse weight value, handling percentage signs
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                // Remove % sign and any whitespace, then parse
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                // If parseFloat returns NaN, default to 0
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100; // Base value
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        // Properly escape JSON for HTML attribute (escape quotes and HTML entities)
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        // Escape double quotes for HTML attribute (since we're using double quotes for the attribute)
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row lrad-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
-                        // Add dropdown content with Operational KPIs
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -4013,12 +4227,12 @@ const performanceData = {
                                 
                                 // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                    if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
                                 // Format target value for display
-                                let targetDisplay = kpiItem.target || '-';
+                                    let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -4030,35 +4244,45 @@ const performanceData = {
                                 }
                                 
                                 // Format actual value
-                                let actualDisplay = '-';
+                                    let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('lrad-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -4092,16 +4316,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -4119,85 +4343,137 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = qualityData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        // Generate random target and actual values for the KRA
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            // Parse weight value, handling percentage signs
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                // Remove % sign and any whitespace, then parse
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                // If parseFloat returns NaN, default to 0
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100; // Base value
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        // Properly escape JSON for HTML attribute (escape quotes and HTML entities)
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        // Escape double quotes for HTML attribute (since we're using double quotes for the attribute)
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row quality-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
-                        // Add dropdown content with Operational KPIs
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -4205,12 +4481,12 @@ const performanceData = {
                                 
                                 // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                    if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
                                 // Format target value for display
-                                let targetDisplay = kpiItem.target || '-';
+                                    let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -4222,35 +4498,45 @@ const performanceData = {
                                 }
                                 
                                 // Format actual value
-                                let actualDisplay = '-';
+                                    let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('quality-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -4284,16 +4570,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -4311,86 +4597,150 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = dcData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row dc-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
                                 const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
                                 
+                                    // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                    if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
-                                let targetDisplay = kpiItem.target || '-';
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -4401,35 +4751,46 @@ const performanceData = {
                                     }
                                 }
                                 
-                                let actualDisplay = '-';
+                                    // Format actual value
+                                    let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('dc-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -4463,16 +4824,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -4490,86 +4851,150 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = opportunityData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row opportunity-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
                                 const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
                                 
+                                    // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                    if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
-                                let targetDisplay = kpiItem.target || '-';
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -4580,35 +5005,46 @@ const performanceData = {
                                     }
                                 }
                                 
-                                let actualDisplay = '-';
+                                    // Format actual value
+                                    let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('opportunity-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -4642,16 +5078,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -4669,86 +5105,150 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = itData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
                     
-                    kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
                         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
                         
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
+                    
+                    kras.forEach(kraData => {
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
                             let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
+                                if (kpi.weight && kpi.weight !== '--') {
                                 const weightStr = String(kpi.weight).replace(/%/g, '').trim();
                                 weightValue = parseFloat(weightStr) || 0;
                             }
                             return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
-                                }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
                         html += `
                             <div class="member-row it-team-kra-row ${dropdownClass}" 
                                  data-name="${owner.toLowerCase()}" 
                                  data-team="${teamName.toLowerCase()}" 
                                  data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
                                  data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
                                  style="cursor: pointer;">
                                 <div>${roleOwner}</div>
                                 <div class="member-info">
                                     <div class="member-name">${owner}</div>
                                 </div>
-                                <div>${kraData.kra}</div>
                                 <div class="target-group">
-                                    <div>${targetValue}</div>
+                                <div>${totalTarget}</div>
                                 </div>
                                 <div class="actual-group">
-                                    <div>${actualValue}</div>
+                                <div>${totalActual}</div>
                                 </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
                             </div>
                         `;
                         
+                    // Add first-level dropdown content with Operational KRAs
                         if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
+                        `;
+                        
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
+                            html += `
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
+                                html += `
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
+                                `;
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
                                 const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
                                 
+                                    // Parse target for data attribute first (before formatting)
                                 let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
+                                    if (kpiItem.target && kpiItem.target !== '--') {
                                     targetNumericForData = parseNumericValue(kpiItem.target);
                                 }
                                 
-                                let targetDisplay = kpiItem.target || '-';
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
                                 if (targetNumericForData !== null) {
                                     if (targetNumericForData >= 1000) {
                                         targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
@@ -4759,35 +5259,46 @@ const performanceData = {
                                     }
                                 }
                                 
-                                let actualDisplay = '-';
+                                    // Format actual value
+                                    let actualDisplay = '--';
                                 if (actualNumeric !== null) {
                                     actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
                                 }
                                 
                                 html += `
-                                    <div class="sub-operation-item" 
+                                        <div class="sub-operation-item kpi-item" 
                                          data-kpi="${kpiItem.kpi}"
                                          data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
                                          data-actual="${actualNumeric !== null ? actualNumeric : ''}">
                                         <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
                                         <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
                                     </div>
                                 `;
+                                });
+                                
+                                html += `</div>`;
+                            }
                             });
                             
                             html += `</div>`;
                         }
                         
                         globalIndex++;
-                    });
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('it-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -4821,16 +5332,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -4848,127 +5359,200 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = marcomData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
+                    
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
+                    const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                    
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
                     
                     kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
-                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-                        
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').trim();
-                                weightValue = parseFloat(weightStr) || 0;
-                            }
-                            return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '--') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
                                 }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
-                        html += `
-                            <div class="member-row marcom-team-kra-row ${dropdownClass}" 
-                                 data-name="${owner.toLowerCase()}" 
-                                 data-team="${teamName.toLowerCase()}" 
-                                 data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
-                                 data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
-                                 style="cursor: pointer;">
-                                <div>${roleOwner}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${owner}</div>
-                                </div>
-                                <div>${kraData.kra}</div>
-                                <div class="target-group">
-                                    <div>${targetValue}</div>
-                                </div>
-                                <div class="actual-group">
-                                    <div>${actualValue}</div>
-                                </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                                return sum + weightValue;
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
+                    html += `
+                        <div class="member-row marcom-team-kra-row ${dropdownClass}" 
+                             data-name="${owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${globalIndex}"
+                             data-owner="${escapeAttributeValue(owner)}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
+                             style="cursor: pointer;">
+                            <div>${roleOwner}</div>
+                            <div class="member-info">
+                                <div class="member-name">${owner}</div>
                             </div>
+                            <div class="target-group">
+                                <div>${totalTarget}</div>
+                            </div>
+                            <div class="actual-group">
+                                <div>${totalActual}</div>
+                            </div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                        </div>
+                    `;
+                    
+                    // Add first-level dropdown content with Operational KRAs
+                    if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
+                        html += `
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
                         `;
                         
-                        if (hasDropdown) {
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
-                                const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
-                                const actualNumeric = periodData ? periodData.actual : null;
-                                const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
-                                
-                                let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
-                                    targetNumericForData = parseNumericValue(kpiItem.target);
-                                }
-                                
-                                let targetDisplay = kpiItem.target || '-';
-                                if (targetNumericForData !== null) {
-                                    if (targetNumericForData >= 1000) {
-                                        targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
-                                    } else if (isPercentageKpi) {
-                                        targetDisplay = `${targetNumericForData}%`;
-                                    } else {
-                                        targetDisplay = targetNumericForData.toString();
-                                    }
-                                }
-                                
-                                let actualDisplay = '-';
-                                if (actualNumeric !== null) {
-                                    actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
-                                }
-                                
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
                                 html += `
-                                    <div class="sub-operation-item" 
-                                         data-kpi="${kpiItem.kpi}"
-                                         data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
-                                         data-actual="${actualNumeric !== null ? actualNumeric : ''}">
-                                        <div class="sub-operation-label">${kpiItem.kpi}</div>
-                                        <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
-                                    </div>
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
-                            });
-                            
-                            html += `</div>`;
-                        }
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
+                                    const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
+                                    const actualNumeric = periodData ? periodData.actual : null;
+                                    const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
+                                    
+                                    // Parse target for data attribute first (before formatting)
+                                    let targetNumericForData = null;
+                                    if (kpiItem.target && kpiItem.target !== '--') {
+                                        targetNumericForData = parseNumericValue(kpiItem.target);
+                                    }
+                                    
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
+                                    if (targetNumericForData !== null) {
+                                        if (targetNumericForData >= 1000) {
+                                            targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
+                                        } else if (isPercentageKpi) {
+                                            targetDisplay = `${targetNumericForData}%`;
+                                        } else {
+                                            targetDisplay = targetNumericForData.toString();
+                                        }
+                                    }
+                                    
+                                    // Format actual value
+                                    let actualDisplay = '--';
+                                    if (actualNumeric !== null) {
+                                        actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
+                                    }
+                                    
+                                    html += `
+                                        <div class="sub-operation-item kpi-item" 
+                                             data-kpi="${kpiItem.kpi}"
+                                             data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
+                                             data-actual="${actualNumeric !== null ? actualNumeric : ''}">
+                                            <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
+                                                <div><span class="target-badge">${targetDisplay}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
+                                        </div>
+                                    `;
+                                });
+                                
+                                html += `</div>`;
+                            }
+                        });
                         
-                        globalIndex++;
-                    });
+                        html += `</div>`;
+                    }
+                    
+                    globalIndex++;
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('marcom-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -5002,16 +5586,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -5029,127 +5613,200 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = operationsData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
+                    
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
+                    const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                    
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
                     
                     kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
-                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-                        
-                        // Calculate total weight for this KRA (sum of all KPI weights)
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').trim();
-                                weightValue = parseFloat(weightStr) || 0;
-                            }
-                            return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '--') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
                                 }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        // Generate random target and actual (for display purposes)
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
-                        html += `
-                            <div class="member-row operations-team-kra-row ${dropdownClass}" 
-                                 data-name="${owner.toLowerCase()}" 
-                                 data-team="${teamName.toLowerCase()}" 
-                                 data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
-                                 data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
-                                 style="cursor: pointer;">
-                                <div>${roleOwner}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${owner}</div>
-                                </div>
-                                <div>${kraData.kra}</div>
-                                <div class="target-group">
-                                    <div>${targetValue}</div>
-                                </div>
-                                <div class="actual-group">
-                                    <div>${actualValue}</div>
-                                </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                                return sum + weightValue;
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
+                    html += `
+                        <div class="member-row operations-team-kra-row ${dropdownClass}" 
+                             data-name="${owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${globalIndex}"
+                             data-owner="${escapeAttributeValue(owner)}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
+                             style="cursor: pointer;">
+                            <div>${roleOwner}</div>
+                            <div class="member-info">
+                                <div class="member-name">${owner}</div>
                             </div>
+                            <div class="target-group">
+                                <div>${totalTarget}</div>
+                            </div>
+                            <div class="actual-group">
+                                <div>${totalActual}</div>
+                            </div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                        </div>
+                    `;
+                    
+                    // Add first-level dropdown content with Operational KRAs
+                    if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
+                        html += `
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
                         `;
                         
-                        if (hasDropdown) {
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
-                                const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
-                                const actualNumeric = periodData ? periodData.actual : null;
-                                const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
-                                
-                                let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
-                                    targetNumericForData = parseNumericValue(kpiItem.target);
-                                }
-                                
-                                let targetDisplay = kpiItem.target || '-';
-                                if (targetNumericForData !== null) {
-                                    if (targetNumericForData >= 1000) {
-                                        targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
-                                    } else if (isPercentageKpi) {
-                                        targetDisplay = `${targetNumericForData}%`;
-                                    } else {
-                                        targetDisplay = targetNumericForData.toString();
-                                    }
-                                }
-                                
-                                let actualDisplay = '-';
-                                if (actualNumeric !== null) {
-                                    actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
-                                }
-                                
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
                                 html += `
-                                    <div class="sub-operation-item" 
-                                         data-kpi="${kpiItem.kpi}"
-                                         data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
-                                         data-actual="${actualNumeric !== null ? actualNumeric : ''}">
-                                        <div class="sub-operation-label">${kpiItem.kpi}</div>
-                                        <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
-                                    </div>
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
-                            });
-                            
-                            html += `</div>`;
-                        }
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available
+                                    const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
+                                    const actualNumeric = periodData ? periodData.actual : null;
+                                    const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
+                                    
+                                    // Parse target for data attribute first (before formatting)
+                                    let targetNumericForData = null;
+                                    if (kpiItem.target && kpiItem.target !== '--') {
+                                        targetNumericForData = parseNumericValue(kpiItem.target);
+                                    }
+                                    
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
+                                    if (targetNumericForData !== null) {
+                                        if (targetNumericForData >= 1000) {
+                                            targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
+                                        } else if (isPercentageKpi) {
+                                            targetDisplay = `${targetNumericForData}%`;
+                                        } else {
+                                            targetDisplay = targetNumericForData.toString();
+                                        }
+                                    }
+                                    
+                                    // Format actual value
+                                    let actualDisplay = '--';
+                                    if (actualNumeric !== null) {
+                                        actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
+                                    }
+                                    
+                                    html += `
+                                        <div class="sub-operation-item kpi-item" 
+                                             data-kpi="${kpiItem.kpi}"
+                                             data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
+                                             data-actual="${actualNumeric !== null ? actualNumeric : ''}">
+                                            <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
+                                                <div><span class="target-badge">${targetDisplay}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
+                                        </div>
+                                    `;
+                                });
+                                
+                                html += `</div>`;
+                            }
+                        });
                         
-                        globalIndex++;
-                    });
+                        html += `</div>`;
+                    }
+                    
+                    globalIndex++;
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('operations-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -5183,16 +5840,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -5210,125 +5867,200 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = auditData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
+                    
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
+                    const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                    
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
                     
                     kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
-                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-                        
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').trim();
-                                weightValue = parseFloat(weightStr) || 0;
-                            }
-                            return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '--') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
                                 }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
-                        html += `
-                            <div class="member-row audit-team-kra-row ${dropdownClass}" 
-                                 data-name="${owner.toLowerCase()}" 
-                                 data-team="${teamName.toLowerCase()}" 
-                                 data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
-                                 data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
-                                 style="cursor: pointer;">
-                                <div>${roleOwner}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${owner}</div>
-                                </div>
-                                <div>${kraData.kra}</div>
-                                <div class="target-group">
-                                    <div>${targetValue}</div>
-                                </div>
-                                <div class="actual-group">
-                                    <div>${actualValue}</div>
-                                </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                                return sum + weightValue;
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
+                    html += `
+                        <div class="member-row audit-team-kra-row ${dropdownClass}" 
+                             data-name="${owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${globalIndex}"
+                             data-owner="${escapeAttributeValue(owner)}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
+                             style="cursor: pointer;">
+                            <div>${roleOwner}</div>
+                            <div class="member-info">
+                                <div class="member-name">${owner}</div>
                             </div>
+                            <div class="target-group">
+                                <div>${totalTarget}</div>
+                            </div>
+                            <div class="actual-group">
+                                <div>${totalActual}</div>
+                            </div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                        </div>
+                    `;
+                    
+                    // Add first-level dropdown content with Operational KRAs
+                    if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
+                        html += `
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
                         `;
                         
-                        if (hasDropdown) {
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
-                                const periodData = leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
-                                const actualNumeric = periodData ? periodData.actual : null;
-                                const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
-                                
-                                let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
-                                    targetNumericForData = parseNumericValue(kpiItem.target);
-                                }
-                                
-                                let targetDisplay = kpiItem.target || '-';
-                                if (targetNumericForData !== null) {
-                                    if (targetNumericForData >= 1000) {
-                                        targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
-                                    } else if (isPercentageKpi) {
-                                        targetDisplay = `${targetNumericForData}%`;
-                                    } else {
-                                        targetDisplay = targetNumericForData.toString();
-                                    }
-                                }
-                                
-                                let actualDisplay = '-';
-                                if (actualNumeric !== null) {
-                                    actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
-                                }
-                                
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
                                 html += `
-                                    <div class="sub-operation-item" 
-                                         data-kpi="${kpiItem.kpi}"
-                                         data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
-                                         data-actual="${actualNumeric !== null ? actualNumeric : ''}">
-                                        <div class="sub-operation-label">${kpiItem.kpi}</div>
-                                        <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
-                                    </div>
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
-                            });
-                            
-                            html += `</div>`;
-                        }
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available (Audit Team uses leadKpiExpensesData)
+                                    const periodData = leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
+                                    const actualNumeric = periodData ? periodData.actual : null;
+                                    const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
+                                    
+                                    // Parse target for data attribute first (before formatting)
+                                    let targetNumericForData = null;
+                                    if (kpiItem.target && kpiItem.target !== '--') {
+                                        targetNumericForData = parseNumericValue(kpiItem.target);
+                                    }
+                                    
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
+                                    if (targetNumericForData !== null) {
+                                        if (targetNumericForData >= 1000) {
+                                            targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
+                                        } else if (isPercentageKpi) {
+                                            targetDisplay = `${targetNumericForData}%`;
+                                        } else {
+                                            targetDisplay = targetNumericForData.toString();
+                                        }
+                                    }
+                                    
+                                    // Format actual value
+                                    let actualDisplay = '--';
+                                    if (actualNumeric !== null) {
+                                        actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
+                                    }
+                                    
+                                    html += `
+                                        <div class="sub-operation-item kpi-item" 
+                                             data-kpi="${kpiItem.kpi}"
+                                             data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
+                                             data-actual="${actualNumeric !== null ? actualNumeric : ''}">
+                                            <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
+                                                <div><span class="target-badge">${targetDisplay}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
+                                        </div>
+                                    `;
+                                });
+                                
+                                html += `</div>`;
+                            }
+                        });
                         
-                        globalIndex++;
-                    });
+                        html += `</div>`;
+                    }
+                    
+                    globalIndex++;
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('audit-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -5362,16 +6094,16 @@ const performanceData = {
                 // Place table-header outside operationsContent
                 const tableHeaderContainer = document.getElementById('operationsTableHeader');
                 if (tableHeaderContainer) {
+                    // Primary header (no Operational KRA here)
                     tableHeaderContainer.innerHTML = `
                         <div class="table-header">
                             <div>Role Owner</div>
                             <div>Role Title</div>
-                            <div>Operational KRA</div>
                             <div>
-                                <div class="target">TARGET</div>
+                                <div class="target">TOTAL TARGET</div>
                             </div>
                             <div>
-                                <div>ACTUAL</div>
+                                <div>TOTAL ACTUAL</div>
                             </div>
                             <div>%KPI</div>
                         </div>
@@ -5389,125 +6121,200 @@ const performanceData = {
                 
                 owners.forEach(owner => {
                     const kras = gatheringData[owner];
-                    const roleOwner = roleOwners[owner] || '-';
+                    const roleOwner = roleOwners[owner] || '--';
+                    
+                    // Check if this owner has any KRAs with KPIs
+                    const hasAnyKras = kras && kras.length > 0;
+                    const hasDropdown = hasAnyKras;
+                    const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                    
+                    // Calculate totals across all KRAs for this role title
+                    let totalWeight = 0;
+                    let totalTarget = 0;
+                    let totalActual = 0;
                     
                     kras.forEach(kraData => {
-                        const hasDropdown = kraData.kpis && kraData.kpis.length > 0;
-                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-                        
-                        const totalKraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').trim();
-                                weightValue = parseFloat(weightStr) || 0;
-                            }
-                            return sum + weightValue;
-                        }, 0) : 0;
-                        
-                        const kpiWeightsData = hasDropdown ? kraData.kpis.map(kpi => {
-                            let weightValue = 0;
-                            if (kpi.weight && kpi.weight !== '-') {
-                                const weightStr = String(kpi.weight).replace(/%/g, '').replace(/,/g, '').trim();
-                                weightValue = parseFloat(weightStr);
-                                if (isNaN(weightValue)) {
-                                    weightValue = 0;
+                        if (kraData.kpis && kraData.kpis.length > 0) {
+                            const kraWeight = kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '--') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
                                 }
-                            }
-                            return {
-                                name: kpi.kpi,
-                                weight: weightValue
-                            };
-                        }) : [];
-                        
-                        const baseTarget = 100;
-                        const targetValue = baseTarget + randomIntInRange(-10, 10);
-                        const actualValue = baseTarget + randomIntInRange(-15, 15);
-                        
-                        const kpiWeightsJson = JSON.stringify(kpiWeightsData);
-                        const kpiWeightsEscaped = kpiWeightsJson.replace(/"/g, '&quot;');
-                        
-                        html += `
-                            <div class="member-row gathering-team-kra-row ${dropdownClass}" 
-                                 data-name="${owner.toLowerCase()}" 
-                                 data-team="${teamName.toLowerCase()}" 
-                                 data-index="${globalIndex}"
-                                 data-operation="${escapeAttributeValue(kraData.kra)}"
-                                 data-owner="${escapeAttributeValue(owner)}"
-                                 data-target="${targetValue}"
-                                 data-actual="${actualValue}"
-                                 data-weight="${totalKraWeight}"
-                                 data-kpi-weights="${kpiWeightsEscaped}"
-                                 style="cursor: pointer;">
-                                <div>${roleOwner}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${owner}</div>
-                                </div>
-                                <div>${kraData.kra}</div>
-                                <div class="target-group">
-                                    <div>${targetValue}</div>
-                                </div>
-                                <div class="actual-group">
-                                    <div>${actualValue}</div>
-                                </div>
-                                <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '-'}</div>
+                                return sum + weightValue;
+                            }, 0);
+                            totalWeight += kraWeight;
+                            
+                            // Calculate target and actual for this KRA
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            totalTarget += kraTarget;
+                            totalActual += kraActual;
+                        }
+                    });
+                    
+                    // Create one row per role title (owner)
+                    html += `
+                        <div class="member-row gathering-team-kra-row ${dropdownClass}" 
+                             data-name="${owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${globalIndex}"
+                             data-owner="${escapeAttributeValue(owner)}"
+                             data-target="${totalTarget}"
+                             data-actual="${totalActual}"
+                             data-weight="${totalWeight}"
+                             style="cursor: pointer;">
+                            <div>${roleOwner}</div>
+                            <div class="member-info">
+                                <div class="member-name">${owner}</div>
                             </div>
+                            <div class="target-group">
+                                <div>${totalTarget}</div>
+                            </div>
+                            <div class="actual-group">
+                                <div>${totalActual}</div>
+                            </div>
+                            <div>--</div>
+                            <div>${hasDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                        </div>
+                    `;
+                    
+                    // Add first-level dropdown content with Operational KRAs
+                    if (hasDropdown) {
+                        const roleTitleIndex = globalIndex;
+                        html += `
+                            <div class="sub-operations" id="dropdown-${roleTitleIndex}">
+                                <div class="sub-operations-header">
+                                    <div>Operational KRA</div>
+                                    <div>Operational KPI</div>
+                                    <div>
+                                        <div class="target">TARGET</div>
+                                    </div>
+                                    <div>
+                                        <div>ACTUAL</div>
+                                    </div>
+                                    <div>%KPI</div>
+                                </div>
                         `;
                         
-                        if (hasDropdown) {
+                        // Create a row for each KRA with nested dropdown for KPIs
+                        kras.forEach((kraData, kraIndex) => {
+                            const hasKpiDropdown = kraData.kpis && kraData.kpis.length > 0;
+                            const kraDropdownClass = hasKpiDropdown ? 'has-dropdown' : '';
+                            
+                            // Calculate KRA totals
+                            const kraWeight = kraData.kpis ? kraData.kpis.reduce((sum, kpi) => {
+                                let weightValue = 0;
+                                if (kpi.weight && kpi.weight !== '-') {
+                                    const weightStr = String(kpi.weight).replace(/%/g, '').trim();
+                                    weightValue = parseFloat(weightStr) || 0;
+                                }
+                                return sum + weightValue;
+                            }, 0) : 0;
+                            
+                            const baseTarget = 100;
+                            const kraTarget = baseTarget + randomIntInRange(-10, 10);
+                            const kraActual = baseTarget + randomIntInRange(-15, 15);
+                            
+                            const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
+                            
+                            // Check if we need to fetch data for this KRA
+                            const needsDataFetch = true; // Set to true initially to show loading
+                            
                             html += `
-                                <div class="sub-operations" id="dropdown-${globalIndex}">
+                                <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
+                                     data-kra="${escapeAttributeValue(kraData.kra)}"
+                                     data-index="${kraRowIndex}"
+                                     data-target="${kraTarget}"
+                                     data-actual="${kraActual}"
+                                     data-weight="${kraWeight}"
+                                     data-loading="true"
+                                     style="cursor: pointer;">
+                                    <div class="sub-operation-kra">${kraData.kra}</div>
+                                    <div>
+                                        <div class="loading-indicator-wrapper">
+                                            <span class="loading-spinner"></span>
+                                            <span class="loading-text">Fetching data...</span>
+                                        </div>
+                                    </div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>--</div>
+                                    <div>${hasKpiDropdown ? '<span class="dropdown-arrow">▼</span>' : '--'}</div>
+                                </div>
                             `;
                             
-                            kraData.kpis.forEach(kpiItem => {
-                                const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey] || leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
-                                const actualNumeric = periodData ? periodData.actual : null;
-                                const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
-                                
-                                let targetNumericForData = null;
-                                if (kpiItem.target && kpiItem.target !== '-') {
-                                    targetNumericForData = parseNumericValue(kpiItem.target);
-                                }
-                                
-                                let targetDisplay = kpiItem.target || '-';
-                                if (targetNumericForData !== null) {
-                                    if (targetNumericForData >= 1000) {
-                                        targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
-                                    } else if (isPercentageKpi) {
-                                        targetDisplay = `${targetNumericForData}%`;
-                                    } else {
-                                        targetDisplay = targetNumericForData.toString();
-                                    }
-                                }
-                                
-                                let actualDisplay = '-';
-                                if (actualNumeric !== null) {
-                                    actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
-                                }
-                                
+                            // Add nested dropdown for KPIs under this KRA
+                            if (hasKpiDropdown) {
                                 html += `
-                                    <div class="sub-operation-item" 
-                                         data-kpi="${kpiItem.kpi}"
-                                         data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
-                                         data-actual="${actualNumeric !== null ? actualNumeric : ''}">
-                                        <div class="sub-operation-label">${kpiItem.kpi}</div>
-                                        <div><span class="target-badge">${targetDisplay}</span></div>
-                                        <div><span class="target-badge">${actualDisplay}</span></div>
-                                        <div><span class="weight-badge">${kpiItem.weight || '-'}</span></div>
-                                    </div>
+                                    <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
-                            });
-                            
-                            html += `</div>`;
-                        }
+                                
+                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                    // Get actual value from period data if available (Gathering Team uses both data sources)
+                                    const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey] || leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
+                                    const actualNumeric = periodData ? periodData.actual : null;
+                                    const isPercentageKpi = kpiItem.kpi.includes('%') || kpiItem.kpi.toLowerCase().includes('percent');
+                                    
+                                    // Parse target for data attribute first (before formatting)
+                                    let targetNumericForData = null;
+                                    if (kpiItem.target && kpiItem.target !== '--') {
+                                        targetNumericForData = parseNumericValue(kpiItem.target);
+                                    }
+                                    
+                                    // Format target value for display
+                                    let targetDisplay = kpiItem.target || '--';
+                                    if (targetNumericForData !== null) {
+                                        if (targetNumericForData >= 1000) {
+                                            targetDisplay = formatPesoIfNeeded(targetNumericForData, true);
+                                        } else if (isPercentageKpi) {
+                                            targetDisplay = `${targetNumericForData}%`;
+                                        } else {
+                                            targetDisplay = targetNumericForData.toString();
+                                        }
+                                    }
+                                    
+                                    // Format actual value
+                                    let actualDisplay = '--';
+                                    if (actualNumeric !== null) {
+                                        actualDisplay = formatValueForDisplay(actualNumeric, isPercentageKpi);
+                                    }
+                                    
+                                    html += `
+                                        <div class="sub-operation-item kpi-item" 
+                                             data-kpi="${kpiItem.kpi}"
+                                             data-target="${targetNumericForData !== null ? targetNumericForData : ''}"
+                                             data-actual="${actualNumeric !== null ? actualNumeric : ''}">
+                                            <div class="sub-operation-label">${kpiItem.kpi}</div>
+                                            <div class="target-group">
+                                                <div><span class="target-badge">${targetDisplay}</span></div>
+                                            </div>
+                                            <div class="actual-group">
+                                                <div><span class="actual-badge">${actualDisplay}</span></div>
+                                            </div>
+                                            <div><span class="weight-badge">${kpiItem.weight || '--'}</span></div>
+                                        </div>
+                                    `;
+                                });
+                                
+                                html += `</div>`;
+                            }
+                        });
                         
-                        globalIndex++;
-                    });
+                        html += `</div>`;
+                    }
+                    
+                    globalIndex++;
                 });
                 
                 html += '</div>';
                 operationsContent.innerHTML = html;
                 operationsContent.classList.add('technical-team-view');
                 operationsContent.classList.add('gathering-team-view');
+                
+                // Update loading indicators with actual data
+                updateKraRowData(teamName, periodKey);
                 
                 attachSearchFunctionality();
                 attachDropdownFunctionality(teamName);
@@ -7336,11 +8143,13 @@ const performanceData = {
             setPerformanceReportCardMode('bar');
 
             if (reportTitle) {
-                const shortName = kraName.length > 50 ? kraName.substring(0, 50) + '...' : kraName;
+                // Use owner (role title) as fallback if kraName is null or empty
+                const displayName = kraName || owner || 'Performance Overview';
+                const shortName = displayName.length > 50 ? displayName.substring(0, 50) + '...' : displayName;
                 reportTitle.innerHTML = `
                     ${shortName}
                     <div style="font-size: 12px; margin-top: 10px; color: #9ca3af;">
-                        ${owner}
+                        ${owner || ''}
                     </div>
                 `;
             }
@@ -7846,30 +8655,129 @@ const performanceData = {
                     if (isAnyTeamKra && owner) {
                         document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
                         this.classList.add('row-active');
+                        // Use owner (role title) as kraName if operationName is not available
+                        const kraNameToUse = operationName || owner;
                         // Call the generic KRA text-display function for all teams.
-                        updateTeamKraChartsGeneric(teamName, null, operationName, target, actual, owner);
+                        updateTeamKraChartsGeneric(teamName, null, kraNameToUse, target, actual, owner);
                     }
                     
                     if (dropdown) {
                         const isExpanded = this.classList.contains('expanded');
                         
-                        document.querySelectorAll('.member-row.has-dropdown').forEach(r => r.classList.remove('expanded'));
-                        document.querySelectorAll('.sub-operations').forEach(d => d.classList.remove('show'));
+                        // Only close other main dropdowns, not nested ones
+                        document.querySelectorAll('.member-row.has-dropdown').forEach(r => {
+                            if (r !== this) {
+                                r.classList.remove('expanded');
+                                const otherIndex = r.getAttribute('data-index');
+                                const otherDropdown = document.getElementById(`dropdown-${otherIndex}`);
+                                if (otherDropdown) {
+                                    otherDropdown.classList.remove('show');
+                                    // Also close any nested dropdowns
+                                    otherDropdown.querySelectorAll('.nested-kpi-dropdown').forEach(nested => nested.classList.remove('show'));
+                                    // Also close any expanded KRA rows
+                                    otherDropdown.querySelectorAll('.kra-row-item.expanded').forEach(kr => {
+                                        kr.classList.remove('expanded');
+                                    });
+                                }
+                            }
+                        });
                         
                         if (!isExpanded) {
                             this.classList.add('expanded');
                             dropdown.classList.add('show');
                             
-                            const subItems = dropdown.querySelectorAll('.sub-operation-item');
+                            // Handle KRA rows (first level) - these have nested dropdowns for KPIs
+                            const kraRows = dropdown.querySelectorAll('.kra-row-item.has-dropdown');
+                            kraRows.forEach(kraRow => {
+                                // Remove any existing listeners to prevent duplicates
+                                const existingHandler = kraRow.__kraClickHandler;
+                                if (existingHandler) {
+                                    kraRow.removeEventListener('click', existingHandler);
+                                }
+                                
+                                const clickHandler = function(e) {
+                                    e.stopPropagation(); // Prevent triggering parent dropdown close
+                                    
+                                    const kraIndex = this.getAttribute('data-index');
+                                    const kpiDropdown = document.getElementById(`dropdown-${kraIndex}`);
+                                    
+                                    if (kpiDropdown) {
+                                        const isKraExpanded = this.classList.contains('expanded');
+                                        
+                                        // Close other KRA dropdowns in the same parent
+                                        dropdown.querySelectorAll('.kra-row-item.has-dropdown').forEach(kr => {
+                                            if (kr !== this) {
+                                                kr.classList.remove('expanded', 'active');
+                                                const otherKraIndex = kr.getAttribute('data-index');
+                                                const otherKpiDropdown = document.getElementById(`dropdown-${otherKraIndex}`);
+                                                if (otherKpiDropdown) {
+                                                    otherKpiDropdown.classList.remove('show');
+                                                }
+                                            }
+                                        });
+                                        
+                                        if (!isKraExpanded) {
+                                            this.classList.add('expanded', 'active');
+                                            kpiDropdown.classList.add('show');
+                                        } else {
+                                            this.classList.remove('expanded', 'active');
+                                            kpiDropdown.classList.remove('show');
+                                        }
+                                    }
+                                };
+                                
+                                kraRow.addEventListener('click', clickHandler);
+                                kraRow.__kraClickHandler = clickHandler; // Store reference
+                            });
+                            
+                            // Handle KPI items (second level) - these trigger chart updates
+                            const kpiItems = dropdown.querySelectorAll('.kpi-item');
+                            kpiItems.forEach(item => {
+                                item.style.cursor = 'pointer';
+                                const clickHandler = function(event) {
+                                    event.stopPropagation();
+                                    
+                                    // Highlight this KPI item
+                                    dropdown.querySelectorAll('.kpi-item').forEach(i => {
+                                        i.style.background = '';
+                                        i.classList.remove('active');
+                                    });
+                                    this.classList.add('active');
+                                    
+                                    const kpiName = this.querySelector('.sub-operation-label')?.textContent.trim() || 
+                                                   this.querySelector('.sub-operation-label')?.textContent.replace('→', '').trim() || '';
+                                    const targetStr = this.getAttribute('data-target');
+                                    const actualStr = this.getAttribute('data-actual');
+                                    const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
+                                    const actualValue = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                                    
+                                    // Always ensure the graph container is visible before rendering
+                                    ensureChartWrapperVisible();
+                                    
+                                    // Always call the single, unified chart update function
+                                    updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);
+                                };
+                                
+                                // Remove old listener before adding new one to prevent duplication
+                                item.removeEventListener('click', item.__clickHandler);
+                                item.addEventListener('click', clickHandler);
+                                item.__clickHandler = clickHandler; // Store reference to remove later
+                            });
+                            
+                            // Handle non-KRA, non-KPI sub-operation items (for backward compatibility)
+                            const subItems = dropdown.querySelectorAll('.sub-operation-item:not(.kra-row-item):not(.kpi-item)');
                             subItems.forEach(item => {
                                 item.style.cursor = 'pointer';
                                 const clickHandler = function(event) {
                                     event.stopPropagation();
                                     
-                                    subItems.forEach(i => i.style.background = '');
-                                    this.style.background = 'rgba(229, 187, 34, 0.15)';
+                                    subItems.forEach(i => {
+                                        i.style.background = '';
+                                        i.classList.remove('active');
+                                    });
+                                    this.classList.add('active');
                                     
-                                    const kpiName = this.querySelector('.sub-operation-label').textContent.replace('→', '').trim();
+                                    const kpiName = this.querySelector('.sub-operation-label')?.textContent.replace('→', '').trim() || '';
                                     const targetStr = this.getAttribute('data-target');
                                     const actualStr = this.getAttribute('data-actual');
                                     const targetValue = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
@@ -7888,9 +8796,20 @@ const performanceData = {
                                 item.__clickHandler = clickHandler; // Store reference to remove later
                             });
                         } else {
-                             if (isAnyTeamKra && owner) {
-                                updateTeamKraChartsGeneric(teamName, null, operationName, target, actual, owner);
-                             }
+                            // Collapse the dropdown when clicking again
+                            this.classList.remove('expanded');
+                            dropdown.classList.remove('show');
+                            // Also close any nested KPI dropdowns
+                            dropdown.querySelectorAll('.nested-kpi-dropdown').forEach(nested => nested.classList.remove('show'));
+                            // Also close any expanded KRA rows
+                            dropdown.querySelectorAll('.kra-row-item.expanded').forEach(kr => {
+                                kr.classList.remove('expanded');
+                            });
+                            
+                            if (isAnyTeamKra && owner) {
+                                const kraNameToUse = operationName || owner;
+                                updateTeamKraChartsGeneric(teamName, null, kraNameToUse, target, actual, owner);
+                            }
                         }
                     }
                 });
@@ -8534,7 +9453,7 @@ const performanceData = {
             teams.forEach(team => {
                 const average = calculateTeamAverage(team.name);
                 const card = document.createElement('div');
-                card.className = 'leader-card clickable-stat-card-carousel';
+                card.className = 'leader-card clickable-stat-card-carousel team-score-card';
                 card.setAttribute('data-team', team.name);
                 card.setAttribute('data-name', '');
                 card.setAttribute('data-title', team.name);
@@ -8550,19 +9469,25 @@ const performanceData = {
                     scorePercentage = Math.max(0, Math.min(100, average.overallScore)); // Clamp between 0-100
                 }
                 
+                const scoreColor = getTeamScoreColor(scorePercentage);
+
                 card.innerHTML = `
-                    <div class="leader-icon"><i class="bi ${team.icon}" aria-hidden="true"></i></div>
-                    <div class="leader-name"></div>
-                    <div class="leader-title">${team.name}</div>
-                    <div class="team-progress-container">
-                        <div class="team-progress-header">
-                            <span class="team-progress-percentage">${scorePercentage.toFixed(0)}%</span>
-                            <span class="team-progress-label">as of ${currentMonthName}</span>
+                    <div class="leader-title leader-title-inline">
+                        <div class="team-score-subtext">as of ${currentMonthName}</div>
+                        <div
+                            class="leader-icon team-score-icon"
+                            style="--score-color:${scoreColor};--score-pct:${scorePercentage}; background: conic-gradient(${scoreColor} 0% ${scorePercentage}%, rgba(0,0,0,0.08) ${scorePercentage}%, rgba(0,0,0,0.08) 100%);"
+                        >
+                            <span class="team-score-text">${scorePercentage.toFixed(0)}%</span>
                         </div>
-                        <div class="team-progress-bar">
-                            <div class="team-progress-fill" style="width: ${scorePercentage}%"></div>
+                        <div class="leader-title-text">
+                            <div class="leader-icon1">
+                                <i class="bi ${team.icon}" aria-hidden="true"></i>
+                            </div>
+                            <span class="leader-title-name">${team.name}</span>
                         </div>
                     </div>
+                    <div class="leader-name"></div>
                 `;
                 
                 container.appendChild(card);
@@ -8570,6 +9495,13 @@ const performanceData = {
             
             // Re-attach click handlers after rendering
             attachLeaderCardHandlers();
+        }
+
+        function getTeamScoreColor(score) {
+            const value = Math.max(0, Math.min(100, Number(score) || 0));
+            const saturation = 40 + (value * 0.35); // 40-75
+            const lightness = 78 - (value * 0.25);  // 78-53
+            return `hsl(90, ${saturation}%, ${lightness}%)`;
         }
 
         window.addEventListener('DOMContentLoaded', () => {

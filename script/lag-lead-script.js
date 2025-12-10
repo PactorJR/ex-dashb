@@ -9431,9 +9431,9 @@
                         varianceEl.style.color = varianceAmount >= 0 ? '#81f31d' : '#ff3146';
                     } else if (hasValidNumbers && targetNumeric !== 0) {
                         // Fallback to percentage when currency display is not applicable
-                        const variance = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
-                        varianceEl.textContent = formatPercentage(variance);
-                        const numValue = parseFloat(variance);
+                    const variance = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
+                    varianceEl.textContent = formatPercentage(variance);
+                    const numValue = parseFloat(variance);
                         varianceEl.style.color = numValue >= 0 ? '#81f31d' : '#ff3146';
                     } else {
                         varianceEl.textContent = '-';
