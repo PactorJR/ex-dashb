@@ -9660,15 +9660,11 @@ const performanceData = {
 
                 card.innerHTML = `
                     <div class="leader-title leader-title-inline">
-                        <div class="team-score-subtext">as of ${currentMonthName}</div>
                         <div class="kpi-card-trend">
-                            <div class="kpi-trend-indicator trend-neutral" data-team-trend-icon="${trendDataKey}" aria-hidden="true"></div>
                             <div class="kpi-trend-value" data-team-trend-value="${trendDataKey}">${trendValue}</div>
                         </div>
+                        <div class="team-score-subtext">as of ${currentMonthName}</div>
                         <div class="leader-title-text">
-                            <div class="leader-icon1">
-                                <i class="bi ${team.icon}" aria-hidden="true"></i>
-                            </div>
                             <span class="leader-title-name">${team.name}</span>
                         </div>
                     </div>

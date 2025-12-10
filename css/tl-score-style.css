@@ -81,6 +81,7 @@ select {
     --font-heading: 'Verdana', 'Geneva', 'Tahoma', sans-serif;
     
     /* Font sizes - Default (1366x768 and similar) */
+    --fs-smaller: 0.6125rem;
     --fs-small: 0.8125rem;      /* 13px */
     --fs-base: 0.9375rem;       /* 15px */
     --fs-medium: 1rem;          /* 16px */
@@ -731,6 +732,12 @@ small {
     background: var(--primary-color) !important;
 }
 
+.leader-title .team-score-subtext {
+    font-size: var(--fs-smaller) !important;
+    font-weight: 100 !important;
+    color: var(--subtext-dark) !important;
+}
+
 .leader-title-text {
     margin-top: 10px;
     display: flex;
@@ -766,8 +773,8 @@ small {
 
 .leader-title {
     color: var(--primary-color);
-    font-size: var(--fs-small);
-    font-weight: 700;
+    font-size: var(--fs-large);
+    font-weight: 900 !important;
     opacity: 1;
     line-height: 1.2;
     letter-spacing: 0.3px;
