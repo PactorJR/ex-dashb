@@ -3142,6 +3142,10 @@ const performanceData = {
                         icon: this.getAttribute('data-icon')
                     };
 
+                    // Ensure report cards and chart wrapper are visible when selecting a team
+                    showReportCards();
+                    ensureChartWrapperVisible();
+                    
                     refreshOperationsContent();
                     updateLeadKpiSection(selectedTeam, selectedTeamData.title);
                     updateTeamMembersMiniContainer();
@@ -8668,6 +8672,7 @@ const performanceData = {
                         document.querySelectorAll('.member-row.has-dropdown').forEach(r => {
                             if (r !== this) {
                                 r.classList.remove('expanded');
+                                r.classList.remove('row-active');
                                 const otherIndex = r.getAttribute('data-index');
                                 const otherDropdown = document.getElementById(`dropdown-${otherIndex}`);
                                 if (otherDropdown) {
@@ -8677,6 +8682,15 @@ const performanceData = {
                                     // Also close any expanded KRA rows
                                     otherDropdown.querySelectorAll('.kra-row-item.expanded').forEach(kr => {
                                         kr.classList.remove('expanded');
+                                    });
+                                    // Remove highlight from all sub-operation-items when dropdown is closed
+                                    otherDropdown.querySelectorAll('.sub-operation-item').forEach(item => {
+                                        item.classList.remove('active');
+                                        item.style.background = '';
+                                    });
+                                    // Remove highlight from all KRA rows when dropdown is closed
+                                    otherDropdown.querySelectorAll('.kra-row-item').forEach(kr => {
+                                        kr.classList.remove('active');
                                     });
                                 }
                             }
@@ -8712,6 +8726,11 @@ const performanceData = {
                                                 const otherKpiDropdown = document.getElementById(`dropdown-${otherKraIndex}`);
                                                 if (otherKpiDropdown) {
                                                     otherKpiDropdown.classList.remove('show');
+                                                    // Remove highlight from all sub-operation-items when nested dropdown is closed
+                                                    otherKpiDropdown.querySelectorAll('.sub-operation-item').forEach(item => {
+                                                        item.classList.remove('active');
+                                                        item.style.background = '';
+                                                    });
                                                 }
                                             }
                                         });
@@ -8722,6 +8741,11 @@ const performanceData = {
                                         } else {
                                             this.classList.remove('expanded', 'active');
                                             kpiDropdown.classList.remove('show');
+                                            // Remove highlight from all sub-operation-items when nested dropdown is closed
+                                            kpiDropdown.querySelectorAll('.sub-operation-item').forEach(item => {
+                                                item.classList.remove('active');
+                                                item.style.background = '';
+                                            });
                                         }
                                     }
                                 };
@@ -8806,10 +8830,22 @@ const performanceData = {
                                 kr.classList.remove('expanded');
                             });
                             
-                            if (isAnyTeamKra && owner) {
-                                const kraNameToUse = operationName || owner;
-                                updateTeamKraChartsGeneric(teamName, null, kraNameToUse, target, actual, owner);
-                            }
+                            // Remove highlight from member-row when dropdown is closed
+                            this.classList.remove('row-active');
+                            
+                            // Remove highlight from all sub-operation-items when dropdown is closed
+                            dropdown.querySelectorAll('.sub-operation-item').forEach(item => {
+                                item.classList.remove('active');
+                                item.style.background = '';
+                            });
+                            
+                            // Remove highlight from all KRA rows when dropdown is closed
+                            dropdown.querySelectorAll('.kra-row-item').forEach(kr => {
+                                kr.classList.remove('active');
+                            });
+                            
+                            // Don't clear the graph when closing dropdown - just remove highlights
+                            // The graph will be updated when a new item is selected
                         }
                     }
                 });
