@@ -9407,11 +9407,20 @@
                     }
                 }
 
-                // Update actual value
+                // Calculate variance percentage (needed for all KPI actual display)
+                let variancePercentage = null;
+                if (actualNumeric !== null && targetNumeric !== null && Number.isFinite(actualNumeric) && Number.isFinite(targetNumeric) && targetNumeric !== 0) {
+                    variancePercentage = ((actualNumeric - targetNumeric) / targetNumeric) * 100;
+                }
+
+                // Update actual value - show percentage variance for all KPIs
                 const actualEl = card.querySelector(`[data-kpi-metric="${kpiTarget}-actual"]`);
                 if (actualEl) {
-                    if (actualRaw !== null && actualRaw !== undefined) {
-                        actualEl.textContent = formatShortenedMillions(actualRaw);
+                    // Show percentage variance instead of actual value for all KPIs
+                    if (variancePercentage !== null) {
+                        actualEl.textContent = formatPercentage(variancePercentage);
+                        const numValue = parseFloat(variancePercentage);
+                        actualEl.style.color = numValue >= 0 ? '#81f31d' : '#ff3146';
                     } else {
                         actualEl.textContent = '-';
                     }

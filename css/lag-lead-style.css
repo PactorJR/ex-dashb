@@ -768,6 +768,7 @@ small {
     font-size: 20px;
     font-weight: 800;
     text-align: left;
+    font-family: var(--font-heading);
 }
 
 .kpi-stat-item {
