@@ -3030,7 +3030,9 @@ const performanceData = {
 
                     // If switching to members view and section switch is on profile (active), switch back to operations
                     if (target === 'members' && currentView === 'profile') {
-                        toggleSections();
+                        currentView = 'operations';
+                        switchToSection('operations');
+                        updateSectionSwitchState();
                     }
 
                     currentOperationsView = target;
@@ -3066,21 +3068,48 @@ const performanceData = {
         });
 
         // Section switch functionality
-        const sectionSwitch = document.getElementById('sectionSwitch');
-        const sectionSwitch2 = document.getElementById('sectionSwitch2');
+        let sectionSwitchButtons = [];
         const operationsSection = document.getElementById('operationsSection');
         const profileSection = document.getElementById('profileSection');
-        const operationsSectionTitle = document.getElementById('operationsSectionTitle');
         const operationsSectionSubtitle = document.getElementById('operationsSectionSubtitle');
         const profileSectionSubtitle = document.getElementById('profileSectionSubtitle');
 
-        function toggleSections() {
-            currentView = currentView === 'operations' ? 'profile' : 'operations';
-            
-            sectionSwitch.classList.toggle('active');
-            sectionSwitch2.classList.toggle('active');
-            
-            if (currentView === 'operations') {
+        function initSectionSwitch() {
+            sectionSwitchButtons = Array.from(document.querySelectorAll('.section-switch'));
+            if (!sectionSwitchButtons.length) {
+                return;
+            }
+
+            sectionSwitchButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.dataset.target === 'lead' ? 'profile' : 'operations';
+                    if (currentView === target) {
+                        return;
+                    }
+
+                    currentView = target;
+                    switchToSection(target);
+                    updateSectionSwitchState();
+                });
+            });
+
+            updateSectionSwitchState();
+        }
+
+        function updateSectionSwitchState() {
+            if (!sectionSwitchButtons.length) {
+                return;
+            }
+
+            sectionSwitchButtons.forEach(button => {
+                const target = button.dataset.target === 'lead' ? 'profile' : 'operations';
+                const isActive = currentView === target;
+                button.classList.toggle('active', isActive);
+            });
+        }
+
+        function switchToSection(target) {
+            if (target === 'operations') {
                 operationsSection.classList.remove('hidden');
                 profileSection.classList.add('hidden');
                 if (selectedTeam) {
@@ -3115,9 +3144,6 @@ const performanceData = {
                 }
             }
         }
-
-        sectionSwitch.addEventListener('click', toggleSections);
-        sectionSwitch2.addEventListener('click', toggleSections);
 
         // Function to attach team leader selection functionality
         function attachLeaderCardHandlers() {
@@ -6418,9 +6444,6 @@ const performanceData = {
 
             if (!selectedTeam || !selectedTeamData) {
                 operationsSection?.classList.toggle('members-view-active', isMembersView);
-                if (operationsSectionTitle) {
-                    operationsSectionTitle.textContent = isMembersView ? 'Team Members' : 'Lag KPIs';
-                }
                 if (operationsSectionSubtitle) {
                     operationsSectionSubtitle.textContent = isMembersView
                         ? 'Select a team to view their team members'
@@ -6441,10 +6464,6 @@ const performanceData = {
             }
 
             operationsSection?.classList.toggle('members-view-active', isMembersView);
-
-            if (operationsSectionTitle) {
-                operationsSectionTitle.textContent = isMembersView ? 'Team Members' : 'Lag KPIs';
-            }
 
             if (operationsSectionSubtitle) {
                 if (isMembersView) {
@@ -9086,7 +9105,9 @@ const performanceData = {
 
             // Switch to profile section if highlightView=profile (for Lead KPIs)
             if (highlightViewParam === 'profile' && currentView !== 'profile') {
-                toggleSections();
+                currentView = 'profile';
+                switchToSection('profile');
+                updateSectionSwitchState();
             }
 
             const leaderCards = document.querySelectorAll('.leader-card');
@@ -9712,6 +9733,7 @@ const performanceData = {
             resetReportsSection(); // Set initial title and subtitle based on current view (after resetTeamPerformanceVisuals)
             refreshOperationsContent();
             initScoreboardToggle();
+            initSectionSwitch();
             applyIncomingLeaderHighlight();
         });
 

@@ -184,27 +184,49 @@ select {
         max-height: 400px !important;
     }
     
+    .section-switch-container {
+        display: flex !important;
+        gap: 0 !important;
+        background: #f5f5f5 !important;
+        border-radius: 999px !important;
+        padding: 4px !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    }
+    
     .section-switch {
-        position: relative;
-        width: 60px !important;
-        height: 30px !important;
-        background: #e0e0e0;
-        border-radius: 20px;
-        border: none;
-        cursor: pointer;
-        transition: background 0.3s ease;
-        margin-bottom: 20px;
-        overflow: hidden;
-        bottom: 10px !important;
+        padding: 10px 32px !important;
+        border: none !important;
+        background: transparent !important;
+        color: var(--text-color) !important;
+        font-size: var(--fs-base) !important;
+        font-weight: 600 !important;
+        border-radius: 999px !important;
+        cursor: pointer !important;
+        transition: all 0.25s ease !important;
+        margin-bottom: 0 !important;
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        bottom: auto !important;
+    }
+    
+    .section-switch:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    .section-switch.active {
+        background: var(--primary-color) !important;
+        color: var(--white) !important;
+        box-shadow: 0 4px 10px rgba(88, 103, 64, 0.25) !important;
     }
     
     .section-switch::before {
-        width: 20px !important;
-        height: 20px !important;
+        display: none !important;
     }
     
     .section-switch.active::before {
-        transform: translateX(30px) !important;
+        display: none !important;
     }
 
     .leaders-grid {
@@ -922,52 +944,51 @@ small {
     grid-row: 1 / span 2;
 }
 
-/* Section Switch Button */
-.section-switch {
-    position: relative;
-    width: 80px;
-    height: 40px;
-    background: #e0e0e0;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    margin-bottom: 20px;
-    overflow: hidden;
-    bottom: 10px !important;
+/* Section Switch Container */
+.section-switch-container {
+    display: flex;
+    gap: 0;
+    background: #f5f5f5;
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-.section-switch::before {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 32px;
-    height: 32px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+/* Section Switch Button */
+.section-switch {
+    padding: 10px 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    font-size: var(--fs-base);
+    font-weight: 600;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 0;
+    position: relative;
+}
+
+.section-switch:hover {
+    color: var(--primary-color);
 }
 
 .section-switch.active {
-    background: var(--light-bg);
+    background: var(--primary-color);
+    color: var(--white);
+    box-shadow: 0 4px 10px rgba(88, 103, 64, 0.25);
+}
+
+.section-switch::before {
+    display: none;
 }
 
 .section-switch.active::before {
-    transform: translateX(40px);
+    display: none;
 }
 
 .section-switch::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: calc(var(--fs-small) * 0.77);
-    color: var(--text-color);
-    font-weight: 600;
-    font-family: var(--font-body);
-    pointer-events: none;
+    display: none;
 }
 
 

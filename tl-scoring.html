@@ -59,7 +59,10 @@
                         <div class="search-box" id="operationsSearchContainer" style="display: none;">
                             <input type="text" id="searchInput" placeholder="Search operations...">
                         </div>
-                        <button class="section-switch" id="sectionSwitch" aria-label="Toggle between Lag and Lead KPIs"></button>
+                        <div class="section-switch-container">
+                            <button class="section-switch active" id="sectionSwitch" data-target="lag">Lag</button>
+                            <button class="section-switch" id="sectionSwitchLead" data-target="lead">Lead</button>
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +90,10 @@
                         <div class="search-box" id="profileSearchContainer" style="display: none;">
                             <input type="text" id="searchInputLead" placeholder="Search operations...">
                         </div>
-                        <button class="section-switch" id="sectionSwitch2"></button>
+                        <div class="section-switch-container">
+                            <button class="section-switch active" id="sectionSwitch2" data-target="lag">Lag</button>
+                            <button class="section-switch" id="sectionSwitch2Lead" data-target="lead">Lead</button>
+                        </div>
                     </div>
                 </div>
 
