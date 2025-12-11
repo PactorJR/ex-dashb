@@ -1056,6 +1056,13 @@ small {
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+
+.members-section::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
 }
 
 .members-section .section-header {
@@ -1614,11 +1621,13 @@ small {
 
 #operationsContent.technical-team-view .sub-operations .sub-operation-item {
     border-radius: 10px;
-    --highlight-radius: 12px;
+    --highlight-radius: 10px;
     display: grid;
     transition: background 0.2s, border 0.2s, box-shadow 0.2s, transform 0.2s;
     grid-template-columns: 235px 340px 120px 90px 90px 10px;
     text-align: center;
+    margin-left: auto !important;
+    z-index: 9999;
 }
 
 #operationsContent.technical-team-view .nested-kpi-dropdown .kpi-item {

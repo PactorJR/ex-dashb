@@ -3082,12 +3082,24 @@ const performanceData = {
 
             sectionSwitchButtons.forEach(button => {
                 button.addEventListener('click', () => {
+                    const previousView = currentView;
                     const target = button.dataset.target === 'lead' ? 'profile' : 'operations';
+                    
+                    console.log('=== SECTION SWITCH CLICKED ===');
+                    console.log('Button clicked:', button);
+                    console.log('Button data-target:', button.dataset.target);
+                    console.log('Previous view:', previousView);
+                    console.log('Target view:', target);
+                    console.log('Selected team:', selectedTeam);
+                    console.log('Selected team data:', selectedTeamData);
+                    
                     if (currentView === target) {
+                        console.log('⚠️ Already in target view, skipping switch');
                         return;
                     }
 
                     currentView = target;
+                    console.log('✅ Switching from', previousView, 'to', target);
                     switchToSection(target);
                     updateSectionSwitchState();
                 });
@@ -3109,39 +3121,66 @@ const performanceData = {
         }
 
         function switchToSection(target) {
-            if (target === 'operations') {
-                operationsSection.classList.remove('hidden');
-                profileSection.classList.add('hidden');
-                if (selectedTeam) {
-                    showReportCards();
-                    // Reset chart visuals when switching back to operations
-                    resetTeamPerformanceVisuals({
-                        infoMessage: 'Select a KPI to view its target vs actual details.'
-                    });
-                } else {
-                    showLegendOnly();
-                }
-                refreshOperationsContent();
-            } else {
-                operationsSection.classList.add('hidden');
-                profileSection.classList.remove('hidden');
-                if (selectedTeam && selectedTeamData) {
-                    // Update subtitle when switching to profile view with team selected
-                    if (profileSectionSubtitle) {
-                        profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
+            console.log('--- switchToSection called ---');
+            console.log('Target section:', target);
+            console.log('Selected team:', selectedTeam);
+            console.log('Selected team data:', selectedTeamData);
+            console.log('Current operations view:', currentOperationsView);
+            
+            try {
+                if (target === 'operations') {
+                    console.log('🔄 Switching to OPERATIONS section (Lag KPIs)');
+                    operationsSection.classList.remove('hidden');
+                    profileSection.classList.add('hidden');
+                    if (selectedTeam) {
+                        console.log('✅ Team selected, showing report cards');
+                        showReportCards();
+                        // Reset chart visuals when switching back to operations
+                        resetTeamPerformanceVisuals({
+                            infoMessage: 'Select a KPI to view its target vs actual details.'
+                        });
+                    } else {
+                        console.log('⚠️ No team selected, showing legend only');
+                        showLegendOnly();
                     }
-                    showReportCards();
-                    // Reset chart visuals when switching to profile
-                    resetTeamPerformanceVisuals({
-                        infoMessage: 'Select a KPI to view its target vs actual details.'
-                    });
+                    console.log('📊 Refreshing operations content...');
+                    refreshOperationsContent();
+                    // Re-initialize sticky header after content is refreshed
+                    setTimeout(() => {
+                        setupSubOperationsHeaderPinning();
+                    }, 100);
                 } else {
-                    // Clear subtitle when no team is selected
-                    if (profileSectionSubtitle) {
-                        profileSectionSubtitle.textContent = '';
+                    console.log('🔄 Switching to PROFILE section (Lead KPIs)');
+                    operationsSection.classList.add('hidden');
+                    profileSection.classList.remove('hidden');
+                    if (selectedTeam && selectedTeamData) {
+                        console.log('✅ Team selected, updating profile section');
+                        // Update subtitle when switching to profile view with team selected
+                        if (profileSectionSubtitle) {
+                            profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
+                        }
+                        showReportCards();
+                        // Reset chart visuals when switching to profile
+                        resetTeamPerformanceVisuals({
+                            infoMessage: 'Select a KPI to view its target vs actual details.'
+                        });
+                        console.log('📊 Updating lead KPI section...');
+                        updateLeadKpiSection(selectedTeam, selectedTeamData.title);
+                    } else {
+                        console.log('⚠️ No team selected, clearing profile section');
+                        // Clear subtitle when no team is selected
+                        if (profileSectionSubtitle) {
+                            profileSectionSubtitle.textContent = '';
+                        }
+                        showLegendOnly();
                     }
-                    showLegendOnly();
+                    // Clear sticky header when switching to profile view
+                    clearPinnedSubOperationsHeader();
                 }
+                console.log('✅ Section switch completed successfully');
+            } catch (error) {
+                console.error('❌ ERROR in switchToSection:', error);
+                console.error('Error stack:', error.stack);
             }
         }
 
@@ -3379,126 +3418,175 @@ const performanceData = {
                            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 
         function updateOperationsSection(teamName, teamTitle) {
-        const operationsContent = document.getElementById('operationsContent');
-        const operations = teamOperationsData[teamName] || [];
-        
-        if (operations.length === 0) {
-            // Hide search container and table header when no data
-            const searchContainer = document.getElementById('operationsSearchContainer');
-            if (searchContainer) {
-                searchContainer.style.display = 'none';
-            }
-            const tableHeaderContainer = document.getElementById('operationsTableHeader');
-            if (tableHeaderContainer) {
-                tableHeaderContainer.style.display = 'none';
-            }
-            operationsContent.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <div class="empty-state-text">No Lag KPIs data available</div>
-                </div>
-            `;
-            return;
-        }
-        
-        // Show and populate search container in section-header
-        setupSearchContainer('Search operations...');
-        
-        // Place table-header outside operationsContent
-        const tableHeaderContainer = document.getElementById('operationsTableHeader');
-        if (tableHeaderContainer) {
-            tableHeaderContainer.innerHTML = `
-                <div class="table-header">
-                    <div>Operation KPI</div>
-                    <div>KPI Owner</div>
-                    <div>
-                        <div class="target">TARGET</div>
-                    </div>
-                    <div>
-                        <div>ACTUAL</div>
-                    </div>
-                </div>
-            `;
-            tableHeaderContainer.style.display = 'block';
-        }
-        
-        let html = `
-            <div id="membersList">
-        `;
-        
-        operations.forEach((op, index) => {
-            const hasDropdown = teamDropdownData[teamName] && teamDropdownData[teamName][op.role];
-            const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+            console.log('--- updateOperationsSection called ---');
+            console.log('Team name:', teamName);
+            console.log('Team title:', teamTitle);
             
-            // Get period data if available
-            const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
-            const periodData = technicalExpensesData[teamName]?.[op.role]?.[periodKey];
-            
-            const targetNumeric = periodData ? periodData.target : null;
-            const actualNumeric = periodData ? periodData.actual : null;
-            const isPercentageKpi = op.role.includes('%') || op.role.toLowerCase().includes('percent');
-            const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
-            const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
-            
-            html += `
-                <div class="member-row ${dropdownClass}" 
-                     data-name="${op.owner.toLowerCase()}" 
-                     data-team="${teamName.toLowerCase()}" 
-                     data-index="${index}"
-                     data-operation="${op.role}"
-                     data-target="${targetNumeric !== null ? targetNumeric : ''}"
-                     data-actual="${actualNumeric !== null ? actualNumeric : ''}"
-                     style="cursor: pointer;">
-                    <div class="member-info">
-                        <div class="member-name">${op.role}</div>
-                    </div>
-                    <div>${op.owner}</div>
-                    <div class="target-group">
-                        <div>${targetValue}</div>
-                    </div>
-                    <div class="actual-group">
-                        <div>${actualValue}</div>
-                    </div>
-                </div>
-            `;
-            
-            // Add dropdown content if available
-            if (hasDropdown) {
-                const dropdownItems = teamDropdownData[teamName][op.role];
-                html += `
-                    <div class="sub-operations" id="dropdown-${index}">
-                `;
+            try {
+                const operationsContent = document.getElementById('operationsContent');
+                if (!operationsContent) {
+                    console.error('❌ operationsContent element not found!');
+                    return;
+                }
                 
-                dropdownItems.forEach(item => {
-                    const targetValue = item.hasOwnProperty('target') ? formatPesoIfNeeded(item.target) : '-';
-                    const weightValue = item.hasOwnProperty('weight') ? item.weight : '-';
-                    html += `
-                        <div class="sub-operation-item">
-                            <div class="sub-operation-label">${item.kpi}</div>
-                            <div>-</div>
-                            <div class="target-group">
-                                <div><span class="target-badge">${targetValue || '-'}</span></div>
-                                <div>-</div>
+                const operations = teamOperationsData[teamName] || [];
+                console.log('Operations data for team:', operations);
+                console.log('Number of operations:', operations.length);
+                console.log('teamOperationsData keys:', Object.keys(teamOperationsData || {}));
+                
+                if (operations.length === 0) {
+                    console.warn('⚠️ No operations data found for team:', teamName);
+                    // Hide search container and table header when no data
+                    const searchContainer = document.getElementById('operationsSearchContainer');
+                    if (searchContainer) {
+                        searchContainer.style.display = 'none';
+                    }
+                    const tableHeaderContainer = document.getElementById('operationsTableHeader');
+                    if (tableHeaderContainer) {
+                        tableHeaderContainer.style.display = 'none';
+                    }
+                    operationsContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <div class="empty-state-text">No Lag KPIs data available</div>
+                        </div>
+                    `;
+                    return;
+                }
+        
+                // Show and populate search container in section-header
+                setupSearchContainer('Search operations...');
+                
+                // Place table-header outside operationsContent
+                const tableHeaderContainer = document.getElementById('operationsTableHeader');
+                if (tableHeaderContainer) {
+                    tableHeaderContainer.innerHTML = `
+                        <div class="table-header">
+                            <div>Operation KPI</div>
+                            <div>KPI Owner</div>
+                            <div>
+                                <div class="target">TARGET</div>
                             </div>
-                            <div class="actual-group">
-                                <div><span class="weight-badge">${weightValue || '-'}</span></div>
-                                <div>-</div>
+                            <div>
+                                <div>ACTUAL</div>
                             </div>
                         </div>
                     `;
+                    tableHeaderContainer.style.display = 'block';
+                    console.log('✅ Table header created');
+                } else {
+                    console.error('❌ operationsTableHeader element not found!');
+                }
+                
+                const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+                console.log('Period key:', periodKey);
+                console.log('Selected year:', selectedYear);
+                console.log('Selected month:', selectedMonth);
+                console.log('technicalExpensesData available:', !!technicalExpensesData);
+                if (technicalExpensesData && technicalExpensesData[teamName]) {
+                    console.log('Technical expenses data keys for team:', Object.keys(technicalExpensesData[teamName]));
+                }
+                
+                let html = `
+                    <div id="membersList">
+                `;
+                
+                operations.forEach((op, index) => {
+                    try {
+                        const hasDropdown = teamDropdownData[teamName] && teamDropdownData[teamName][op.role];
+                        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
+                        
+                        // Get period data if available
+                        const periodData = technicalExpensesData[teamName]?.[op.role]?.[periodKey];
+                        
+                        console.log(`Operation ${index + 1}/${operations.length}:`, {
+                            role: op.role,
+                            owner: op.owner,
+                            hasPeriodData: !!periodData,
+                            periodData: periodData
+                        });
+                        
+                        const targetNumeric = periodData ? periodData.target : null;
+                        const actualNumeric = periodData ? periodData.actual : null;
+                        const isPercentageKpi = op.role.includes('%') || op.role.toLowerCase().includes('percent');
+                        const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
+                        const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
+                        
+                        if (!periodData) {
+                            console.warn(`⚠️ No period data found for operation: ${op.role} (period: ${periodKey})`);
+                        }
+            
+                        html += `
+                            <div class="member-row ${dropdownClass}" 
+                                 data-name="${op.owner.toLowerCase()}" 
+                                 data-team="${teamName.toLowerCase()}" 
+                                 data-index="${index}"
+                                 data-operation="${op.role}"
+                                 data-target="${targetNumeric !== null ? targetNumeric : ''}"
+                                 data-actual="${actualNumeric !== null ? actualNumeric : ''}"
+                                 style="cursor: pointer;">
+                                <div class="member-info">
+                                    <div class="member-name">${op.role}</div>
+                                </div>
+                                <div>${op.owner}</div>
+                                <div class="target-group">
+                                    <div>${targetValue}</div>
+                                </div>
+                                <div class="actual-group">
+                                    <div>${actualValue}</div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add dropdown content if available
+                        if (hasDropdown) {
+                            const dropdownItems = teamDropdownData[teamName][op.role];
+                            html += `
+                                <div class="sub-operations" id="dropdown-${index}">
+                            `;
+                            
+                            dropdownItems.forEach(item => {
+                                const targetValue = item.hasOwnProperty('target') ? formatPesoIfNeeded(item.target) : '-';
+                                const weightValue = item.hasOwnProperty('weight') ? item.weight : '-';
+                                html += `
+                                    <div class="sub-operation-item">
+                                        <div class="sub-operation-label">${item.kpi}</div>
+                                        <div>-</div>
+                                        <div class="target-group">
+                                            <div><span class="target-badge">${targetValue || '-'}</span></div>
+                                            <div>-</div>
+                                        </div>
+                                        <div class="actual-group">
+                                            <div><span class="weight-badge">${weightValue || '-'}</span></div>
+                                            <div>-</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            html += `</div>`;
+                        }
+                    } catch (error) {
+                        console.error(`❌ Error processing operation ${index} (${op.role}):`, error);
+                        console.error('Error stack:', error.stack);
+                    }
                 });
                 
-                html += `</div>`;
+                html += '</div>';
+                console.log('📝 Generated HTML length:', html.length);
+                console.log('📝 Setting operationsContent.innerHTML...');
+                operationsContent.innerHTML = html;
+                console.log('✅ Operations content updated');
+                
+                attachSearchFunctionality();
+                attachDropdownFunctionality(teamName);
+                attachMemberRowClickHandlers();
+                console.log('✅ Event handlers attached');
+            } catch (error) {
+                console.error('❌ ERROR in updateOperationsSection:', error);
+                console.error('Error stack:', error.stack);
             }
-        });
-        
-        html += '</div>';
-        operationsContent.innerHTML = html;
-        
-        attachSearchFunctionality();
-        attachDropdownFunctionality(teamName);
-        attachMemberRowClickHandlers();
-    }
+        }
 
 
         function generateInitials(name = '') {
@@ -6435,153 +6523,230 @@ const performanceData = {
         }
 
         function refreshOperationsContent() {
-            const operationsContent = document.getElementById('operationsContent');
-            if (!operationsContent) {
-                return;
-            }
-
-            const isMembersView = currentOperationsView === 'members';
-
-            if (!selectedTeam || !selectedTeamData) {
-                operationsSection?.classList.toggle('members-view-active', isMembersView);
-                if (operationsSectionSubtitle) {
-                    operationsSectionSubtitle.textContent = isMembersView
-                        ? 'Select a team to view their team members'
-                        : '';
+            console.log('--- refreshOperationsContent called ---');
+            console.log('Current view:', currentView);
+            console.log('Current operations view:', currentOperationsView);
+            console.log('Selected team:', selectedTeam);
+            console.log('Selected team data:', selectedTeamData);
+            
+            try {
+                const operationsContent = document.getElementById('operationsContent');
+                if (!operationsContent) {
+                    console.error('❌ operationsContent element not found!');
+                    return;
                 }
-                operationsContent.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
-                        <div class="empty-state-text">${isMembersView
+
+                const isMembersView = currentOperationsView === 'members';
+                console.log('Is members view:', isMembersView);
+
+                if (!selectedTeam || !selectedTeamData) {
+                    console.warn('⚠️ No team selected, showing empty state');
+                    operationsSection?.classList.toggle('members-view-active', isMembersView);
+                    if (operationsSectionSubtitle) {
+                        operationsSectionSubtitle.textContent = isMembersView
                             ? 'Select a team to view their team members'
-                            : 'Select a team to view lag KPIs or their team members'}</div>
-                    </div>
-                `;
-                
-                updateScoreboardToggleState();
-                updateTeamMembersMiniContainer();
-                return;
-            }
-
-            operationsSection?.classList.toggle('members-view-active', isMembersView);
-
-            if (operationsSectionSubtitle) {
-                if (isMembersView) {
-                    operationsSectionSubtitle.textContent = '';
-                } else {
-                    // Check switch state: 'profile' = Lead KPIs, 'operations' = Lag KPIs
-                    operationsSectionSubtitle.textContent = currentView === 'profile'
-                        ? `${selectedTeamData.title} lead KPIs`
-                        : `${selectedTeamData.title} lag KPIs`;
+                            : 'Select a team leader to view KPIs';
+                    }
+                    operationsContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <div class="empty-state-text">${isMembersView
+                                ? 'Select a team to view their team members'
+                                : 'Select a team to view lag KPIs or their team members'}</div>
+                        </div>
+                    `;
+                    
+                    // Clear sticky header when showing empty state
+                    clearPinnedSubOperationsHeader();
+                    
+                    updateScoreboardToggleState();
+                    updateTeamMembersMiniContainer();
+                    return;
                 }
-            }
 
-            if (isMembersView) {
-                updateTeamMembersSection(selectedTeam, selectedTeamData.title).catch(err => {
-                    console.error('Error updating team members section:', err);
-                });
-                updateTeamMembersMiniContainer();
-            } else {
-                updateOperationsSection(selectedTeam, selectedTeamData.title);
-                updateTeamMembersMiniContainer();
-            }
+                operationsSection?.classList.toggle('members-view-active', isMembersView);
 
-            updateScoreboardToggleState();
+                if (operationsSectionSubtitle) {
+                    if (isMembersView) {
+                        operationsSectionSubtitle.textContent = '';
+                    } else {
+                        // Check switch state: 'profile' = Lead KPIs, 'operations' = Lag KPIs
+                        operationsSectionSubtitle.textContent = currentView === 'profile'
+                            ? `${selectedTeamData.title} lead KPIs`
+                            : `${selectedTeamData.title} lag KPIs`;
+                        console.log('Updated subtitle:', operationsSectionSubtitle.textContent);
+                    }
+                }
+
+                if (isMembersView) {
+                    console.log('📊 Updating team members section...');
+                    updateTeamMembersSection(selectedTeam, selectedTeamData.title).catch(err => {
+                        console.error('❌ Error updating team members section:', err);
+                        console.error('Error stack:', err.stack);
+                    });
+                    updateTeamMembersMiniContainer();
+                    // Clear sticky header for members view
+                    clearPinnedSubOperationsHeader();
+                } else {
+                    console.log('📊 Updating operations section (Lag KPIs)...');
+                    updateOperationsSection(selectedTeam, selectedTeamData.title);
+                    updateTeamMembersMiniContainer();
+                    // Re-initialize sticky header after operations content is updated
+                    setTimeout(() => {
+                        setupSubOperationsHeaderPinning();
+                    }, 100);
+                }
+
+                updateScoreboardToggleState();
+                console.log('✅ refreshOperationsContent completed');
+            } catch (error) {
+                console.error('❌ ERROR in refreshOperationsContent:', error);
+                console.error('Error stack:', error.stack);
+            }
         }
 
         function updateLeadKpiSection(teamName, teamTitle) {
-            const profileContent = document.getElementById('profileContent');
-            const leadKpis = leadKpiData[teamName] || [];
+            console.log('--- updateLeadKpiSection called ---');
+            console.log('Team name:', teamName);
+            console.log('Team title:', teamTitle);
             
-            // Update subtitle when team is selected
-            if (profileSectionSubtitle && selectedTeamData) {
-                profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
-            }
-            
-            if (leadKpis.length === 0) {
-                // Hide search container and table header when no data
-                const searchContainer = document.getElementById('profileSearchContainer');
-                if (searchContainer) {
-                    searchContainer.style.display = 'none';
+            try {
+                const profileContent = document.getElementById('profileContent');
+                if (!profileContent) {
+                    console.error('❌ profileContent element not found!');
+                    return;
                 }
+                
+                const leadKpis = leadKpiData[teamName] || [];
+                console.log('Lead KPIs data for team:', leadKpis);
+                console.log('Number of lead KPIs:', leadKpis.length);
+                console.log('leadKpiData keys:', Object.keys(leadKpiData || {}));
+                
+                // Update subtitle when team is selected
+                if (profileSectionSubtitle && selectedTeamData) {
+                    profileSectionSubtitle.textContent = `${selectedTeamData.title} lead KPIs`;
+                }
+                
+                if (leadKpis.length === 0) {
+                    console.warn('⚠️ No lead KPIs data found for team:', teamName);
+                    // Hide search container and table header when no data
+                    const searchContainer = document.getElementById('profileSearchContainer');
+                    if (searchContainer) {
+                        searchContainer.style.display = 'none';
+                    }
+                    const tableHeaderContainer = document.getElementById('profileTableHeader');
+                    if (tableHeaderContainer) {
+                        tableHeaderContainer.style.display = 'none';
+                    }
+                    profileContent.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📊</div>
+                                <div class="empty-state-text">No Lead KPIs data available</div>
+                        </div>
+                    `;
+                    return;
+                }
+        
+                // Show and populate search container in section-header
+                setupSearchContainer('Search operations...', 'profileSearchContainer', 'searchInputLead');
+                
+                // Place table-header outside profileContent
                 const tableHeaderContainer = document.getElementById('profileTableHeader');
                 if (tableHeaderContainer) {
-                    tableHeaderContainer.style.display = 'none';
+                    tableHeaderContainer.innerHTML = `
+                        <div class="table-header">
+                            <div>Operation KPI</div>
+                            <div>KPI Owner</div>
+                            <div>
+                                <div class="target">TARGET</div>
+                            </div>
+                            <div>
+                                <div>ACTUAL</div>
+                            </div>
+                        </div>
+                    `;
+                    tableHeaderContainer.style.display = 'block';
+                    console.log('✅ Profile table header created');
+                } else {
+                    console.error('❌ profileTableHeader element not found!');
                 }
-                profileContent.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📊</div>
-                            <div class="empty-state-text">No Lead KPIs data available</div>
-                    </div>
+                
+                const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+                console.log('Period key:', periodKey);
+                console.log('Selected year:', selectedYear);
+                console.log('Selected month:', selectedMonth);
+                console.log('leadKpiExpensesData available:', !!leadKpiExpensesData);
+                if (leadKpiExpensesData && leadKpiExpensesData[teamName]) {
+                    console.log('Lead KPI expenses data keys for team:', Object.keys(leadKpiExpensesData[teamName]));
+                }
+                
+                let html = `
+                    <div id="leadKpiList">
                 `;
-                return;
+                
+                leadKpis.forEach((kpi, index) => {
+                    try {
+                        // Get period data if available
+                        const periodData = leadKpiExpensesData[teamName]?.[kpi.role]?.[periodKey];
+                        
+                        console.log(`Lead KPI ${index + 1}/${leadKpis.length}:`, {
+                            role: kpi.role,
+                            owner: kpi.owner,
+                            hasPeriodData: !!periodData,
+                            periodData: periodData
+                        });
+                        
+                        const targetNumeric = periodData ? periodData.target : null;
+                        const actualNumeric = periodData ? periodData.actual : null;
+                        const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
+                        const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
+                        const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
+                        
+                        if (!periodData) {
+                            console.warn(`⚠️ No period data found for lead KPI: ${kpi.role} (period: ${periodKey})`);
+                        }
+                        
+                        html += `
+                        <div class="member-row" 
+                             data-name="${kpi.owner.toLowerCase()}" 
+                             data-team="${teamName.toLowerCase()}" 
+                             data-index="${index}"
+                             data-operation="${kpi.role}"
+                             data-target="${targetNumeric !== null ? targetNumeric : ''}"
+                             data-actual="${actualNumeric !== null ? actualNumeric : ''}"
+                             style="cursor: pointer;">
+                            <div class="member-info">
+                                <div class="member-name">${kpi.role}</div>
+                            </div>
+                            <div>${kpi.owner}</div>
+                            <div class="target-group">
+                            <div>${targetValue}</div>
+                            </div>
+                            <div class="actual-group">
+                            <div>${actualValue}</div>
+                            </div>
+                        </div>
+                        `;
+                    } catch (error) {
+                        console.error(`❌ Error processing lead KPI ${index} (${kpi.role}):`, error);
+                        console.error('Error stack:', error.stack);
+                    }
+                });
+                
+                html += '</div>';
+                console.log('📝 Generated HTML length:', html.length);
+                console.log('📝 Setting profileContent.innerHTML...');
+                profileContent.innerHTML = html;
+                console.log('✅ Profile content updated');
+            
+                attachSearchFunctionalityLead();
+                attachMemberRowClickHandlersLead();
+                console.log('✅ Event handlers attached');
+            } catch (error) {
+                console.error('❌ ERROR in updateLeadKpiSection:', error);
+                console.error('Error stack:', error.stack);
             }
-        
-            // Show and populate search container in section-header
-            setupSearchContainer('Search operations...', 'profileSearchContainer', 'searchInputLead');
-            
-            // Place table-header outside profileContent
-            const tableHeaderContainer = document.getElementById('profileTableHeader');
-            if (tableHeaderContainer) {
-                tableHeaderContainer.innerHTML = `
-                    <div class="table-header">
-                        <div>Operation KPI</div>
-                        <div>KPI Owner</div>
-                        <div>
-                            <div class="target">TARGET</div>
-                        </div>
-                        <div>
-                            <div>ACTUAL</div>
-                        </div>
-                    </div>
-                `;
-                tableHeaderContainer.style.display = 'block';
-            }
-            
-            let html = `
-                <div id="leadKpiList">
-            `;
-            
-            leadKpis.forEach((kpi, index) => {
-            // Get period data if available
-            const periodKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
-            const periodData = leadKpiExpensesData[teamName]?.[kpi.role]?.[periodKey];
-            
-            const targetNumeric = periodData ? periodData.target : null;
-            const actualNumeric = periodData ? periodData.actual : null;
-            const isPercentageKpi = kpi.role.includes('%') || kpi.role.toLowerCase().includes('percent');
-            const targetValue = periodData ? formatValueForDisplay(periodData.target, isPercentageKpi) : '-';
-            const actualValue = periodData ? formatValueForDisplay(periodData.actual, isPercentageKpi) : '-';
-            
-                html += `
-                <div class="member-row" 
-                     data-name="${kpi.owner.toLowerCase()}" 
-                     data-team="${teamName.toLowerCase()}" 
-                     data-index="${index}"
-                     data-operation="${kpi.role}"
-                     data-target="${targetNumeric !== null ? targetNumeric : ''}"
-                     data-actual="${actualNumeric !== null ? actualNumeric : ''}"
-                     style="cursor: pointer;">
-                        <div class="member-info">
-                            <div class="member-name">${kpi.role}</div>
-                        </div>
-                        <div>${kpi.owner}</div>
-                        <div class="target-group">
-                        <div>${targetValue}</div>
-                        </div>
-                        <div class="actual-group">
-                        <div>${actualValue}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            profileContent.innerHTML = html;
-        
-        attachSearchFunctionalityLead();
-        attachMemberRowClickHandlersLead();
-    }
+        }
 
         const performanceReportCopy = {
             defaultTitle: '--',
@@ -8941,13 +9106,13 @@ const performanceData = {
             const tableHeaderContainer = document.getElementById('operationsTableHeader');
             
             if (!operationsContent || !tableHeaderContainer) {
-                console.log('[sticky-subheader] missing operationsContent or tableHeaderContainer');
+                // Silently return if elements don't exist (normal when switching views)
                 return;
             }
             
             const tableHeader = tableHeaderContainer.querySelector('.table-header');
             if (!tableHeader) {
-                console.log('[sticky-subheader] no table-header found');
+                // Silently return if table header doesn't exist
                 return;
             }
             
@@ -8955,7 +9120,7 @@ const performanceData = {
             const pinnedClass = 'sub-operations-header-pinned';
             
             if (!activeSubHeader) {
-                console.log('[sticky-subheader] no active sub-operations header to pin');
+                // This is normal when no sub-operations are expanded - silently clear
                 clearPinnedSubOperationsHeader();
                 return;
             }
@@ -9015,8 +9180,11 @@ const performanceData = {
             window.__subOpsHeaderHandler = handler;
             operationsContent.addEventListener('scroll', handler, { passive: true });
             
-            // Run once to initialize state
-            console.log('[sticky-subheader] initializing pinning (operationsContent scroll)');
+            // Run once to initialize state (only log if there's actually content)
+            const hasContent = operationsContent.querySelector('.member-row, .sub-operations');
+            if (hasContent) {
+                console.log('[sticky-subheader] initializing pinning (operationsContent scroll)');
+            }
             updateSubOperationsHeaderPinning();
         }
 
