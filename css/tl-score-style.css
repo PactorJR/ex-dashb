@@ -306,6 +306,14 @@ select {
         gap: 10px;
     }
 
+    .reports-section .report-card .chart-wrapper .team-members-mini-container.show {
+        height: 250px !important;
+        width: 100% !important;
+        max-height: 250px !important;
+        max-width: 100% !important;
+    }
+    
+
     /* Team Members Mini Container responsive adjustments */
     .chart-wrapper { 
         height: 100% !important;
