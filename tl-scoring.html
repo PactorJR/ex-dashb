@@ -52,16 +52,15 @@
             <div class="members-section" id="operationsSection">
                 <div class="section-header">
                     <div class="section-heading">
-                        <h2 class="section-title" id="operationsSectionTitle">Lag KPIs</h2>
+                        <div class="section-switch-container">
+                            <button class="section-switch active" id="sectionSwitch" data-target="lag">Lag</button>
+                            <button class="section-switch" id="sectionSwitchLead" data-target="lead">Lead</button>
+                        </div>
                         <p class="section-subtitle" id="operationsSectionSubtitle">Select a team leader to view KPIs</p>
                     </div>
                     <div class="section-actions">
                         <div class="search-box" id="operationsSearchContainer" style="display: none;">
                             <input type="text" id="searchInput" placeholder="Search operations...">
-                        </div>
-                        <div class="section-switch-container">
-                            <button class="section-switch active" id="sectionSwitch" data-target="lag">Lag</button>
-                            <button class="section-switch" id="sectionSwitchLead" data-target="lead">Lead</button>
                         </div>
                     </div>
                 </div>
@@ -83,16 +82,15 @@
             <div class="members-section hidden" id="profileSection">
                 <div class="section-header">
                     <div class="section-heading">
-                        <h2 class="section-title">Lead KPIs</h2>
+                        <div class="section-switch-container">
+                            <button class="section-switch active" id="sectionSwitch2" data-target="lag">Lag</button>
+                            <button class="section-switch" id="sectionSwitch2Lead" data-target="lead">Lead</button>
+                        </div>
                         <p class="section-subtitle" id="profileSectionSubtitle"></p>
                     </div>
                     <div class="section-actions">
                         <div class="search-box" id="profileSearchContainer" style="display: none;">
                             <input type="text" id="searchInputLead" placeholder="Search operations...">
-                        </div>
-                        <div class="section-switch-container">
-                            <button class="section-switch active" id="sectionSwitch2" data-target="lag">Lag</button>
-                            <button class="section-switch" id="sectionSwitch2Lead" data-target="lead">Lead</button>
                         </div>
                     </div>
                 </div>
