@@ -3039,6 +3039,7 @@ const performanceData = {
                     refreshOperationsContent();
                     updateScoreboardToggleState();
                     updateTeamMembersMiniContainer();
+                    manageTeamMembersMiniInChartWrapper();
                 });
             });
 
@@ -3198,6 +3199,9 @@ const performanceData = {
                     allCards.forEach(c => c.classList.remove('active'));
                     this.classList.add('active');
                     
+                    // Clear any active member rows when selecting a new team
+                    document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                    
                     selectedTeam = normalizeTeamName(this.getAttribute('data-team'));
                     selectedTeamData = {
                         name: this.getAttribute('data-name'),
@@ -3214,6 +3218,13 @@ const performanceData = {
                     refreshOperationsContent();
                     updateLeadKpiSection(selectedTeam, selectedTeamData.title);
                     updateTeamMembersMiniContainer();
+                    
+                    // Use setTimeout to ensure manageTeamMembersMiniInChartWrapper runs after all DOM updates
+                    setTimeout(() => {
+                        // Double-check no member rows are active after content updates
+                        document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
+                        manageTeamMembersMiniInChartWrapper();
+                    }, 0);
                 });
 
                 card.addEventListener('keydown', function(event) {
@@ -3411,6 +3422,86 @@ const performanceData = {
                 container.classList.add('show');
             } else {
                 container.classList.remove('show');
+            }
+            
+            // Manage display in chart-wrapper based on conditions
+            manageTeamMembersMiniInChartWrapper();
+        }
+
+        // Function to manage team-members-mini-container display in chart-wrapper
+        function manageTeamMembersMiniInChartWrapper() {
+            console.log('🔍 [manageTeamMembersMiniInChartWrapper] Function called');
+            
+            const miniContainer = document.getElementById('teamMembersMiniContainer');
+            const chartWrapper = document.querySelector('.chart-wrapper');
+            const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
+            const scoreboardToggleActive = document.querySelector('.scoreboard-toggle-btn.active');
+            const activeMemberRow = document.querySelector('.member-row.row-active');
+            const activeKpiItem = document.querySelector('.sub-operation-item.kpi-item.active');
+            
+            console.log('📦 Element checks:', {
+                miniContainer: !!miniContainer,
+                chartWrapper: !!chartWrapper,
+                chartContainer: !!chartContainer,
+                scoreboardToggleActive: !!scoreboardToggleActive,
+                activeMemberRow: !!activeMemberRow,
+                activeKpiItem: !!activeKpiItem
+            });
+            
+            if (!miniContainer || !chartWrapper || !chartContainer) {
+                console.warn('⚠️ [manageTeamMembersMiniInChartWrapper] Missing required elements, exiting');
+                return;
+            }
+            
+            // Check if we're in members view (Team Members) and a team is selected
+            // Use currentOperationsView to determine the view instead of button attribute
+            const isMembersView = currentOperationsView === 'members';
+            const hasSelectedTeam = selectedTeam && selectedTeamData;
+            const hasActiveMemberRow = activeMemberRow !== null;
+            const hasActiveKpiItem = activeKpiItem !== null;
+            
+            console.log('🔎 Condition checks:', {
+                isMembersView: isMembersView,
+                currentOperationsView: currentOperationsView,
+                scoreboardToggleTarget: scoreboardToggleActive?.getAttribute('data-target'),
+                hasSelectedTeam: hasSelectedTeam,
+                selectedTeam: selectedTeam,
+                selectedTeamData: !!selectedTeamData,
+                hasActiveMemberRow: hasActiveMemberRow,
+                hasActiveKpiItem: hasActiveKpiItem
+            });
+            
+            // If in members view, team is selected, and no member row or kpi-item is clicked
+            if (isMembersView && hasSelectedTeam && !hasActiveMemberRow && !hasActiveKpiItem) {
+                console.log('✅ [manageTeamMembersMiniInChartWrapper] Conditions met - showing mini container in chart-wrapper');
+                
+                // Move mini container to chart-wrapper if not already there
+                const wasMoved = miniContainer.parentElement !== chartWrapper;
+                if (wasMoved) {
+                    console.log('📦 Moving mini container to chart-wrapper');
+                    chartWrapper.appendChild(miniContainer);
+                } else {
+                    console.log('📍 Mini container already in chart-wrapper');
+                }
+                
+                // Show mini container and hide chart container
+                miniContainer.style.display = 'block';
+                chartContainer.style.display = 'none';
+                console.log('👁️ Display updated: miniContainer=block, chartContainer=none');
+            } else {
+                console.log('❌ [manageTeamMembersMiniInChartWrapper] Conditions not met - hiding mini container');
+                console.log('   Reason:', {
+                    isMembersView: isMembersView ? '✓' : '✗',
+                    hasSelectedTeam: hasSelectedTeam ? '✓' : '✗',
+                    hasActiveMemberRow: hasActiveMemberRow ? '✗ (row active)' : '✓',
+                    hasActiveKpiItem: hasActiveKpiItem ? '✗ (kpi-item active)' : '✓'
+                });
+                
+                // Hide mini container and show chart container when member row is clicked
+                // or when conditions are not met
+                miniContainer.style.display = 'none';
+                chartContainer.style.display = 'block';
+                console.log('👁️ Display updated: miniContainer=none, chartContainer=block');
             }
         }
 
@@ -8632,6 +8723,9 @@ const performanceData = {
 
                     // Always ensure the graph container is visible when selecting a KPI
                     ensureChartWrapperVisible();
+                    
+                    // Hide team members mini container when a member row is clicked
+                    manageTeamMembersMiniInChartWrapper();
 
                     const operationName = this.getAttribute('data-operation');
                     const targetStr = this.getAttribute('data-target');
@@ -8791,6 +8885,9 @@ const performanceData = {
                     document.querySelectorAll('.member-row').forEach(r => r.classList.remove('row-active'));
                     // Add active class to clicked row
                     this.classList.add('row-active');
+
+                    // Hide team members mini container when a member row is clicked
+                    manageTeamMembersMiniInChartWrapper();
 
                     const operationName = this.getAttribute('data-operation');
                     const targetStr = this.getAttribute('data-target');
@@ -9004,6 +9101,9 @@ const performanceData = {
                                     // Always ensure the graph container is visible before rendering
                                     ensureChartWrapperVisible();
                                     
+                                    // Hide team members mini container when a kpi-item is clicked
+                                    manageTeamMembersMiniInChartWrapper();
+                                    
                                     // Always call the single, unified chart update function
                                     updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);
                                 };
@@ -9035,6 +9135,9 @@ const performanceData = {
                                     
                                     // Always ensure the graph container is visible before rendering
                                     ensureChartWrapperVisible();
+                                    
+                                    // Hide team members mini container when a sub-operation-item is clicked
+                                    manageTeamMembersMiniInChartWrapper();
                                     
                                     // Always call the single, unified chart update function
                                     updateOperationalKpiChart(teamName, kpiName, targetValue, actualValue);

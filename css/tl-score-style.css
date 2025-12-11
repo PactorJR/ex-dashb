@@ -117,6 +117,78 @@ select {
         max-height: 450px;
     }
 
+    .team-member-mini-icon {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 15px !important;
+    }
+
+    .team-member-mini-name {
+        font-size: var(--fs-medium) !important;
+        min-width: 70px !important;
+    }
+
+    .team-members-mini-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .chart-wrapper { 
+        height: 100% !important;
+        max-height: 450px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        justify-self: center !important;
+    }
+
+    .chart-container.monthly-profit-chart {
+        height: 100% !important;
+        padding: 10px !important;
+    }
+
+    .reports-section .report-card .chart-container.monthly-profit-chart{
+        padding: 10px !important;
+    }
+
+    .reports-section .report-card {
+        padding: 30px !important;
+    }
+
+    .reports-section .report-card .chart-wrapper .team-members-mini-container {
+        height: 100% !important;
+        max-height: 450px !important;
+        width: 100% !important;
+        max-width: 450px !important;
+    }
+    
+    .reports-section .report-card .chart-wrapper .team-members-mini-container.show {
+        height: 400px !important;
+        width: 100% !important;
+        max-height: 500px !important;
+        max-width: 100% !important;
+    }
+
+    .reports-section .report-card .chart-wrapper {
+        padding-bottom: 70px !important;
+    }
+
+    .members-section .team-members-mini-container {
+        margin-top: -18px !important;
+        margin-bottom: 0px !important;
+        max-width: 100% !important;
+        padding: 8px !important;
+        max-height: 400px !important;
+        overflow-x: auto;
+        height: 100% !important;
+        width: 100% !important;
+    }
+    
+    .team-members-mini-container.show {
+        height: 400px !important;
+        width: 100% !important;
+        max-height: 100px !important;
+        max-width: 100% !important;
+    }
+
     .members-section:not(.members-view-active) .table-header {
         grid-template-columns: 420px 210px 150px 150px !important;
         text-align: left;
@@ -235,15 +307,28 @@ select {
     }
 
     /* Team Members Mini Container responsive adjustments */
-    .team-members-mini-container {
-        max-width: 100% !important;
-        padding: 8px !important;
-        max-height: 90px !important;
+    .chart-wrapper { 
+        height: 100% !important;
+        max-height: 260px !important;
+    }
+
+    .reports-section .report-card .chart-container.monthly-profit-chart{
+        padding: 10px !important;
+    }
+
+    .reports-section .report-card {
+        padding: 10px !important;
     }
 
     .members-section .team-members-mini-container {
         margin-top: -18px !important;
         margin-bottom: 0px !important;
+        max-width: 100% !important;
+        padding: 8px !important;
+        max-height: 400px !important;
+        overflow-x: auto;
+        height: 100% !important;
+        width: 100% !important;
     }
 
     .team-members-mini-list {
@@ -261,13 +346,13 @@ select {
     }
 
     .team-member-mini-icon {
-        width: 18px !important;
-        height: 18px !important;
+        width: 28px !important;
+        height: 28px !important;
         font-size: 8px !important;
     }
 
     .team-member-mini-name {
-        font-size: 10px !important;
+        font-size: var(--fs-medium) !important;
         min-width: 70px !important;
     }
 
@@ -486,12 +571,11 @@ small {
 /* Team Members Mini Container */
 .team-members-mini-container {
     display: none;
-    max-width: 100%;
     margin: 0 auto;
     padding: 16px;
-    background: white;
+    background: #f9faf6;
+    border: 1px solid #e3e7d6;
     border-radius: 12px;
-    max-height: 140px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -504,12 +588,19 @@ small {
 
 .team-members-mini-container.show {
     display: block;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .team-members-mini-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .team-members-mini-list.centered-single {
@@ -532,7 +623,7 @@ small {
 .team-member-mini-item {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 30px;
     padding: 6px 0;
 }
 
@@ -1042,6 +1133,10 @@ small {
     font-size: var(--fs-large);
     font-weight: 600;
     font-family: var(--font-body);
+}
+
+.members-section.members-view-active .search-box {
+    padding-top: 10px !important;
 }
 
 /* Team Members Section */
@@ -2249,7 +2344,6 @@ small {
     position: relative;
     height: 240px;
     margin-bottom: 10px;
-    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2303,6 +2397,10 @@ small {
     align-items: stretch;
     gap: 18px;
     margin-top: 18px;
+    height: 100%;
+    max-height: 100%;
+    width: 100%;
+    max-width: 1000px;
 }
 
 .y-axis-label {
