@@ -1,9 +1,22 @@
-/* styles.css */
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable no-duplicate-selectors */
+/* stylelint-disable CssSyntaxError */
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable comment-empty-line-before */
+/* stylelint-disable keyframes-name-pattern */
+
+/* styles.css
+   Global stylesheet and design tokens.
+   - :root variables are the single source of truth for colors, fonts, and responsive font sizes.
+   - Adjusting values here will update the visual system for Navigation, Hero, Ten-Year, and Three-Year sections.
+   - Use this section for global resets and shared utilities used across components.
+*/
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 html {
     scroll-behavior: smooth;
     scroll-snap-type: y mandatory;
@@ -14,8 +27,7 @@ body {
     font-family: var(--font-body);
     background: #fffff5;
     line-height: 1.6;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden auto;
     font-size: var(--fs-base);
     color: var(--text-color);
     width: 100%;
@@ -50,8 +62,8 @@ select {
     --text-color: #000;
     --subtext-color: #525252;
     --light-bg: #96a840;
-    --white: #ffffff;
-    --overlay: rgba(88, 103, 64, 0.4);
+    --white: #fff;
+    --overlay: rgb(88 103 64 / 40%);
     
     /* Additional text colors */
     --text-muted: #6b7280;
@@ -75,8 +87,12 @@ select {
     --fs-h1: 2.5rem;            /* 40px */
 }
 
-/* Responsive font sizes for 1920x1080 and larger */
-@media (min-width: 1920px) {
+/* Responsive font sizes for 1920x1080 and larger
+   - Increases global typographic scale for large viewports.
+   - Affects Hero headline sizes, Plan image scale, and spacing in `.ten-year-plan` and `.three-year-plan`.
+   - Treat this as the 'desktop-XL' tuning layer for visual balance between text and imagery.
+*/
+@media (width >= 1920px) {
     :root {
         --fs-small: 0.875rem;      /* 14px */
         --fs-base: 1rem;           /* 16px */
@@ -99,10 +115,13 @@ select {
     .hero-title-new {
         margin-left: 90px !important;
     }
-}
+} 
 
-/* Responsive font sizes for 1366x768 specifically */
-@media (min-width: 1024px) and (max-width: 1680px) {
+/* Responsive font sizes for mid-size screens (≈1366x768)
+   - Tuning layer for common laptop and medium desktop sizes.
+   - Keeps hero and plan text readable without overpowering imagery; matches `@media` rules for `.plan-image` and grids.
+*/
+@media (width >= 1024px) and (width <= 1680px) {
     :root {
         --fs-small: 0.75rem;        /* 12px */
         --fs-base: 0.875rem;        /* 14px */
@@ -113,9 +132,9 @@ select {
         --fs-h2: 1.75rem;           /* 28px */
         --fs-h1: 2.25rem;           /* 36px */
     }
-}
+} 
 
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     :root {
         --fs-small: 0.8125rem;      /* 13px */
         --fs-base: 0.9375rem;       /* 15px */
@@ -128,14 +147,17 @@ select {
     }
 }
 
-/* Heading styles */
+/* Heading styles
+   - Centralized heading treatment used by `.section-header`, `.hero-content h1`, and feature titles.
+   - Uses `--font-heading` and `--primary-color` so updating here cascades across Ten-Year and Three-Year headers.
+*/
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     line-height: 1.2;
     color: var(--primary-color);
     margin-bottom: 1rem;
-}
+} 
 
 h1 {
     font-size: var(--fs-h1);
@@ -172,7 +194,7 @@ small {
 }
 
 /* Responsive font sizes for smaller screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     :root {
         --fs-h1: 2.25rem;      /* 36px */
         --fs-h2: 1.875rem;     /* 30px */
@@ -181,7 +203,7 @@ small {
     }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
     :root {
         --fs-h1: 2rem;         /* 32px */
         --fs-h2: 1.5rem;       /* 24px */
@@ -194,7 +216,11 @@ small {
     }
 }
 
-/* Loading Animation */
+/* Loading Animation
+   - Full-screen overlay shown on initial load (uses `loading.html` iframe).
+   - High z-index (9999) intentionally sits above fixed `.navbar`; fades out to reveal `.hero` and other sections.
+   - Keep duration/animation in sync with lazy-loaded content to avoid jarring reveals.
+*/
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -208,12 +234,12 @@ small {
     justify-content: center;
     z-index: 9999;
     animation: fadeOut 0.5s ease 3s forwards;
-}
+} 
 
 .loading-spinner {
     width: 60px;
     height: 60px;
-    border: 4px solid rgba(229, 187, 34, 0.2);
+    border: 4px solid rgb(229 187 34 / 20%);
     border-top: 4px solid #e5bb22;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -232,6 +258,7 @@ small {
     100% { transform: rotate(360deg); }
 }
 
+
 @keyframes fadeOut {
     to {
         opacity: 0;
@@ -240,12 +267,15 @@ small {
 }
 
 
-/* Scroll Animation Classes */
+/* Scroll Animation Classes
+   - Utility animations for elements entering the viewport (.fade-in, .slide-left/right, .scale-in).
+   - Commonly applied to `.hero-new`, `.feature-block`, `.plan-image-wrapper`, and other revealable sections to create consistent motion.
+*/
 .fade-in {
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
+} 
 
 .fade-in.visible {
     opacity: 1;
@@ -285,7 +315,11 @@ small {
     transform: scale(1);
 }
 
-/* Navigation */
+/* Navigation
+   - Fixed top navigation bar; uses `--primary-color` and provides `.navbar.scrolled` variant when content scrolls.
+   - z-index:1000 keeps it above main sections but below the `.loading-overlay` (z-index:9999).
+   - Changing padding or height affects `scroll-margin-top` used by sections to avoid covered headings.
+*/
 .navbar {
     position: fixed;
     top: 0;
@@ -295,9 +329,9 @@ small {
     padding: 15px 20px;
     z-index: 1000;
     border-bottom: var(--secondary-color) solid 2px;
-    box-shadow: 0 2px 10px rgba(88, 103, 64, 0.3);
+    box-shadow: 0 2px 10px rgb(88 103 64 / 30%);
     transition: all 0.3s ease;
-}
+} 
 
 .container-navbar {
     max-width: 100%;
@@ -324,7 +358,7 @@ small {
 
 .navbar.scrolled {
     padding: 10px 20px;
-    box-shadow: 0 4px 20px rgba(88, 103, 64, 0.4);
+    box-shadow: 0 4px 20px rgb(88 103 64 / 40%);
 }
 
 .logo h2 {
@@ -370,8 +404,7 @@ small {
     margin: 0 auto;
     margin-top: -50px;
     padding: 0 20px;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .container {
@@ -393,7 +426,7 @@ small {
     list-style: none;
     padding: 10px 0;
     min-width: 200px;
-    box-shadow: 0 5px 20px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 5px 20px rgb(88 103 64 / 20%);
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
@@ -431,7 +464,7 @@ small {
     background: var(--light-bg);
     color: var(--white);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 5px 15px rgb(229 187 34 / 40%);
 }
 
 .mobile-menu-toggle {
@@ -447,7 +480,11 @@ small {
     background: var(--white);
     transition: all 0.3s ease;
 }
-/* Main Content */
+
+/* Main Content
+   - The root scroll container for full-page sections; enables `scroll-snap` behavior for `.hero`, `.ten-year-plan`, and `.three-year-plan`.
+   - Adjusting `height` or `scroll-snap` here changes how sections align during navigation and when using the scroll-to-top button.
+*/
 .main-content {
     margin-left: 0;
     transition: margin-left 0.3s ease;
@@ -455,7 +492,7 @@ small {
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
     height: 100vh;
-}
+} 
 
 .header {
     margin-bottom: 1.5vh;
@@ -531,10 +568,10 @@ small {
     height: 300px;
     background: linear-gradient(
         to bottom,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 245, 0.3) 40%,
-        rgba(255, 255, 245, 0.6) 70%,
-        rgba(255, 255, 245, 0.9) 90%,
+        rgb(255 255 255 / 0%) 0%,
+        rgb(255 255 245 / 30%) 40%,
+        rgb(255 255 245 / 60%) 70%,
+        rgb(255 255 245 / 90%) 90%,
         #fffff5 100%
     );
     z-index: 4;
@@ -553,7 +590,11 @@ small {
     margin-top: -200px;
 }
 
-/* Hero Title Text Styles - Matching Image Design */
+/* Hero Title Text Styles - Matching Image Design
+   - Styles the hero headline and supports the image-based composition (.hero-image + .hero-overlay).
+   - Font sizes are driven by :root variables so they scale with the responsive media queries above.
+   - Keep `z-index` in sync with `.hero-overlay` (z-index:2) and `.hero-content` (z-index:3) to ensure correct stacking.
+*/
 .hero-title-text {
     width: 100%;
     max-width: 800px;
@@ -572,7 +613,7 @@ small {
     left: 50%;
     transform: translateX(-50%);
     box-sizing: border-box;
-}
+} 
 
 .hero-title-prefix {
     font-size: 24px;
@@ -580,7 +621,7 @@ small {
     color: var(--subtext-color) !important;
     margin: 0;
     text-align: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     flex: 0 0 auto;
     white-space: nowrap;
 }
@@ -602,11 +643,10 @@ small {
     margin: 0;
     line-height: 1.1;
     background: linear-gradient(to right, #bfb02c 0%, #94ae44 20%, #7ca244 40%, #649350 60%, #537e44 80%, #446938 100%);
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-align: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     flex: 0 0 auto;
 }
 
@@ -643,6 +683,7 @@ small {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -676,10 +717,10 @@ small {
     background: linear-gradient(
         to bottom,
         var(--overlay) 0%,
-        rgba(88, 103, 64, 0.3) 40%,
-        rgba(88, 103, 64, 0.2) 70%,
-        rgba(88, 103, 64, 0.1) 90%,
-        rgba(255, 255, 245, 0.1) 100%
+        rgb(88 103 64 / 30%) 40%,
+        rgb(88 103 64 / 20%) 70%,
+        rgb(88 103 64 / 10%) 90%,
+        rgb(255 255 245 / 10%) 100%
     );
     z-index: 2;
     transition: background 0.6s ease-in-out;
@@ -699,6 +740,7 @@ small {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -745,7 +787,11 @@ small {
     color: var(--text-color);
 }
 
-/* Ten Year Plan Section */
+/* Ten Year Plan Section
+   - Long-term roadmap layout pairing large imagery and feature grids (.plan-image + .plan-features-summary).
+   - Uses overlay and ::before/::after fades to create consistent transitions shared with `.three-year-plan`.
+   - When adjusting spacing or gradients here, mirror similar changes in `.three-year-plan` for consistent design language.
+*/
 .ten-year-plan {
     position: relative;
     background: #fffff5;
@@ -759,7 +805,7 @@ small {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-}
+} 
 
 /* Ten Year Plan Features Section */
 .ten-year-features {
@@ -774,6 +820,7 @@ small {
     align-items: center;
     justify-content: center;
 }
+
 .ten-year-plan > * {
     position: relative;
     z-index: 2;
@@ -785,7 +832,7 @@ small {
     z-index: 5;
     margin-bottom: 30px;
     margin-top: 0;
-    border-bottom: 2px solid rgba(82, 85, 82, 0.1);
+    border-bottom: 2px solid rgb(82 85 82 / 10%);
     width: 100%;
     max-width: 1920px;
 }
@@ -803,6 +850,7 @@ small {
     color: var(--subtext-color);
     margin-bottom: 0;
 }
+
 .ten-year-plan::before,
 .ten-year-plan::after {
     content: '';
@@ -824,10 +872,10 @@ small {
     background: linear-gradient(
         to bottom,
         #fffff5 0%,
-        rgba(255, 255, 245, 0.9) 10%,
-        rgba(255, 255, 245, 0.6) 30%,
-        rgba(255, 255, 245, 0.3) 60%,
-        rgba(255, 255, 245, 0) 100%
+        rgb(255 255 245 / 90%) 10%,
+        rgb(255 255 245 / 60%) 30%,
+        rgb(255 255 245 / 30%) 60%,
+        rgb(255 255 245 / 0%) 100%
     );
     z-index: 4;
     pointer-events: none;
@@ -842,10 +890,10 @@ small {
     height: 100px;
     background: linear-gradient(
         to bottom,
-        rgba(255, 255, 245, 0) 0%,
-        rgba(255, 255, 245, 0.3) 40%,
-        rgba(255, 255, 245, 0.6) 70%,
-        rgba(255, 255, 245, 0.9) 90%,
+        rgb(255 255 245 / 0%) 0%,
+        rgb(255 255 245 / 30%) 40%,
+        rgb(255 255 245 / 60%) 70%,
+        rgb(255 255 245 / 90%) 90%,
         #fffff5 100%
     );
     z-index: 4;
@@ -861,10 +909,10 @@ small {
     background: linear-gradient(
         to bottom,
         var(--overlay) 0%,
-        rgba(88, 103, 64, 0.3) 40%,
-        rgba(88, 103, 64, 0.2) 70%,
-        rgba(88, 103, 64, 0.1) 90%,
-        rgba(255, 255, 245, 0.1) 100%
+        rgb(88 103 64 / 30%) 40%,
+        rgb(88 103 64 / 20%) 70%,
+        rgb(88 103 64 / 10%) 90%,
+        rgb(255 255 245 / 10%) 100%
     );
     z-index: 2;
     transition: background 0.6s ease-in-out;
@@ -900,7 +948,7 @@ small {
     max-height: 100%;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     background: #f8f9fa;
 }
@@ -950,7 +998,7 @@ small {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    background: rgba(229, 187, 34, 0.1);
+    background: rgb(229 187 34 / 10%);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -989,12 +1037,13 @@ small {
 }
 
 /* Plan Image - Creative Sizing System */
+
 /* Edit CSS variables in :root to change dimensions easily! */
 .plan-image {
     position: relative;
     border-radius: var(--plan-image-border-radius);
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 10px 40px rgb(88 103 64 / 20%);
     
     /* Creative sizing using CSS variables */
     width: clamp(
@@ -1010,7 +1059,6 @@ small {
     
     /* Aspect ratio support */
     aspect-ratio: var(--plan-image-aspect-ratio);
-    
     min-height: 0;
     display: flex;
     align-items: stretch;
@@ -1103,9 +1151,11 @@ small {
 }
 
 /* Responsive image adjustments */
+
 /* Responsive image adjustments for full left side */
+
 /* Responsive plan-image for 1980x1080 resolution */
-@media (min-width: 1980px) {
+@media (width >= 1980px) {
     .plan-image-wrapper {
         min-height: 0;
         height: 100%;
@@ -1134,7 +1184,7 @@ small {
     }
 }
 
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
     .plan-image-wrapper {
         min-height: 0;
         height: 100%;
@@ -1147,7 +1197,7 @@ small {
 }
 
 /* Responsive plan-image for 1366x768 resolution */
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     .plan-image-wrapper {
         min-height: 0;
         height: 100%;
@@ -1160,7 +1210,7 @@ small {
     }
 }
 
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     .plan-image-wrapper {
         min-height: 0;
         height: 100%;
@@ -1180,7 +1230,7 @@ small {
     background: white;
     padding: clamp(18px, 2.5vw, 25px) clamp(22px, 3vw, 30px);
     border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 10px 30px rgb(88 103 64 / 20%);
     text-align: center;
     z-index: 10;
 }
@@ -1204,13 +1254,13 @@ small {
 /* Projects Badge (Top Right) */
 .projects-badge {
     position: absolute;
-    top: 0px;
+    top: 0;
     right: -10px;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-bg) 100%);
     color: white;
     padding: clamp(15px, 2vw, 20px) clamp(20px, 2.5vw, 25px);
     border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(150, 168, 64, 0.4);
+    box-shadow: 0 10px 30px rgb(150 168 64 / 40%);
     text-align: center;
     z-index: 10;
 }
@@ -1266,7 +1316,7 @@ small {
     flex-shrink: 0;
     width: 50px;
     height: 50px;
-    background: rgba(229, 187, 34, 0.1);
+    background: rgb(229 187 34 / 10%);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -1276,7 +1326,7 @@ small {
 
 /* Ten Year Plan - Text & icon treatment on gradient */
 .ten-year-plan .plan-text {
-    background: rgba(0, 0, 0, 0.22);
+    background: rgb(0 0 0 / 22%);
     border-radius: 16px;
     padding: 22px 26px;
     backdrop-filter: blur(6px);
@@ -1308,7 +1358,7 @@ small {
 }
 
 .ten-year-plan .plan-features .feature-icon {
-    background: rgba(229, 187, 34, 0.1);
+    background: rgb(229 187 34 / 10%);
     color: var(--secondary-color);
 }
 
@@ -1361,7 +1411,7 @@ small {
     gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 0 40px 0;
+    padding: 0 0 40px;
 }
 
 /* Horizontal features grid for ten-year-plan */
@@ -1375,10 +1425,10 @@ small {
 
 /* Feature Block Styles */
 .feature-block {
-    background: #ffffff;
+    background: #fff;
     padding: 32px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.2);
+    border: 1px solid rgb(88 103 64 / 20%);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     max-height: 70% !important;
     height: 70% !important;
@@ -1432,8 +1482,8 @@ small {
 
 .feature-block:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    border-color: rgba(88, 103, 64, 0.4);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+    border-color: rgb(88 103 64 / 40%);
 }
 
 .feature-header {
@@ -1446,7 +1496,7 @@ small {
 .feature-icon-block {
     width: 56px;
     height: 56px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -1486,7 +1536,7 @@ small {
 .feature-tag {
     display: inline-block;
     padding: 6px 12px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     color: var(--secondary-color);
     border-radius: 6px;
     font-size: 13px;
@@ -1494,7 +1544,7 @@ small {
 }
 
 /* Responsive Design */
-@media (max-width: 968px) {
+@media (width <= 968px) {
     .plan-content {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -1520,7 +1570,7 @@ small {
     }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
     .ten-year-plan {
         padding: 60px 0;
     }
@@ -1585,7 +1635,11 @@ small {
     }
 }
 
-/* Three Year Plan Section */
+/* Three Year Plan Section
+   - Mid-term plan section with a colorful gradient background that complements the Ten-Year palette.
+   - Shares overlay and fade patterns with `.ten-year-plan` so maintain consistent `pointer-events` and z-index behavior.
+   - Service cards and metrics are responsive siblings to the features in the Ten Year section; change grid rules in both when tuning layout.
+*/
 .three-year-plan {
     position: relative;
     background: linear-gradient(to right, #5a8c4a 0%, #6fa85a 20%, #85c46a 40%, #a5d85a 60%, #c5e85a 80%, #ffeb3b 100%);
@@ -1619,10 +1673,10 @@ small {
     background: linear-gradient(
         to bottom,
         #fffff5 0%,
-        rgba(255, 255, 245, 0.9) 10%,
-        rgba(255, 255, 245, 0.6) 30%,
-        rgba(255, 255, 245, 0.3) 60%,
-        rgba(255, 255, 245, 0) 100%
+        rgb(255 255 245 / 90%) 10%,
+        rgb(255 255 245 / 60%) 30%,
+        rgb(255 255 245 / 30%) 60%,
+        rgb(255 255 245 / 0%) 100%
     );
     z-index: 4;
 }
@@ -1633,10 +1687,10 @@ small {
     height: 50px;
     background: linear-gradient(
         to bottom,
-        rgba(255, 255, 245, 0) 0%,
-        rgba(255, 255, 245, 0.3) 40%,
-        rgba(255, 255, 245, 0.6) 70%,
-        rgba(255, 255, 245, 0.9) 90%,
+        rgb(255 255 245 / 0%) 0%,
+        rgb(255 255 245 / 30%) 40%,
+        rgb(255 255 245 / 60%) 70%,
+        rgb(255 255 245 / 90%) 90%,
         #fffff5 100%
     );
     z-index: 4;
@@ -1651,10 +1705,10 @@ small {
     background: linear-gradient(
         to bottom,
         var(--overlay) 0%,
-        rgba(88, 103, 64, 0.3) 40%,
-        rgba(88, 103, 64, 0.2) 70%,
-        rgba(88, 103, 64, 0.1) 90%,
-        rgba(255, 255, 245, 0.1) 100%
+        rgb(88 103 64 / 30%) 40%,
+        rgb(88 103 64 / 20%) 70%,
+        rgb(88 103 64 / 10%) 90%,
+        rgb(255 255 245 / 10%) 100%
     );
     z-index: 2;
     transition: background 0.6s ease-in-out;
@@ -1707,7 +1761,7 @@ small {
 
 /* Service Card */
 .service-card {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px;
@@ -1720,7 +1774,7 @@ small {
 
 .service-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
 }
 
 .service-card .service-tag,
@@ -1745,17 +1799,17 @@ small {
 }
 
 .service-card--advocates .service-tag {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgb(255 255 255 / 18%);
 }
 
 .service-card--advocates .service-subtitle,
 .service-card--advocates .service-description,
 .service-card--advocates .metrics-list li {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgb(255 255 255 / 85%);
 }
 
 .service-card--advocates .metrics-group {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgb(255 255 255 / 12%);
 }
 
 .service-card--advocates .metrics-list li::before {
@@ -1783,18 +1837,18 @@ small {
 }
 
 .service-card--innovator .service-tag {
-    background: rgba(45, 58, 45, 0.12);
+    background: rgb(45 58 45 / 12%);
     color: #2d3a2d;
 }
 
 .service-card--innovator .service-subtitle,
 .service-card--innovator .service-description,
 .service-card--innovator .metrics-list li {
-    color: rgba(45, 58, 45, 0.9);
+    color: rgb(45 58 45 / 90%);
 }
 
 .service-card--innovator .metrics-group {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgb(255 255 255 / 60%);
 }
 
 .service-card--innovator .metrics-list li::before {
@@ -1822,18 +1876,18 @@ small {
 }
 
 .service-card--sages .service-tag {
-    background: rgba(36, 50, 31, 0.12);
+    background: rgb(36 50 31 / 12%);
     color: #24321f;
 }
 
 .service-card--sages .service-subtitle,
 .service-card--sages .service-description,
 .service-card--sages .metrics-list li {
-    color: rgba(36, 50, 31, 0.85);
+    color: rgb(36 50 31 / 85%);
 }
 
 .service-card--sages .metrics-group {
-    background: rgba(255, 255, 255, 0.45);
+    background: rgb(255 255 255 / 45%);
 }
 
 .service-card--sages .metrics-list li::before {
@@ -1862,17 +1916,17 @@ small {
 }
 
 .service-card--essentialists .service-tag {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgb(255 255 255 / 18%);
 }
 
 .service-card--essentialists .service-subtitle,
 .service-card--essentialists .service-description,
 .service-card--essentialists .metrics-list li {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgb(255 255 255 / 85%);
 }
 
 .service-card--essentialists .metrics-group {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgb(255 255 255 / 12%);
 }
 
 .service-card--essentialists .metrics-list li::before {
@@ -1899,7 +1953,7 @@ small {
 .service-icon {
     width: 48px;
     height: 48px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -1917,7 +1971,7 @@ small {
 .service-tag {
     display: inline-block;
     padding: 6px 14px;
-    background: rgba(88, 103, 64, 0.1);
+    background: rgb(88 103 64 / 10%);
     color: var(--primary-color);
     border-radius: 20px;
     font-size: 11px;
@@ -1953,7 +2007,7 @@ small {
 }
 
 .metrics-group {
-    background: rgba(88, 103, 64, 0.05);
+    background: rgb(88 103 64 / 5%);
     border-radius: 8px;
     padding: 16px;
 }
@@ -1997,7 +2051,7 @@ small {
 }
 
 /* Responsive Design for Service Cards */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
     .plan-services-grid {
         grid-template-columns: 1fr;
         gap: 24px;
@@ -2009,7 +2063,7 @@ small {
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .service-card {
         padding: 24px;
     }
@@ -2116,10 +2170,10 @@ small {
 }
 
 .metric-item {
-    background: rgba(88, 103, 64, 0.15);
+    background: rgb(88 103 64 / 15%);
     padding: 24px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    border: 1px solid rgb(88 103 64 / 30%);
 }
 
 .metric-value {
@@ -2195,7 +2249,7 @@ small {
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    background: rgba(88, 103, 64, 0.15);
+    background: rgb(88 103 64 / 15%);
     aspect-ratio: 16/10;
     width: 90%;
     height: 90%;
@@ -2211,14 +2265,14 @@ small {
     position: absolute;
     bottom: 24px;
     right: 24px;
-    background: rgba(82, 85, 82, 0.95);
+    background: rgb(82 85 82 / 95%);
     backdrop-filter: blur(10px);
     padding: 16px 20px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    border: 1px solid rgb(88 103 64 / 30%);
 }
 
 .speed-icon {
@@ -2241,8 +2295,8 @@ small {
 
 /* Detailed Metrics */
 .detailed-metrics {
-    background: rgba(88, 103, 64, 0.1);
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    background: rgb(88 103 64 / 10%);
+    border: 1px solid rgb(88 103 64 / 30%);
     border-radius: 12px;
     padding: 15px;
     display: grid;
@@ -2287,7 +2341,7 @@ small {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
     .plan-tabs {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -2297,7 +2351,7 @@ small {
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .plan-tabs {
         grid-template-columns: 1fr;
     }
@@ -2376,7 +2430,7 @@ small {
     gap: 1.5vw;
     max-width: 100%;
     height: 100%;
-    padding-top: 100px 0;
+    padding-top: 100px;
 }
 
 
@@ -2384,7 +2438,7 @@ small {
 .carousel-controls {
     display: flex;
     align-items: center;
-    gap: -15px;
+    gap: 15px;
     padding: 10px;
 }
 
@@ -2402,7 +2456,7 @@ small {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0px;
+    padding: 0;
 }
 
 .carousel-btn:hover:not(:disabled) {
@@ -2446,7 +2500,7 @@ small {
     flex-shrink: 0; /* Add this to prevent cards from shrinking */
     height: 90px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(88, 103, 64, 0.1);
+    box-shadow: 0 2px 4px rgb(88 103 64 / 10%);
     border-left: 4px solid var(--secondary-color);
     transition: all 0.3s ease;
     line-height: 2vh;
@@ -2463,7 +2517,7 @@ small {
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px rgb(0 0 0 / 12%);
 }
 
 .stat-header {
@@ -2556,7 +2610,7 @@ small {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    border: 1px solid rgb(88 103 64 / 30%);
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
@@ -2566,7 +2620,7 @@ small {
 
 .chart-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 5px 20px rgb(88 103 64 / 20%);
 }
 
 .chart-value {
@@ -2597,7 +2651,7 @@ small {
     background: white;
     padding: 25px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    border: 1px solid rgb(88 103 64 / 30%);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -2720,7 +2774,7 @@ small {
 }
 
 .section-header p {
-    color: rgba(82, 85, 82, 0.8);
+    color: rgb(82 85 82 / 80%);
     font-size: clamp(0.8em, 0.95vw, 0.95em);
 }
 
@@ -2736,10 +2790,10 @@ small {
 }
 
 .card {
-    background: #ffffff;
+    background: #fff;
     border-radius: 20px;
     padding: 1.2vh 1.2vw;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
     border: 1px solid #f0f0f0;
     height: 100%;
     min-height: 0;
@@ -2780,7 +2834,7 @@ small {
 
 .stat-card {
     background: #f5f5f0; 
-    border: 1px solid rgba(88, 103, 64, 0.3);
+    border: 1px solid rgb(88 103 64 / 30%);
     border-radius: 16px;
     padding: 1.2vh 1.2vw;
     color: white;
@@ -2890,7 +2944,7 @@ small {
     cursor: pointer;
     display: flex;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+    box-shadow: 0 4px 12px rgb(88 115 64 / 40%);
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -2940,7 +2994,7 @@ small {
     cursor: pointer;
     display: flex;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+    box-shadow: 0 4px 12px rgb(88 115 64 / 40%);
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -2964,6 +3018,7 @@ small {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2975,6 +3030,7 @@ small {
         opacity: 0;
         transform: translateX(-50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -2986,6 +3042,7 @@ small {
         opacity: 0;
         transform: translateX(50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -2997,6 +3054,7 @@ small {
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -3063,7 +3121,7 @@ small {
 }
 
 .card-header h3 {
-    margin: 0 0 0.3vh 0;
+    margin: 0 0 0.3vh;
     font-size: clamp(1em, 1.2vw, 1.2em);
     color: var(--subtext-color);
 }
@@ -3078,7 +3136,7 @@ small {
     background: linear-gradient(135deg, #587340 0%, #96a840 100%);
     padding: 0.5vh 1vw;
     border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(88, 115, 64, 0.2);
+    box-shadow: 0 2px 8px rgb(88 115 64 / 20%);
 }
 
 .badge-text {
@@ -3103,7 +3161,7 @@ small {
     align-items: center;
     color: white;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .stat-content {
@@ -3198,7 +3256,7 @@ small {
     border-radius: 16px;
     padding: 1.5vh 1.5vw;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
     border: 1px solid #f0f0f0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
@@ -3206,7 +3264,7 @@ small {
 
 .collection-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
 }
 
 .collection-card h4 {
@@ -3246,7 +3304,7 @@ small {
     background: white;
     border-radius: 20px;
     padding: 1.5vh 1.5vw;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
     border: 1px solid #f0f0f0;
     margin-top: 1.2vh;
     width: 100%;
@@ -3266,7 +3324,7 @@ small {
 }
 
 /* Tablet landscape and small laptops (1024px - 1365px) */
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     .dashboard-section {
         padding: 80px 20px;
     }
@@ -3314,7 +3372,7 @@ small {
 }
 
 /* Standard laptops (1366px - 1919px) */
-@media (min-width: 1366px) and (max-width: 1919px) {
+@media (width >= 1366px) and (width <= 1919px) {
     .plan-services-grid {
         grid-template-columns: repeat(4, 1fr);
         margin: 0 auto;
@@ -3350,7 +3408,7 @@ small {
 }
 
 /* Smaller laptops (1366px - 1599px) - Adjust for tighter spacing */
-@media (min-width: 1366px) and (max-width: 1599px) {
+@media (width >= 1366px) and (width <= 1599px) {
     .plan-services-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 12px;
@@ -3365,7 +3423,7 @@ small {
 }
 
 /* Larger laptops (1600px - 1919px) - More spacing and wider cards */
-@media (min-width: 1600px) and (max-width: 1919px) {
+@media (width >= 1600px) and (width <= 1919px) {
     .plan-services-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 20px;
@@ -3411,10 +3469,10 @@ small {
     background: linear-gradient(
         to bottom,
         #fffff5 0%,
-        rgba(255, 255, 245, 0.9) 10%,
-        rgba(255, 255, 245, 0.6) 30%,
-        rgba(255, 255, 245, 0.3) 60%,
-        rgba(255, 255, 245, 0) 100%
+        rgb(255 255 245 / 90%) 10%,
+        rgb(255 255 245 / 60%) 30%,
+        rgb(255 255 245 / 30%) 60%,
+        rgb(255 255 245 / 0%) 100%
     );
     z-index: 4;
 }
@@ -3425,10 +3483,10 @@ small {
     height: 100px;
     background: linear-gradient(
         to bottom,
-        rgba(255, 255, 245, 0) 0%,
-        rgba(255, 255, 245, 0.3) 40%,
-        rgba(255, 255, 245, 0.6) 70%,
-        rgba(255, 255, 245, 0.9) 90%,
+        rgb(255 255 245 / 0%) 0%,
+        rgb(255 255 245 / 30%) 40%,
+        rgb(255 255 245 / 60%) 70%,
+        rgb(255 255 245 / 90%) 90%,
         #fffff5 100%
     );
     z-index: 4;
@@ -3443,10 +3501,10 @@ small {
     background: linear-gradient(
         to bottom,
         var(--overlay) 0%,
-        rgba(88, 103, 64, 0.3) 40%,
-        rgba(88, 103, 64, 0.2) 70%,
-        rgba(88, 103, 64, 0.1) 90%,
-        rgba(255, 255, 245, 0.1) 100%
+        rgb(88 103 64 / 30%) 40%,
+        rgb(88 103 64 / 20%) 70%,
+        rgb(88 103 64 / 10%) 90%,
+        rgb(255 255 245 / 10%) 100%
     );
     z-index: 2;
     transition: background 0.6s ease-in-out;
@@ -3458,8 +3516,7 @@ small {
     margin: 0 auto;
     margin-top: -60px;
     justify-content: center;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 /* VISIBLE STATE (Added via JS) */
@@ -3473,13 +3530,12 @@ small {
 
 .scroll-top-btn:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 6px 20px rgb(229 187 34 / 40%);
     background: linear-gradient(135deg, #e5bb22 0%, #96a840 100%);
 }
 
 /* Specific for 1366x768 laptop resolution */
-@media (min-width: 800px) and (max-width: 1900px)  {
-
+@media (width >= 800px) and (width <= 1900px)  {
     .dashboard-section,
     .hero,
     .hero-new,
@@ -3913,7 +3969,7 @@ small {
 }
 
 /* Large laptops and desktops (1600px - 1919px) */
-@media (min-width: 1600px) and (max-width: 1919px) {
+@media (width >= 1600px) and (width <= 1919px) {
     .dashboard-section {
         padding: 80px 20px;
     }
@@ -3940,7 +3996,7 @@ small {
 }
 
 /* Full HD (1920px - 1080px) and larger displays */
-@media (min-width: 1920px) and (max-width: 2560px) {
+@media (width >= 1920px) and (width <= 2560px) {
     .dashboard-section {
         padding: 80px 20px;
     }
@@ -3963,8 +4019,8 @@ small {
 
     .three-year-plan {
         padding: 50px 20px 30px;
-        height: 100vh;
-        min-height: 100vh;
+        height: 95vh;
+        min-height: 80vh;
     }
 
     .three-year-plan .section-header {
@@ -4253,7 +4309,7 @@ small {
 }
 
 /* Mobile and tablet responsive adjustments */
-@media (max-width: 1023px) {
+@media (width <= 1023px) {
     body {
         overflow-y: auto;
         height: auto;
@@ -4297,7 +4353,7 @@ small {
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .sidebar {
         transform: translateX(-100%);
     }
@@ -4363,7 +4419,7 @@ small {
 .hero-badge {
     display: inline-block;
     padding: 8px 20px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border: 1px solid var(--secondary-color);
     border-radius: 30px;
     margin-bottom: 30px;
@@ -4429,7 +4485,6 @@ small {
     font-size: 25px !important;
     font-weight: 700;
     background: linear-gradient(to right, #bfb02c 0%, #94ae44 20%, #7ca244 40%, #649350 60%, #537e44 80%, #446938 100%) !important;
-    -webkit-background-clip: text !important;
     background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     color: transparent !important;
@@ -4465,7 +4520,7 @@ small {
     background: var(--light-bg);
     color: var(--white);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 8px 20px rgb(229 187 34 / 40%);
 }
 
 .btn-secondary {
@@ -4503,15 +4558,15 @@ small {
     background: var(--white);
     padding: 24px 32px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.2);
+    border: 1px solid rgb(88 103 64 / 20%);
     text-align: center;
-    box-shadow: 0 2px 8px rgba(88, 103, 64, 0.1);
+    box-shadow: 0 2px 8px rgb(88 103 64 / 10%);
     transition: all 0.3s ease;
 }
 
 .graphic-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(88, 103, 64, 0.15);
+    box-shadow: 0 4px 12px rgb(88 103 64 / 15%);
 }
 
 .graphic-number {
@@ -4537,6 +4592,7 @@ small {
 }
 
 /* Current Achievements Section */
+
 /* Current Achievements Section */
 .current-achievements-section {
     background: #fffff5;
@@ -4578,24 +4634,24 @@ small {
     background: var(--white);
     padding: 24px;
     border-radius: 12px;
-    border: 1px solid rgba(88, 103, 64, 0.2);
+    border: 1px solid rgb(88 103 64 / 20%);
     display: flex;
     gap: 16px;
     align-items: flex-start;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(88, 103, 64, 0.1);
+    box-shadow: 0 2px 8px rgb(88 103 64 / 10%);
 }
 
 .achievement-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(88, 103, 64, 0.15);
-    border-color: rgba(88, 103, 64, 0.3);
+    box-shadow: 0 4px 12px rgb(88 103 64 / 15%);
+    border-color: rgb(88 103 64 / 30%);
 }
 
 .achievement-icon {
     width: 48px;
     height: 48px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -4683,7 +4739,7 @@ small {
 }
 
 .purpose-box {
-    background: rgba(88, 103, 64, 0.05);
+    background: rgb(88 103 64 / 5%);
     padding: 32px;
     border-radius: 12px;
     border-left: 4px solid var(--secondary-color);
@@ -4712,7 +4768,7 @@ small {
 .stat-item {
     text-align: center;
     padding: 24px;
-    background: rgba(88, 103, 64, 0.05);
+    background: rgb(88 103 64 / 5%);
     border-radius: 12px;
 }
 
@@ -4744,7 +4800,7 @@ small {
 .feature-icon-box {
     width: 56px;
     height: 56px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -4808,7 +4864,7 @@ small {
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 10px 40px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 10px 40px rgb(88 103 64 / 20%);
 }
 
 .image-card-top img,
@@ -4822,7 +4878,7 @@ small {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background: rgba(88, 103, 64, 0.95);
+    background: rgb(88 103 64 / 95%);
     backdrop-filter: blur(10px);
     padding: 12px 20px;
     border-radius: 8px;
@@ -4892,7 +4948,7 @@ small {
 
 .service-card-new {
     background: var(--white);
-    border: 1px solid rgba(88, 103, 64, 0.2);
+    border: 1px solid rgb(88 103 64 / 20%);
     border-radius: 12px;
     padding: 32px;
     transition: all 0.3s ease;
@@ -4902,7 +4958,7 @@ small {
 
 .service-card-new:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(88, 103, 64, 0.15);
+    box-shadow: 0 8px 24px rgb(88 103 64 / 15%);
     border-color: var(--primary-color);
 }
 
@@ -4916,7 +4972,7 @@ small {
 .service-icon-new {
     width: 48px;
     height: 48px;
-    background: rgba(229, 187, 34, 0.15);
+    background: rgb(229 187 34 / 15%);
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -4927,7 +4983,7 @@ small {
 .service-tag-new {
     display: inline-block;
     padding: 6px 14px;
-    background: rgba(255, 152, 0, 0.15);
+    background: rgb(255 152 0 / 15%);
     color: #ff9800;
     border-radius: 20px;
     font-size: 11px;
@@ -4955,7 +5011,7 @@ small {
 .service-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 24px 0;
+    margin: 0 0 24px;
 }
 
 .service-list li {
@@ -5001,15 +5057,15 @@ small {
     width: 50px;
     height: 50px;
     background: linear-gradient(135deg, #586740 0%, #96a840 100%);
-    color: #ffffff;
+    color: #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(88, 103, 64, 0.4);
+    box-shadow: 0 4px 15px rgb(88 103 64 / 40%);
     z-index: 9999;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgb(255 255 255 / 20%);
     
     /* HIDDEN STATE (Default) */
     opacity: 0;
@@ -5031,13 +5087,13 @@ small {
 
 .scroll-top-btn:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 6px 20px rgb(229 187 34 / 40%);
     background: linear-gradient(135deg, #e5bb22 0%, #96a840 100%);
 }
 
 
 /* Responsive Design for New Sections */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
     .hero-title-new {
         font-size: 42px;
     }
@@ -5060,7 +5116,7 @@ small {
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .hero-new {
         padding: 100px 20px 60px;
     }
@@ -5122,7 +5178,7 @@ small {
     }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
     .hero-title-new {
         font-size: 28px;
     }

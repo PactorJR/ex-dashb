@@ -1,10 +1,6 @@
         // Smooth scroll to section
-        function scrollToSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
+/* global Chart */
+/* eslint-env browser */
 
         // Smooth scroll specifically to a chart canvas (or its parent card)
         function scrollToChartByCanvasId(canvasId) {
@@ -25,7 +21,7 @@
             });
         }
 
-        // Smooth scroll to team section
+         // Smooth scroll to team section
         function scrollToTeamSection(teamName) {
             const teamSectionMap = {
                 'accounting': 'accounting-team-section',
@@ -50,14 +46,6 @@
                 }
             }
         }
-
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
         // Setup carousel card click handlers for team navigation
         function setupTeamCarouselNavigation() {
             const carouselCards = document.querySelectorAll('.leader-card[data-team]');
@@ -294,9 +282,9 @@
                     let sibling = current.previousElementSibling;
                     while (sibling) {
                         if (sibling.classList && sibling.classList.contains('team-section')) {
-                            const classList = Array.from(sibling.classList);
-                            for (const className of classList) {
-                                if (teamToLeaderMap[className]) {
+                            const teamClassList = Array.from(sibling.classList);
+                            for (const className of teamClassList) {
+                                if (teamToTeamNameMap[className]) {
                                     return className;
                                 }
                             }
@@ -403,11 +391,8 @@
             const lagTitleToKpiMap = {
                 // Accounting Team
                 'net profit': 'FS Target : Net Profit',
-                'net profit': 'FS Target : Net Profit',
                 'revenue': 'FS Target : Total Gross Revenue',  // Normalized version
                 'gross revenue': 'FS Target : Total Gross Revenue',
-                'gross revenue': 'FS Target : Total Gross Revenue',
-                'total gross revenue': 'FS Target : Total Gross Revenue',
                 'total gross revenue': 'FS Target : Total Gross Revenue',
                 'collection': '% Collection : All Sites',  // Normalized version
                 'collection summary': '% Collection : All Sites',
@@ -947,7 +932,7 @@
         }
 
         // Format raw value for tooltip display (handles both currency and thousands formats)
-        function formatRawTooltipValue(rawValue, isThousandsFormat = false) {
+        function formatRawTooltipValue(rawValue = false) {
             if (rawValue === null || rawValue === undefined || rawValue === '') {
                 return 'P0.00';
             }
@@ -973,7 +958,6 @@
         };
 
         // Store hovered elements per chart
-        const chartHoveredElements = new WeakMap();
 
         function createBarDataLabelsPlugin(pluginId) {
             return {
@@ -2228,97 +2212,6 @@
             }
             // Display as "10K" format instead of full currency value
             return `${numeric}K`;
-        };
-
-        // Custom plugin for venue/thousands format chart data labels (handles K format, labels above bars)
-        const venueDataLabelsPlugin = {
-            id: 'venueDataLabels',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                const chartArea = chart.chartArea;
-                
-                ctx.save();
-                ctx.font = 'bold 10px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                
-                const labelOffset = 4; // Distance above bar top
-                
-                // Draw labels directly above each bar
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta || meta.type !== 'bar') {
-                        return;
-                    }
-                    meta.data.forEach((bar, index) => {
-                        const data = dataset.data[index];
-                        if (data !== null && data !== undefined && data > 0 && typeof bar.height === 'number' && bar.height > 0) {
-                            const value = formatThousandsLabel(data);
-                            if (value) {
-                                // Position label directly above this bar
-                                const barTop = bar.y - bar.height;
-                                let labelY = barTop - labelOffset;
-                                
-                                // Ensure label is within chart area (with some margin)
-                                const minY = chartArea.top + 5;
-                                if (labelY < minY) {
-                                    labelY = minY;
-                                }
-                                
-                                // Only draw if within chart bounds
-                                if (bar.x >= chartArea.left && bar.x <= chartArea.right && 
-                                    labelY >= chartArea.top && labelY <= chartArea.bottom) {
-                                    const labelColor = resolveDataLabelColor(dataset.dataLabelColor || dataset.backgroundColor, index);
-                                    ctx.fillStyle = labelColor;
-                                    ctx.fillText(value, bar.x, labelY);
-                                }
-                            }
-                        }
-                    });
-                });
-                
-                ctx.restore();
-            }
-        };
-
-        // Custom line labels plugin for venue/thousands format charts (uses K format)
-        const venueLineDataLabelsPlugin = {
-            id: 'venueLineDataLabels',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                ctx.font = '11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta || meta.type !== 'line') {
-                        return;
-                    }
-
-                    // Only show label for one point (e.g., first month) to avoid clutter
-                    const point = meta.data[0];
-                    if (!point) {
-                        return;
-                    }
-                    const data = dataset.data[0];
-                    if (data === null || data === undefined) {
-                        return;
-                    }
-
-                    const label = formatThousandsLabel(data);
-                    if (!label) {
-                        return;
-                    }
-                    const color = resolveDataLabelColor(dataset.dataLabelColor || dataset.borderColor, 0);
-                    const offset = dataset.dataLabelOffset || 12;
-                    ctx.fillStyle = color;
-                    ctx.fillText(label, point.x, point.y - offset);
-                });
-
-                ctx.restore();
-            }
         };
 
 
@@ -7044,7 +6937,7 @@
                 const h3 = card.querySelector('h3');
                 if (h3 && h3.textContent.trim().includes(titleText)) {
                     const statCards = card.querySelectorAll('.stat-card');
-                    statCards.forEach((statCard, index) => {
+                    statCards.forEach((statCard) => {
                         const label = statCard.querySelector('.stat-label');
                         const valueEl = statCard.querySelector('.stat-value');
                         if (label && valueEl) {
@@ -7553,30 +7446,8 @@
             }, 1500);
         }
 
-        function highlightCarouselCard(teamKey) {
-            if (!teamKey) return;
-            const targetCard = document.querySelector(`.leader-card[data-team="${teamKey}"]`);
-            if (!targetCard) return;
-
-            targetCard.classList.add('carousel-card-highlight');
-            setTimeout(() => {
-                targetCard.classList.remove('carousel-card-highlight');
-            }, 1500);
-        }
-
-        function scrollToCarouselAndHighlight(teamKey) {
-            if (!teamKey) return;
-            const carouselContainer = document.querySelector('.stats-carousel-container');
-            if (carouselContainer) {
-                window.scrollTo({
-                    top: carouselContainer.offsetTop - 20,
-                    behavior: 'smooth'
-                });
-                setTimeout(() => highlightCarouselCard(teamKey), 400);
-                return;
-            }
-            highlightCarouselCard(teamKey);
-        }
+        
+        
 
         function focusTeamSection(teamKey) {
             const config = teamSectionConfig[teamKey];
@@ -8054,8 +7925,8 @@
                 if (!isVarianceMetric && !isYoYGrowthMetric) return;
 
                 const text = (el.textContent || '').trim();
-                const startsWithMinus = /^[\-\u2212]/.test(text);
-                const numericValue = parseFloat(text.replace(/[^\d.\-]/g, ''));
+                const startsWithMinus = /^[-\u2212]/.test(text);
+                const numericValue = parseFloat(text.replace(/[^\d.-]/g, ''));
                 const isNegative = startsWithMinus || (!isNaN(numericValue) && numericValue < 0);
                 if (isNegative) {
                     // Use a slightly lighter red so negative values remain readable
@@ -8107,7 +7978,7 @@
         }
 
         // Helper function to format raw data for display (exact values like tooltips)
-        function formatRawValueForDisplay(rawItem, isThousandsFormat = false) {
+        function formatRawValueForDisplay(rawItem = false) {
             if (rawItem === null || rawItem === undefined || rawItem === '') {
                 return '₱0.00';
             }

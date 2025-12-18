@@ -1,3 +1,6 @@
+/* global Chart */
+/* eslint-env browser */
+
 // Mapping from old leader IDs to team names (for backward compatibility if needed)
 const leaderIdToTeamName = {
     'sarah-mitchell': 'Technical Team',
@@ -35,98 +38,6 @@ function setupSearchContainer(placeholder = 'Search operations...', containerId 
 
 
 
-const performanceData = {
-            'Quality Team': {
-                '1. Team Target & Performance': {
-                    'Score/Evaluation/NPS : Team Performance': {
-                        current: 85,
-                        previous: 78
-                    },
-                    'Score/Evaluation/NPS : Team Members Performance': {
-                        current: 82,
-                        previous: 75
-                    },
-                    '% Score : Project/Work Orders': {
-                        current: 88,
-                        previous: 82
-                    },
-                    '# of Team\'s I.C.A.R.E (Audit Findings)': {
-                        current: 92,
-                        previous: 88
-                    }
-                },
-                '2. Team Budget and Expenses Management': {
-                    '% Within the Team\'s Budget': {
-                        current: 95,
-                        previous: 90
-                    }
-                },
-                '3. LotusOS (RP+Lotuszen+PT+KDB [PM+F]) Development, Innovation, and Performance': {
-                    'Score/Evaluation/NPS : SMD Projects': {
-                        current: 87,
-                        previous: 80
-                    },
-                    'Score/Evaluation/NPS : SID Projects': {
-                        current: 84,
-                        previous: 79
-                    },
-                    'Score/Evaluation/NPS : LotusOS NPS': {
-                        current: 86,
-                        previous: 81
-                    }
-                }
-            },
-            'Marcom Team': {
-                'Team Budget and Expenses Management': {
-                    '% Within the Team\'s Budget': {
-                        current: 60,
-                        previous: 60
-                    },
-                    'FS Target : Marketing Expense': {
-                        current: null,
-                        previous: null,
-                    }
-                }
-            },
-            'Accounting Team': {
-                '1. Team Target & Performance': {
-                    'Score/Evaluation/NPS : Team Performance': {
-                        current: 80,
-                        previous: null
-                    },
-                    'Score/Evaluation/NPS : Team Members Performance': {
-                        current: 80,
-                        previous: null,
-                    },
-                    '% Score : Project/Work Orders': {
-                        current: 85,
-                        previous: null,
-                    },
-                    '# of Team\'s I.C.A.R.E (Audit Findings)': {
-                        current: 0,
-                        previous: null,
-                    }
-                },
-                '2. Team Budget and Expenses Management': {
-                    '% Within the Team\'s Budget': {
-                        current: 100,
-                        previous: 100
-                    },
-                    'FS Target : Total Operating Expense': {
-                        current: 22956972.14,
-                        previous: null,
-                    },
-                    'FS Target : Total Gross Revenue': {
-                        current: 37264091.75,
-                        previous: null,
-                    },
-                    'FS Target : Net Profit': {
-                        current: 10455576.64,
-                        previous: null,
-                    }
-                }
-            },
-        };
 
         const teamDropdownData = {
             'Quality Team': {
@@ -327,31 +238,7 @@ const performanceData = {
             return `₱${formattedNumber}`;
         }
 
-        function formatMetricValueForDisplay(value) {
-            if (value === null || value === undefined) {
-                return 'N/A';
-            }
-
-            const numericValue = parseNumericValue(value);
-
-            if (numericValue === null) {
-                if (typeof value === 'string' && value.trim() !== '') {
-                    return value;
-                }
-                return 'N/A';
-            }
-
-            if (Math.abs(numericValue) >= 1000) {
-                return formatPesoIfNeeded(numericValue, true);
-            }
-
-            const formattedPercent = numericValue.toLocaleString('en-US', {
-                minimumFractionDigits: numericValue % 1 === 0 ? 0 : 2,
-                maximumFractionDigits: 2
-            });
-
-            return `${formattedPercent}%`;
-        }
+        
 
         function formatValueForDisplay(value, isPercentage = false) {
             // Check if value is currency (>= 1000) or just a number
@@ -2016,90 +1903,6 @@ const performanceData = {
             }, 0);
         }
 
-        function buildQuarterlySeriesFromMonthlySeries(monthlySeries = null) {
-            if (!monthlySeries) {
-                return null;
-            }
-
-            const { target = [], actual = [], valueType = 'thousands', decimals = 0 } = monthlySeries;
-            if (!Array.isArray(target) || !Array.isArray(actual) || target.length < 4 || actual.length < 4) {
-                return null;
-            }
-
-            const quarterGroups = [
-                { label: 'Q1', indices: [0, 1, 2] },
-                { label: 'Q2', indices: [3, 4, 5] },
-                { label: 'Q3', indices: [6, 7, 8] },
-                { label: 'Q4', indices: [9, 10, 11] }
-            ];
-
-            const aggregateSeries = (sourceArray) => quarterGroups.map(group => {
-                const values = group.indices
-                    .map(idx => Number(sourceArray[idx]))
-                    .filter(value => Number.isFinite(value));
-                if (!values.length) {
-                    return 0;
-                }
-                const aggregatedValue = values.reduce((sum, value) => sum + value, 0);
-                return Number(aggregatedValue.toFixed(decimals));
-            });
-
-            return {
-                labels: quarterGroups.map(group => group.label),
-                target: aggregateSeries(target),
-                actual: aggregateSeries(actual),
-                valueType
-            };
-        }
-
-        // Store quarterly data for Technical Team Operational KPIs
-        const technicalOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Accounting Team Operational KPIs
-        const accountingOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for LRAD Team Operational KPIs
-        const lradOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Quality Team Operational KPIs
-        const qualityOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for DC Team Operational KPIs
-        const dcOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for IT Team Operational KPIs
-        const itOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Opportunity Team Operational KPIs
-        const opportunityOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Marcom Team Operational KPIs
-        const marcomOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Audit Team Operational KPIs
-        const auditOperationalKpiQuarterlyData = {};
-
-        // Store quarterly data for Gathering Team Operational KPIs
-        const gatheringOperationalKpiQuarterlyData = {};
-        
-        // Store quarterly data for Operations Team Operational KPIs
-        const operationsOperationalKpiQuarterlyData = {};
-
-        // Unified object mapping all team names to their quarterly data objects
-        const allTeamsOperationalKpiQuarterlyData = {
-            'Technical Team': technicalOperationalKpiQuarterlyData,
-            'Accounting Team': accountingOperationalKpiQuarterlyData,
-            'LRAD Team': lradOperationalKpiQuarterlyData,
-            'Quality Team': qualityOperationalKpiQuarterlyData,
-            'DC Team': dcOperationalKpiQuarterlyData,
-            'IT Team': itOperationalKpiQuarterlyData,
-            'Opportunity Team': opportunityOperationalKpiQuarterlyData,
-            'Marcom Team': marcomOperationalKpiQuarterlyData,
-            'Audit Team': auditOperationalKpiQuarterlyData,
-            'Gathering Team': gatheringOperationalKpiQuarterlyData,
-            'Operations Team': operationsOperationalKpiQuarterlyData
-        };
-
         const technicalMonthlySeries = {
             'FS Target : Repairs & Maintenance (Labor) (TECHNICAL) Expense': generateMonthlySeries({
                 targetRange: [120000, 135000],
@@ -2587,58 +2390,6 @@ const performanceData = {
             })
         };
 
-        function formatAggregateValue(value, valueType = 'thousands') {
-            if (value === null || value === undefined || Number.isNaN(Number(value))) {
-                return '-';
-            }
-            if (valueType === 'percentage') {
-                const numeric = Number(value);
-                const fixed = numeric.toFixed(1);
-                return `${fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed}%`;
-            }
-            if (valueType === 'count') {
-                return Number(value).toLocaleString('en-US', { maximumFractionDigits: 0 });
-            }
-            return formatPesoIfNeeded(value, true);
-        }
-
-        function getAggregateDisplayData(kpiName, targetNumeric, actualNumeric, isPercentageKpi = false, leaderId = null) {
-            const monthlySeries = technicalMonthlySeries[kpiName] 
-                || accountingMonthlySeries[kpiName]
-                || lradMonthlySeries[kpiName]
-                || dcMonthlySeries[kpiName]
-                || opportunityMonthlySeries[kpiName]
-                || marcomMonthlySeries[kpiName]
-                || gatheringMonthlySeries[kpiName]
-                || operationsMonthlySeries[kpiName]
-                || lradLeadMonthlySeries[kpiName]
-                || qualityLeadMonthlySeries[kpiName]
-                || dcLeadMonthlySeries[kpiName]
-                || itLeadMonthlySeries[kpiName]
-                || opportunityLeadMonthlySeries[kpiName]
-                || marcomLeadMonthlySeries[kpiName]
-                || auditLeadMonthlySeries[kpiName]
-                || gatheringLeadMonthlySeries[kpiName]
-                || operationsLeadMonthlySeries[kpiName];
-            let aggregateTarget = targetNumeric;
-            let aggregateActual = actualNumeric;
-            let valueType = isPercentageKpi ? 'percentage' : 'thousands';
-
-            if (monthlySeries) {
-                aggregateTarget = monthlySeries.totalTarget;
-                aggregateActual = monthlySeries.totalActual;
-                valueType = monthlySeries.valueType;
-            }
-
-            return {
-                aggregateTarget: typeof aggregateTarget === 'number' ? aggregateTarget : null,
-                aggregateActual: typeof aggregateActual === 'number' ? aggregateActual : null,
-                valueType,
-                targetLabel: formatAggregateValue(aggregateTarget, valueType),
-                actualLabel: formatAggregateValue(aggregateActual, valueType)
-            };
-        }
-
         const technicalExpensesData = {
             'Technical Team': generateTechnicalLagKpiData(),
             'Accounting Team': generateAccountingLagKpiData(),
@@ -2649,6 +2400,9 @@ const performanceData = {
             'Gathering Team': generateGatheringLagKpiData(),
             'Operations Team': generateOperationsLagKpiData()
         };
+
+        // Quarterly data for Technical Team Operational KPIs
+        const technicalOperationalKpiQuarterlyData = {};
 
         // Lead KPI data by period (year-month)
 
@@ -2666,210 +2420,11 @@ const performanceData = {
         };
 
         // Helpers to compute weights and render the Team Metrics Overview chart
-        function parsePercentToNumber(text) {
-            if (typeof text !== 'string') return 0;
-            const match = text.match(/-?\d+(\.\d+)?/);
-            return match ? Number(match[0]) : 0;
-        }
+        
 
-        function computeWeightsSummary(teamName) {
-            const roles = teamOperationsData[teamName] || [];
-            const roleToWeight = {};
-            let overall = 0;
+        
 
-            roles.forEach(r => {
-                const items = teamDropdownData[teamName]?.[r.role] || [];
-                const roleSum = items.reduce((sum, it) => sum + parsePercentToNumber(it.weight), 0);
-                roleToWeight[r.role] = roleSum;
-                overall += roleSum;
-            });
-
-            return { overall, roleToWeight };
-        }
-
-        function updateWeightsOverview(teamName, selectedRole = null) {
-            // Find the "Team Metrics Overview" card's SVG (third report-card)
-            const reportCards = document.querySelectorAll('.report-card');
-            const metricsCard = reportCards[2];
-            if (!metricsCard) return;
-            const svg = metricsCard.querySelector('svg.line-chart');
-            if (!svg) return;
-
-            const { overall, roleToWeight } = computeWeightsSummary(teamName);
-            const selectedValue = selectedRole ? (roleToWeight[selectedRole] || 0) : null;
-
-            // SVG helpers
-            const toY = v => 120 - (v * 1.0); // 0–100 -> approx fit to 120px height
-            const buildPath = y => `M 0,${y} L 50,${y-5} L 100,${y+3} L 150,${y-2} L 200,${y+5} L 250,${y-8} L 300,${y}`;
-
-            const defs = `
-                <defs>
-                    <linearGradient id="overallGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0" />
-                    </linearGradient>
-                </defs>
-            `;
-
-            const overallY = toY(Math.max(0, Math.min(100, overall)));
-            const overallPath = buildPath(overallY);
-
-            const parts = [
-                defs,
-                `<path class="chart-area" d="${overallPath} L 300,120 L 0,120 Z" fill="url(#overallGradient)" />`,
-                `<path class="chart-line" d="${overallPath}" style="stroke:#ff6b6b;stroke-width:3;fill:none;" />`
-            ];
-
-            if (selectedValue !== null) {
-                const sel = Math.max(0, Math.min(100, selectedValue));
-                const selY = toY(sel);
-                const selPath = buildPath(selY);
-                parts.push(
-                    `<path class="chart-line" d="${selPath}" style="stroke:#586740;stroke-width:3;fill:none;" />`
-                );
-            }
-
-            svg.innerHTML = parts.join('');
-
-            // Update the title with quick legend
-            const title = metricsCard.querySelector('.report-title');
-            if (title) {
-                const overallLabel = `${overall}%`;
-                const legendItems = [
-                    `<span style="color:#ff6b6b;">● Total Weight: ${overallLabel}</span>`
-                ];
-                if (selectedValue !== null) {
-                    legendItems.push(
-                        `<span style="color:#586740;">● ${selectedRole}: ${selectedValue}%</span>`
-                    );
-                }
-                title.innerHTML = `
-                    Team Metrics Overview
-                    <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                        ${legendItems.join('')}
-                    </div>
-                `;
-            }
-        }
-
-        function updatePerformanceGraph(teamName, operationRole, kpiName) {
-        const data = performanceData[teamName]?.[operationRole]?.[kpiName];
-        if (!data) {
-            console.log('No data available');
-            return;
-        }
-
-        // Coerce non-numeric (e.g., strings like "Pull from GMPT") to null
-        const rawCurrent = data.current;
-        const rawPrevious = data.previous;
-        const currentValue = (typeof rawCurrent === 'number' && isFinite(rawCurrent)) ? rawCurrent : null;
-        const previousValue = (typeof rawPrevious === 'number' && isFinite(rawPrevious)) ? rawPrevious : null;
-
-        if (currentValue === null && previousValue === null) {
-            console.log('No numeric data available');
-            const chartSvg = document.querySelector('.line-chart');
-            if (chartSvg) chartSvg.innerHTML = '';
-            const reportTitle = document.querySelector('.report-title');
-            if (reportTitle) {
-                reportTitle.innerHTML = `
-                     - ${kpiName}
-                    <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                        <span style="color: #96a840;">● Current: N/A</span>
-                        <span style="color: #e5bb22;">● Previous: N/A</span>
-                        <span style="color: #9ca3af;">Δ N/A</span>
-                    </div>
-                `;
-            }
-            return;
-        }
-
-        const chartSvg = document.querySelector('.line-chart');
-        if (!chartSvg) return;
-
-        // Helpers
-        const toY = v => 120 - (v * 1.2); // 0–100 -> fit 120px height, invert for SVG
-        const buildPath = y => `M 0,${y} L 50,${y-5} L 100,${y+3} L 150,${y-2} L 200,${y+5} L 250,${y-8} L 300,${y}`;
-
-        const defs = `
-            <defs>
-                <linearGradient id="currentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#96a840;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#96a840;stop-opacity:0" />
-                </linearGradient>
-                <linearGradient id="previousGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#e5bb22;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#e5bb22;stop-opacity:0" />
-                </linearGradient>
-            </defs>
-        `;
-
-        let parts = [defs];
-
-        // Previous series (if available)
-        if (previousValue !== null) {
-            const previousY = toY(previousValue);
-            const previousPath = buildPath(previousY);
-            parts.push(`
-                <path class="chart-area" d="${previousPath} L 300,120 L 0,120 Z" fill="url(#previousGradient)" />
-                <path class="chart-line" d="${previousPath}" style="stroke: #e5bb22; stroke-width: 2; fill: none; stroke-dasharray: 5,5;" />
-                <circle cx="0" cy="${previousY}" r="3" fill="#e5bb22" />
-                <circle cx="300" cy="${previousY}" r="3" fill="#e5bb22" />
-            `);
-        }
-
-        // Current series (if available)
-        if (currentValue !== null) {
-            const currentY = toY(currentValue);
-            const currentPath = buildPath(currentY);
-            parts.push(`
-                <path class="chart-area" d="${currentPath} L 300,120 L 0,120 Z" fill="url(#currentGradient)" />
-                <path class="chart-line recover-line" d="${currentPath}" />
-                <circle cx="0" cy="${currentY}" r="4" fill="#96a840" />
-                <circle cx="300" cy="${currentY}" r="4" fill="#96a840" />
-            `);
-        }
-
-        chartSvg.innerHTML = parts.join('');
-
-        // Title + legend
-        const reportTitle = document.querySelector('.report-title');
-        if (reportTitle) {
-            const isCurrencyMetric = (currentValue !== null && Math.abs(currentValue) >= 1000) ||
-                (previousValue !== null && Math.abs(previousValue) >= 1000);
-
-            const currentLabel = formatMetricValueForDisplay(currentValue);
-            const previousLabel = formatMetricValueForDisplay(previousValue);
-
-            let deltaText = 'Δ N/A';
-            let deltaColor = '#9ca3af';
-
-            if (currentValue !== null && previousValue !== null) {
-                const diff = currentValue - previousValue;
-                const up = diff >= 0;
-                deltaColor = up ? '#4ade80' : '#f87171';
-
-                if (isCurrencyMetric) {
-                    const formattedDiff = formatPesoIfNeeded(Math.abs(diff), true);
-                    deltaText = `${up ? '↑' : '↓'} ${formattedDiff}`;
-                } else {
-                    const formattedDiff = Math.abs(diff).toLocaleString('en-US', {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    });
-                    deltaText = `${up ? '↑' : '↓'} ${formattedDiff}%`;
-                }
-            }
-
-            reportTitle.innerHTML = `
-                KPI Target and Actual - ${kpiName}  
-                <div style="font-size: 12px; margin-top: 10px; display: flex; gap: 20px;">
-                    <span style="color: #96a840;">● Current: ${currentLabel}</span>
-                    <span style="color: #e5bb22;">● Previous: ${previousLabel}</span>
-                    <span style="color: ${deltaColor};">${deltaText}</span>
-                </div>
-            `;
-        }
-    }
+        
 
         // State management
         let currentView = 'operations';
@@ -3505,9 +3060,6 @@ const performanceData = {
             }
         }
 
-        const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
-                           'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-
         function updateOperationsSection(teamName, teamTitle) {
             console.log('--- updateOperationsSection called ---');
             console.log('Team name:', teamName);
@@ -3637,8 +3189,8 @@ const performanceData = {
                             `;
                             
                             dropdownItems.forEach(item => {
-                                const targetValue = item.hasOwnProperty('target') ? formatPesoIfNeeded(item.target) : '-';
-                                const weightValue = item.hasOwnProperty('weight') ? item.weight : '-';
+                                const targetValue = Object.prototype.hasOwnProperty.call(item, 'target') ? formatPesoIfNeeded(item.target) : '-';
+                                const weightValue = Object.prototype.hasOwnProperty.call(item, 'weight') ? item.weight : '-';
                                 html += `
                                     <div class="sub-operation-item">
                                         <div class="sub-operation-label">${item.kpi}</div>
@@ -3690,7 +3242,7 @@ const performanceData = {
         }
 
         // Function to update KRA row data and replace loading indicators
-        function updateKraRowData(teamName, periodKey) {
+        function updateKraRowData( ) {
             const kraRows = document.querySelectorAll('.kra-row-item[data-loading="true"]');
             
             kraRows.forEach(kraRow => {
@@ -3699,10 +3251,7 @@ const performanceData = {
                 if (!loadingWrapper) return;
                 
                 // Get data attributes
-                const targetStr = kraRow.getAttribute('data-target');
-                const actualStr = kraRow.getAttribute('data-actual');
-                const target = targetStr && targetStr !== '' ? parseFloat(targetStr) : null;
-                const actual = actualStr && actualStr !== '' ? parseFloat(actualStr) : null;
+                
                 
                 // Step 1: Show loading spinner for 1.5 seconds
                 // (Already showing, so we wait)
@@ -3889,7 +3438,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -3920,7 +3468,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                     const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                     const actualNumeric = periodData ? periodData.actual : null;
@@ -4144,7 +3692,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -4175,7 +3722,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -4399,7 +3946,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -4430,7 +3976,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -4653,7 +4199,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -4684,7 +4229,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                 // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -4907,7 +4452,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -4938,7 +4482,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -5161,7 +4705,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -5192,7 +4735,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -5415,7 +4958,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -5446,7 +4988,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                 const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                 const actualNumeric = periodData ? periodData.actual : null;
@@ -5669,7 +5211,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -5700,7 +5241,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                     const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                     const actualNumeric = periodData ? periodData.actual : null;
@@ -5923,7 +5464,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -5954,7 +5494,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available
                                     const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                     const actualNumeric = periodData ? periodData.actual : null;
@@ -6177,7 +5717,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -6208,7 +5747,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available (Audit Team uses leadKpiExpensesData)
                                     const periodData = leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                     const actualNumeric = periodData ? periodData.actual : null;
@@ -6431,7 +5970,6 @@ const performanceData = {
                             const kraRowIndex = globalIndex + 1000 + kraIndex; // Use offset to avoid conflicts
                             
                             // Check if we need to fetch data for this KRA
-                            const needsDataFetch = true; // Set to true initially to show loading
                             
                             html += `
                                 <div class="sub-operation-item kra-row-item ${kraDropdownClass}" 
@@ -6462,7 +6000,7 @@ const performanceData = {
                                     <div class="sub-operations nested-kpi-dropdown" id="dropdown-${kraRowIndex}">
                                 `;
                                 
-                                kraData.kpis.forEach((kpiItem, kpiIndex) => {
+                                kraData.kpis.forEach((kpiItem) => {
                                     // Get actual value from period data if available (Gathering Team uses both data sources)
                                     const periodData = technicalExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey] || leadKpiExpensesData[teamName]?.[kpiItem.kpi]?.[periodKey];
                                     const actualNumeric = periodData ? periodData.actual : null;
@@ -6537,7 +6075,7 @@ const performanceData = {
             operationsContent.classList.remove('technical-team-view');
             
             // Fetch team members data from Google Sheets
-            await fetchTeamMembersData();
+            await teamMembersData();
             const members = teamMembersData[teamName] || [];
 
             if (members.length === 0) {
@@ -7583,7 +7121,7 @@ const performanceData = {
                                 font: {
                                     weight: 600
                                 },
-                                callback: function(value, index) {
+                                callback: function(value) {
                                     if (isAverageView) {
                                         // Hide tick labels in average view; use axis title instead
                                         return '';
@@ -7645,7 +7183,6 @@ const performanceData = {
                             const overallText = `Overall ${direction} ${formatted}% vs target (${selectedPerformanceYear})`;
                             
                             // Get CSS variable values from computed styles
-                            const canvas = chart.canvas;
                             const rootStyle = window.getComputedStyle(document.documentElement);
                             const primaryColor = rootStyle.getPropertyValue('--primary-color')?.trim() || '#586740';
                             const fontFamily = rootStyle.getPropertyValue('--font-body')?.trim() || '"Trebuchet MS", sans-serif';
@@ -8271,7 +7808,6 @@ const performanceData = {
         function updateTechnicalTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
-            const reportCard = document.querySelector('.performance-report-card');
 
             if (!chartContainer) return;
 
@@ -8306,7 +7842,6 @@ const performanceData = {
         function updateAccountingTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
-            const reportCard = document.querySelector('.performance-report-card');
 
             if (!chartContainer) return;
 
@@ -8341,7 +7876,6 @@ const performanceData = {
         function updateLradTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
-            const reportCard = document.querySelector('.performance-report-card');
 
             if (!chartContainer) return;
 
@@ -8376,7 +7910,6 @@ const performanceData = {
         function updateQualityTeamKraCharts(kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
-            const reportCard = document.querySelector('.performance-report-card');
 
             if (!chartContainer) return;
 
@@ -8412,7 +7945,6 @@ const performanceData = {
         function updateTeamKraChartsGeneric(teamName, teamDataVar, kraName, target, actual, owner) {
             const chartContainer = document.querySelector('.chart-container.monthly-profit-chart');
             const reportTitle = document.querySelector('.performance-report-card .report-title');
-            const reportCard = document.querySelector('.performance-report-card');
 
             if (!chartContainer) return;
 
@@ -8793,48 +8325,7 @@ const performanceData = {
             });
         }
 
-        function attachDateSelectorFunctionality(section) {
-            const isLead = section === 'lead';
-            const monthSelectId = isLead ? 'periodMonthSelectLead' : 'periodMonthSelect';
-            const yearSelectId = isLead ? 'periodYearSelectLead' : 'periodYearSelect';
-            const targetDisplayId = isLead ? 'targetPeriodDisplayLead' : 'targetPeriodDisplay';
-            const actualDisplayId = isLead ? 'actualPeriodDisplayLead' : 'actualPeriodDisplay';
-            
-            const periodMonthSelect = document.getElementById(monthSelectId);
-            const periodYearSelect = document.getElementById(yearSelectId);
-            const targetPeriodDisplay = document.getElementById(targetDisplayId);
-            const actualPeriodDisplay = document.getElementById(actualDisplayId);
-            
-            const updatePeriodDisplay = () => {
-                const monthName = monthNames[selectedMonth];
-                const periodText = `${monthName} ${selectedYear}`;
-                if (targetPeriodDisplay) targetPeriodDisplay.textContent = periodText;
-                if (actualPeriodDisplay) actualPeriodDisplay.textContent = periodText;
-                
-                // Refresh the appropriate section to show updated data for the new period
-                if (selectedTeam && selectedTeamData) {
-                    if (isLead) {
-                        updateLeadKpiSection(selectedTeam, selectedTeamData.title);
-                    } else {
-                        refreshOperationsContent();
-                    }
-                }
-            };
-            
-            if (periodMonthSelect) {
-                periodMonthSelect.addEventListener('change', function() {
-                    selectedMonth = parseInt(this.value);
-                    updatePeriodDisplay();
-                });
-            }
-            
-            if (periodYearSelect) {
-                periodYearSelect.addEventListener('change', function() {
-                    selectedYear = parseInt(this.value);
-                    updatePeriodDisplay();
-                });
-            }
-        }
+        
 
         function attachSearchFunctionalityLead() {
             const searchInput = document.getElementById('searchInputLead');
@@ -9568,12 +9059,12 @@ const performanceData = {
                         if (decoded.includes('%')) {
                             try {
                                 decoded = decodeURIComponent(decoded);
-                            } catch (e) {
+                            } catch {
                                 // If second decode fails, use first decode result
                             }
                         }
                         return decoded;
-                    } catch (e) {
+                    } catch {
                         // If decode fails, return original string
                         return str;
                     }
@@ -9946,7 +9437,6 @@ const performanceData = {
                     scorePercentage = Math.max(0, Math.min(100, average.overallScore)); // Clamp between 0-100
                 }
                 
-                const scoreColor = getTeamScoreColor(scorePercentage);
                 const trendValue = `${scorePercentage.toFixed(0)}%`;
                 const trendDataKey = team.name;
 
@@ -9985,13 +9475,6 @@ const performanceData = {
             
             // Re-attach click handlers after rendering
             attachLeaderCardHandlers();
-        }
-
-        function getTeamScoreColor(score) {
-            const value = Math.max(0, Math.min(100, Number(score) || 0));
-            const saturation = 40 + (value * 0.35); // 40-75
-            const lightness = 78 - (value * 0.25);  // 78-53
-            return `hsl(90, ${saturation}%, ${lightness}%)`;
         }
 
         window.addEventListener('DOMContentLoaded', () => {

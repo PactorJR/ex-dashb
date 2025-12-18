@@ -203,21 +203,6 @@
             });
         }
 
-        // Smooth scroll to section
-        function scrollToSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
 
         // Observe all animated elements
         document.addEventListener('DOMContentLoaded', () => {
@@ -235,7 +220,6 @@
             if (!mainContent) return;
 
             let lastScrollTop = mainContent.scrollTop;
-            let scrollDirection = 0;
 
             function lockScroll() {
                 isScrollLocked = true;
@@ -281,12 +265,6 @@
                     return false;
                 }
             }, { passive: false });
-
-            // Handle touch events for mobile
-            let touchStartY = 0;
-            mainContent.addEventListener('touchstart', function(e) {
-                touchStartY = e.touches[0].clientY;
-            }, { passive: true });
 
             mainContent.addEventListener('touchmove', function(e) {
                 if (isScrollLocked) {

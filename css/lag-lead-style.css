@@ -1,3 +1,7 @@
+/* stylelint-disable no-duplicate-selectors */
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable keyframes-name-pattern */
+/* stylelint-disable selector-id-pattern */
 
 /* styles.css */
 * {
@@ -15,8 +19,7 @@ body {
     font-family: var(--font-body);
     background: #fffff5;
     line-height: 1.6;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden auto;
     font-size: var(--fs-base);
     color: var(--text-color);
     width: 100%;
@@ -51,8 +54,8 @@ select {
     --text-color: #000;
     --subtext-color: #525252;
     --light-bg: #96a840;
-    --white: #ffffff;
-    --overlay: rgba(88, 103, 64, 0.4);
+    --white: #fff;
+    --overlay: rgb(88 103 64 / 40%);
     
     /* Additional text colors */
     --text-muted: #6b7280;
@@ -77,7 +80,7 @@ select {
 }
 
 /* Responsive font sizes for 1920x1080 and larger */
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
     :root {
         --fs-small: 0.875rem;      /* 14px */
         --fs-base: 1rem;           /* 16px */
@@ -104,7 +107,7 @@ select {
 }
 
 /* Responsive font sizes for 1366x768 specifically */
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     :root {
         --fs-small: 0.8125rem;      /* 13px */
         --fs-base: 0.9375rem;       /* 15px */
@@ -171,7 +174,7 @@ select {
 }
 
 /* Responsive font sizes for 1024px to 1680px range */
-@media (min-width: 1024px) and (max-width: 1680px) {
+@media (width >= 1024px) and (width <= 1680px) {
     :root {
         --fs-small: 0.75rem;        /* 12px */
         --fs-base: 0.875rem;        /* 14px */
@@ -228,7 +231,7 @@ small {
 }
 
 /* Responsive font sizes for smaller screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     :root {
         --fs-h1: 2.25rem;      /* 36px */
         --fs-h2: 1.875rem;     /* 30px */
@@ -237,7 +240,7 @@ small {
     }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
     :root {
         --fs-h1: 2rem;         /* 32px */
         --fs-h2: 1.5rem;       /* 24px */
@@ -258,15 +261,15 @@ small {
     width: 50px;
     height: 50px;
     background: linear-gradient(135deg, #586740 0%, #96a840 100%);
-    color: #ffffff;
+    color: #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(88, 103, 64, 0.4);
+    box-shadow: 0 4px 15px rgb(88 103 64 / 40%);
     z-index: 9999;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgb(255 255 255 / 20%);
     
     /* HIDDEN STATE (Default) */
     opacity: 0;
@@ -288,7 +291,7 @@ small {
 
 .scroll-top-btn:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 6px 20px rgb(229 187 34 / 40%);
     background: linear-gradient(135deg, #e5bb22 0%, #96a840 100%);
 }
 
@@ -302,7 +305,7 @@ small {
     padding: 15px 20px;
     z-index: 1000;
     border-bottom: var(--secondary-color) solid 2px;
-    box-shadow: 0 2px 10px rgba(88, 103, 64, 0.3);
+    box-shadow: 0 2px 10px rgb(88 103 64 / 30%);
     transition: all 0.3s ease;
 }
 
@@ -331,7 +334,7 @@ small {
 
 .navbar.scrolled {
     padding: 10px 20px;
-    box-shadow: 0 4px 20px rgba(88, 103, 64, 0.4);
+    box-shadow: 0 4px 20px rgb(88 103 64 / 40%);
 }
 
 .logo h2 {
@@ -376,7 +379,7 @@ small {
     #dashboardLoadingOverlay {
         position: fixed;
         inset: 0;
-        background: rgba(245, 245, 240, 0.85);
+        background: rgb(245 245 240 / 85%);
         backdrop-filter: blur(2px);
         display: flex;
         align-items: center;
@@ -401,7 +404,7 @@ small {
         padding: 18px 28px;
         border-radius: 999px;
         background: var(--white);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 15px 40px rgb(0 0 0 / 8%);
         color: var(--text-color);
         font-weight: 600;
         letter-spacing: 0.02em;
@@ -411,7 +414,7 @@ small {
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 2px solid rgba(88, 103, 64, 0.3);
+        border: 2px solid rgb(88 103 64 / 30%);
         border-top-color: var(--primary-color);
         animation: dashboard-spin 0.8s linear infinite;
     }
@@ -425,15 +428,12 @@ small {
     /* Per-chart loading indicator */
     .chart-loading-indicator {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: rgba(245, 245, 240, 0.9);
+        background: rgb(245 245 240 / 90%);
         backdrop-filter: blur(2px);
         z-index: 10;
         opacity: 0;
@@ -453,7 +453,7 @@ small {
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        border: 3px solid rgba(88, 103, 64, 0.2);
+        border: 3px solid rgb(88 103 64 / 20%);
         border-top-color: var(--primary-color);
         animation: dashboard-spin 0.8s linear infinite;
         margin-bottom: 8px;
@@ -618,7 +618,7 @@ small {
         align-items: center;
         justify-content: center;
         gap: 15px;
-        padding: 20px 10px 10px 10px;
+        padding: 20px 10px 10px;
         margin-top: 10px;
     }
 
@@ -626,14 +626,13 @@ small {
 .kpi-carousel-controls {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    align-items: center;
+    place-items: center center;
     justify-content: center;
-    justify-items: center;
     column-gap: 14px;
     padding: 0;
     width: 100%;
     max-width: 400px;
-    margin: 14px auto 0 auto;
+    margin: 14px auto 0;
 }
 
     .carousel-btn {
@@ -650,7 +649,7 @@ small {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0px;
+        padding: 0;
     }
 
     .carousel-btn:hover:not(:disabled) {
@@ -704,7 +703,7 @@ small {
     border-radius: 12px;
     padding: 15px 10px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(88, 103, 64, 0.1);
+    box-shadow: 0 5px 15px rgb(88 103 64 / 10%);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     position: relative;
@@ -795,11 +794,11 @@ small {
 
 /* Variance styling - make it stand out more */
 .kpi-stat-variance {
-    background: rgba(88, 103, 64, 0.05);
+    background: rgb(88 103 64 / 5%);
     border-radius: 6px;
     padding: 6px 8px;
     margin-top: 4px;
-    border: 1px solid rgba(88, 103, 64, 0.15);
+    border: 1px solid rgb(88 103 64 / 15%);
 }
 
 .kpi-stat-variance .kpi-stat-label {
@@ -826,7 +825,7 @@ small {
 
 .leader-card.active {
     transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 15px 30px rgba(229, 187, 34, 0.4);
+    box-shadow: 0 15px 30px rgb(229 187 34 / 40%);
     border: 2px solid var(--secondary-color);
 }
 
@@ -836,7 +835,7 @@ small {
 
 .leader-card:hover {
     transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 15px 30px rgba(88, 103, 64, 0.2);
+    box-shadow: 0 15px 30px rgb(88 103 64 / 20%);
 }
 
 #kpiCarousel .leader-card {
@@ -892,7 +891,7 @@ small {
     line-height: 1.2;
     letter-spacing: 0.3px;
     margin-top: 10px;
-    border-top: 1px solid rgba(88, 103, 64, 0.1);
+    border-top: 1px solid rgb(88 103 64 / 10%);
 }
 
     @keyframes fadeInDown {
@@ -900,6 +899,7 @@ small {
             opacity: 0;
             transform: translateY(-30px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -913,6 +913,7 @@ small {
             transform: translateY(0);
             opacity: 1;
         }
+
         40% {
             transform: translateY(-3px);
             opacity: 0.7;
@@ -921,17 +922,18 @@ small {
 
     @keyframes pulse {
         0%, 100% {
-            box-shadow: 0 0 0 0 rgba(229, 187, 34, 0.7);
+            box-shadow: 0 0 0 0 rgb(229 187 34 / 70%);
         }
+
         50% {
-            box-shadow: 0 0 0 10px rgba(229, 187, 34, 0);
+            box-shadow: 0 0 0 10px rgb(229 187 34 / 0%);
         }
     }
 
     /* Team Section Headers */
     .team-section {
         grid-column: 1 / -1;
-        margin: 10px 0 10px 0;
+        margin: 10px 0;
         padding-bottom: 15px;
         border-bottom: 3px solid var(--primary-color) !important;
         scroll-margin-top: 100px; /* Offset for fixed navbar */
@@ -970,24 +972,26 @@ small {
     .team-section.team-section-linkable:hover,
     .team-section.team-section-linkable:focus-visible {
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
         outline: none;
     }
 
     .team-section.team-section-highlight {
         animation: teamSectionPulse 1.4s ease-out;
-        box-shadow: 0 0 0 3px rgba(129, 243, 29, 0.35);
+        box-shadow: 0 0 0 3px rgb(129 243 29 / 35%);
     }
 
     @keyframes teamSectionPulse {
         0% {
-            box-shadow: 0 0 0 0 rgba(129, 243, 29, 0.6);
+            box-shadow: 0 0 0 0 rgb(129 243 29 / 60%);
         }
+
         70% {
-            box-shadow: 0 0 0 8px rgba(129, 243, 29, 0);
+            box-shadow: 0 0 0 8px rgb(129 243 29 / 0%);
         }
+
         100% {
-            box-shadow: 0 0 0 0 rgba(129, 243, 29, 0);
+            box-shadow: 0 0 0 0 rgb(129 243 29 / 0%);
         }
     }
 
@@ -1044,10 +1048,10 @@ small {
     
 
     .card {
-        background: #ffffff;
+        background: #fff;
         border-radius: 20px !important;
-        padding: -500px !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important;
+        padding: 25px !important;
+        box-shadow: 0 2px 12px rgb(0 0 0 / 4%) !important;
         border: 1px solid #f0f0f0 !important;
         height: 100% !important;
         min-height: 420px !important;
@@ -1085,7 +1089,7 @@ small {
         background: #f5f5f5;
         border-radius: 12px;
         padding: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     }
 
     .company-toggle-btn {
@@ -1107,8 +1111,8 @@ small {
 
     .company-toggle-btn.active {
         background: #586740;
-        color: #ffffff;
-        box-shadow: 0 2px 4px rgba(88, 103, 64, 0.3);
+        color: #fff;
+        box-shadow: 0 2px 4px rgb(88 103 64 / 30%);
     }
 
     /* Critical Numbers Table */
@@ -1163,10 +1167,10 @@ small {
     /* Summary cards (left side) - make them smaller */
     .dashboard-grid > .card:nth-child(odd),
     .dashboard-grid > .summary-card-compact {
-        background: #ffffff;
+        background: #fff;
         border-radius: 16px;
         padding: 25px;
-        box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+        box-shadow: 0 1px 8px rgb(0 0 0 / 3%);
         border: 1px solid #f0f0f0;
         min-height: 280px;
         max-height: none;
@@ -1238,11 +1242,11 @@ small {
 
     /* Chart cards (right side) - make them stand out more */
     .dashboard-grid > .card:nth-child(even) {
-        background: #ffffff;
+        background: #fff;
         border-radius: 24px;
         padding: 25px;
-        box-shadow: 0 8px 24px rgba(88, 103, 64, 0.12), 0 2px 8px rgba(0,0,0,0.06);
-        border: 2px solid rgba(88, 103, 64, 0.1);
+        box-shadow: 0 8px 24px rgb(88 103 64 / 12%), 0 2px 8px rgb(0 0 0 / 6%);
+        border: 2px solid rgb(88 103 64 / 10%);
         min-height: 450px;
         max-height: 450px;
         transform: translateY(0);
@@ -1251,7 +1255,7 @@ small {
 
     .dashboard-grid > .card:nth-child(even):hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 32px rgba(88, 103, 64, 0.15), 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 12px 32px rgb(88 103 64 / 15%), 0 4px 12px rgb(0 0 0 / 8%);
     }
 
     .card h3 {
@@ -1337,7 +1341,7 @@ small {
         font-weight: 600;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: rgba(82, 85, 82, 0.65);
+        color: rgb(82 85 82 / 65%);
     }
 
     .summary-stats-compact .stat-value {
@@ -1408,7 +1412,7 @@ small {
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+        box-shadow: 0 4px 12px rgb(88 115 64 / 40%);
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
@@ -1459,7 +1463,7 @@ small {
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(88, 115, 64, 0.4);
+        box-shadow: 0 4px 12px rgb(88 115 64 / 40%);
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
@@ -1483,6 +1487,7 @@ small {
             opacity: 0;
             transform: translateY(30px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -1494,6 +1499,7 @@ small {
             opacity: 0;
             transform: translateX(-50px);
         }
+
         to {
             opacity: 1;
             transform: translateX(0);
@@ -1505,6 +1511,7 @@ small {
             opacity: 0;
             transform: translateX(50px);
         }
+
         to {
             opacity: 1;
             transform: translateX(0);
@@ -1516,6 +1523,7 @@ small {
             opacity: 0;
             transform: scale(0.95);
         }
+
         to {
             opacity: 1;
             transform: scale(1);
@@ -1575,12 +1583,13 @@ small {
     }
 
     .card-header h3 {
-        margin: 0 0 5px 0;
+        margin: 0 0 5px;
         font-size: 1em;
         color: #525552;
     }
 
     /* Override card-header h3 styling for chart cards in dashboard-grid */
+
     /* Chart cards have .card-header, summary cards don't */
     .dashboard-grid .card .card-header h3 {
         font-size: 1.15em;
@@ -1599,7 +1608,7 @@ small {
         background: linear-gradient(135deg, #587340 0%, #96a840 100%);
         padding: 6px 14px;
         border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(88, 115, 64, 0.2);
+        box-shadow: 0 2px 8px rgb(88 115 64 / 20%);
     }
 
     .badge-text {
@@ -1650,7 +1659,7 @@ small {
 
     .stat-card.stat-card-link:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(88, 103, 64, 0.2);
+        box-shadow: 0 4px 12px rgb(88 103 64 / 20%);
         background: #a5b84a;
     }
 
@@ -1673,7 +1682,7 @@ small {
         justify-content: center;
         color: white;
         flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
     }
 
     .stat-content {
@@ -1763,14 +1772,14 @@ small {
         border-radius: 16px;
         padding: 30px;
         text-align: center;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
         border: 1px solid #f0f0f0;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .collection-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
     }
 
     .collection-card h4 {
@@ -1810,7 +1819,7 @@ small {
         background: white;
         border-radius: 20px;
         padding: 32px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
         border: 1px solid #f0f0f0;
         margin-top: 30px;
     }
@@ -1826,20 +1835,20 @@ small {
     }
 
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .collection-rate-grid {
             grid-template-columns: 1fr;
         }
     }
 
     /* Responsive adjustments */
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
         .revenue-dashboard {
             grid-template-columns: 1fr;
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .stat-card {
             flex-direction: column;
             text-align: center;
@@ -1858,7 +1867,7 @@ small {
     }
 
     /* Responsive */
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
         .dashboard-grid {
             grid-template-columns: 1fr;
             gap: 20px;
@@ -1895,7 +1904,7 @@ small {
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .sidebar {
             transform: translateX(-100%);
         }
