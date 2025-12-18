@@ -3,6 +3,8 @@
 /* stylelint-disable keyframes-name-pattern */
 /* stylelint-disable selector-id-pattern */
 
+/* Global Reset & Base */
+
 /* styles.css */
 * {
     margin: 0;
@@ -48,6 +50,7 @@ select {
     color: var(--text-color);
 }
 
+/* Root variables (colors, fonts, sizes) */
 :root {
     --primary-color: #586740;
     --secondary-color: #e5bb22;
@@ -375,6 +378,7 @@ small {
     background: var(--secondary-color);
 }
 
+/* Loading overlays & spinners */
 
     #dashboardLoadingOverlay {
         position: fixed;
@@ -576,6 +580,7 @@ small {
         transform: scale(1);
     }
 
+    /* Layout container */
     .container {
         max-width: 100%;
         margin: 0 auto;
@@ -635,6 +640,7 @@ small {
     margin: 14px auto 0;
 }
 
+    /* Carousel buttons */
     .carousel-btn {
         width: 36px;
         height: 36px;
@@ -1046,7 +1052,7 @@ small {
         padding: 0; /* ADD THIS */
     }
     
-
+    /* Card components (panels) */
     .card {
         background: #fff;
         border-radius: 20px !important;
@@ -1068,7 +1074,7 @@ small {
         box-sizing: border-box;
     }
     
-    /* Ensure chart canvas displays properly and stays within bounds */
+    /* Chart canvas */
     .card .chart-container canvas {
         display: block;
         max-width: 100%;
@@ -1604,6 +1610,7 @@ small {
         margin: 0;
     }
 
+    /* Card badges */
     .card-badge {
         background: linear-gradient(135deg, #587340 0%, #96a840 100%);
         padding: 6px 14px;
@@ -1611,6 +1618,7 @@ small {
         box-shadow: 0 2px 8px rgb(88 115 64 / 20%);
     }
 
+    /* Badge text */
     .badge-text {
         color: white;
         font-size: 0.85em;
@@ -1673,6 +1681,7 @@ small {
         transform: translateY(0);
     }
 
+    /* Stat icons */
     .stat-icon {
         width: 50px;
         height: 50px;
@@ -1709,6 +1718,7 @@ small {
         gap: 10px;
     }
 
+    /* Chart insight dot */
     .insight-dot {
         width: 12px;
         height: 12px;
@@ -1824,6 +1834,7 @@ small {
         margin-top: 30px;
     }
 
+    /* Collection chart container */
     .collection-chart-container {
         position: relative;
         height: 350px;

@@ -5,12 +5,7 @@
 /* stylelint-disable comment-empty-line-before */
 /* stylelint-disable keyframes-name-pattern */
 
-/* styles.css
-   Global stylesheet and design tokens.
-   - :root variables are the single source of truth for colors, fonts, and responsive font sizes.
-   - Adjusting values here will update the visual system for Navigation, Hero, Ten-Year, and Three-Year sections.
-   - Use this section for global resets and shared utilities used across components.
-*/
+/* Global styles - variables and base rules */
 * {
     margin: 0;
     padding: 0;
@@ -87,11 +82,7 @@ select {
     --fs-h1: 2.5rem;            /* 40px */
 }
 
-/* Responsive font sizes for 1920x1080 and larger
-   - Increases global typographic scale for large viewports.
-   - Affects Hero headline sizes, Plan image scale, and spacing in `.ten-year-plan` and `.three-year-plan`.
-   - Treat this as the 'desktop-XL' tuning layer for visual balance between text and imagery.
-*/
+/* Desktop-XL responsive sizes */
 @media (width >= 1920px) {
     :root {
         --fs-small: 0.875rem;      /* 14px */
@@ -117,10 +108,7 @@ select {
     }
 } 
 
-/* Responsive font sizes for mid-size screens (≈1366x768)
-   - Tuning layer for common laptop and medium desktop sizes.
-   - Keeps hero and plan text readable without overpowering imagery; matches `@media` rules for `.plan-image` and grids.
-*/
+/* Mid-size (laptop) responsive sizes */
 @media (width >= 1024px) and (width <= 1680px) {
     :root {
         --fs-small: 0.75rem;        /* 12px */
@@ -147,17 +135,14 @@ select {
     }
 }
 
-/* Heading styles
-   - Centralized heading treatment used by `.section-header`, `.hero-content h1`, and feature titles.
-   - Uses `--font-heading` and `--primary-color` so updating here cascades across Ten-Year and Three-Year headers.
-*/
+/* Headings - shared heading styles */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     line-height: 1.2;
     color: var(--primary-color);
     margin-bottom: 1rem;
-} 
+}
 
 h1 {
     font-size: var(--fs-h1);
@@ -216,11 +201,7 @@ small {
     }
 }
 
-/* Loading Animation
-   - Full-screen overlay shown on initial load (uses `loading.html` iframe).
-   - High z-index (9999) intentionally sits above fixed `.navbar`; fades out to reveal `.hero` and other sections.
-   - Keep duration/animation in sync with lazy-loaded content to avoid jarring reveals.
-*/
+/* Loading overlay (initial screen) */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -267,10 +248,7 @@ small {
 }
 
 
-/* Scroll Animation Classes
-   - Utility animations for elements entering the viewport (.fade-in, .slide-left/right, .scale-in).
-   - Commonly applied to `.hero-new`, `.feature-block`, `.plan-image-wrapper`, and other revealable sections to create consistent motion.
-*/
+/* Scroll reveal utilities (fade/slide/scale) */
 .fade-in {
     opacity: 0;
     transform: translateY(30px);
@@ -315,11 +293,7 @@ small {
     transform: scale(1);
 }
 
-/* Navigation
-   - Fixed top navigation bar; uses `--primary-color` and provides `.navbar.scrolled` variant when content scrolls.
-   - z-index:1000 keeps it above main sections but below the `.loading-overlay` (z-index:9999).
-   - Changing padding or height affects `scroll-margin-top` used by sections to avoid covered headings.
-*/
+/* Navigation (top bar) */
 .navbar {
     position: fixed;
     top: 0;
@@ -481,10 +455,7 @@ small {
     transition: all 0.3s ease;
 }
 
-/* Main Content
-   - The root scroll container for full-page sections; enables `scroll-snap` behavior for `.hero`, `.ten-year-plan`, and `.three-year-plan`.
-   - Adjusting `height` or `scroll-snap` here changes how sections align during navigation and when using the scroll-to-top button.
-*/
+/* Main content (scroll container) */
 .main-content {
     margin-left: 0;
     transition: margin-left 0.3s ease;
@@ -590,11 +561,7 @@ small {
     margin-top: -200px;
 }
 
-/* Hero Title Text Styles - Matching Image Design
-   - Styles the hero headline and supports the image-based composition (.hero-image + .hero-overlay).
-   - Font sizes are driven by :root variables so they scale with the responsive media queries above.
-   - Keep `z-index` in sync with `.hero-overlay` (z-index:2) and `.hero-content` (z-index:3) to ensure correct stacking.
-*/
+/* Hero title (headline area) */
 .hero-title-text {
     width: 100%;
     max-width: 800px;
@@ -787,11 +754,7 @@ small {
     color: var(--text-color);
 }
 
-/* Ten Year Plan Section
-   - Long-term roadmap layout pairing large imagery and feature grids (.plan-image + .plan-features-summary).
-   - Uses overlay and ::before/::after fades to create consistent transitions shared with `.three-year-plan`.
-   - When adjusting spacing or gradients here, mirror similar changes in `.three-year-plan` for consistent design language.
-*/
+/* Ten-year plan section */
 .ten-year-plan {
     position: relative;
     background: #fffff5;
@@ -1635,11 +1598,7 @@ small {
     }
 }
 
-/* Three Year Plan Section
-   - Mid-term plan section with a colorful gradient background that complements the Ten-Year palette.
-   - Shares overlay and fade patterns with `.ten-year-plan` so maintain consistent `pointer-events` and z-index behavior.
-   - Service cards and metrics are responsive siblings to the features in the Ten Year section; change grid rules in both when tuning layout.
-*/
+/* Three-year plan section */
 .three-year-plan {
     position: relative;
     background: linear-gradient(to right, #5a8c4a 0%, #6fa85a 20%, #85c46a 40%, #a5d85a 60%, #c5e85a 80%, #ffeb3b 100%);
